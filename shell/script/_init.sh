@@ -1,19 +1,35 @@
 ##
-# `ps` in `procps` on Cygwin
-if [[ $OSTYPE = cygwin ]]
+if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
 then
     function ps {
     procps $*
     }
 fi
 
-if [[ $(ps --pid $$ --format comm=) = bash ]]
+shell=$(ps --pid $$ --format comm=)
+
+## OPTIONS ##
+if [[ $shell = bash ]]
 then
-    ## OPTIONS ##
     shopt -os errexit nounset  # stop when an error occurs
     IFS=                       # disable word splitting
+else
+    emulate -R zsh             # set all options to their defaults
+    setopt errexit nounset     # stop when an error occurs
+    IFS=                       # disable word splitting (for command substitution)
+fi
 
-    ## DEBUGGING ##
+## DEBUGGING ##
+if [[ $shell = bash ]]
+then
+    function debug {
+    PS4='%B%F{cyan}+%b%f%1N[%I]%B%F{cyan}:%b%f '
+
+    print -P "%B%F{cyan}DEBUG:%b%f Trace:" >&2
+
+    trap "setopt xtrace" EXIT
+    }
+else
     function debug {
     lcyan=$'\e[1;36m'
     reset=$'\e[m'
@@ -22,21 +38,6 @@ then
     printf "${lcyan}DEBUG:$reset Trace:\n" >&2
 
     shopt -os xtrace
-    }
-
-else
-    ## OPTIONS ##
-    emulate -R zsh             # set all options to their defaults
-    setopt errexit nounset     # stop when an error occurs
-    IFS=                       # disable word splitting (for command substitution)
-
-    ## DEBUGGING ##
-    function debug {
-    PS4='%B%F{cyan}+%b%f%1N[%I]%B%F{cyan}:%b%f '
-
-    print -P "%B%F{cyan}DEBUG:%b%f Trace:" >&2
-
-    trap "setopt xtrace" EXIT
     }
 fi
 
@@ -54,8 +55,16 @@ fi
 
 ## VERSION ##
 # version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
+if [[ $shell = bash ]]
+then
+    shell_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}.${BASH_VERSINFO[2]}
+else
+    shell_version=$ZSH_VERSION
+fi
+
 function version {
-printf "%s %s.%04x\n" $scriptname                                    \
-                      $(date --reference $script --utc +%y%m%d.%H%M) \
-                      $(sum $script | cut --fields 1 --delimiter " ")
+printf "%s %s.%04x ($shell %s)\n" $scriptname                                \
+                      $(date --reference $script --utc +%y%m%d.%H%M)  \
+                      $(sum $script | cut --fields 1 --delimiter " ") \
+                      $shell_version
 }
