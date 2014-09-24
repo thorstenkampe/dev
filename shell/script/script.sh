@@ -30,5 +30,4 @@ do
 done
 shift $(($OPTIND - 1))
 
-## Main code starts here
-
+## MAIN CODE STARTS HERE ##
