@@ -40,11 +40,11 @@ if not_found and not isPyInstaller:
 #endregion
 
 ##region## IMPORTS
-import logging, colorama, colorlog  ## LOGGING
-import traceback                    ## TRACEBACK
-import gettext                      ## INTERNATIONALIZATION
-import inspect                      ## DEBUGGING
-import binascii, time, crcmod       ## VERSION
+import logging, colorama, colorlog       ## LOGGING
+import traceback                         ## TRACEBACK
+import gettext                           ## INTERNATIONALIZATION
+import inspect                           ## DEBUGGING
+import binascii, time, crcmod, platform  ## VERSION
 #endregion
 
 ##region## LOGGING
@@ -105,7 +105,7 @@ def setupdebugging(debug):
 
 ##region## VERSION
 # version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
-version_msg       = '{scriptname} {date}.{time}.{crc:02x}'
+version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version})'
 modification_time = time.gmtime(os.path.getmtime(script))
 version_date      = time.strftime('%y%m%d', modification_time)
 version_time      = time.strftime('%H%M', modification_time)
@@ -115,5 +115,6 @@ scriptfile        = open(script, 'rb').read()
 version_msg       = version_msg.format(scriptname = scriptname,
                                        date       = version_date,
                                        time       = version_time,
-                                       crc        = crcmod.predefined.mkCrcFun('crc-8')(scriptfile))
+                                       crc        = crcmod.predefined.mkCrcFun('crc-8')(scriptfile),
+                                       version    = platform.python_version())
 #endregion
