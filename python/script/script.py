@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 """
-{script} does something
+`{script}` does something
 
 Usage:
  {script} [-d]
@@ -12,6 +12,7 @@ Options:
  -v, --version   show version
 """
 
+from __future__ import division, print_function, unicode_literals
 import _init, docopt
 
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
