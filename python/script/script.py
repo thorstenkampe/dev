@@ -20,7 +20,7 @@ arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
 _init.setupdebugging(arguments['--debug'])
 
 def main():
-    ##region## MAIN CODE STARTS HERE
+    ## region MAIN CODE STARTS HERE ##
     pass
     #endregion
 
