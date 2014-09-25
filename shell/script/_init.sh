@@ -1,11 +1,16 @@
-##
-if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
+## OS SPECIFIC STUFF ##
+if [[ $OSTYPE = darwin12 || $OSTYPE = darwin12.0]]
+then
+    printf "OSX not supported\n"
+    exit 2
+elif [[ $OSTYPE = cygwin ]]    # `ps` is `procps` on Cygwin
 then
     function ps {
     procps $*
     }
 fi
 
+##
 shell=$(ps --pid $$ --format comm=)
 
 ## OPTIONS ##

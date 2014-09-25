@@ -106,7 +106,7 @@ def setupdebugging(debug):
 #endregion
 
 ## region VERSION ##
-# Script version
+# Script and Python version
 # version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
 version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version} on {platform})'
 modification_time = time.gmtime(os.path.getmtime(script))
