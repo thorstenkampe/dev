@@ -11,6 +11,7 @@ isPython2  = sys.version_info.major == 2
 
 ##region IMPORTS ##
 modulemsg = (
+'ERROR: {exception}',
 '`{script}` needs external module `{module}`.',
 'You can install the missing package with...',
 '`pip install [--target "{scriptpath}"] {module}`'
@@ -24,8 +25,8 @@ try:
     import binascii, time, crcmod, platform  ## VERSION
 
 except ImportError as exception:
-    print('ERROR:', exception)
-    sys.exit('\n'.join(modulemsg).format(script     = scriptname,
+    sys.exit('\n'.join(modulemsg).format(exception  = exception,
+                                         script     = scriptname,
                                          scriptpath = scriptpath,
                                          module     = str(exception).split()[-1].strip("'")))
 #endregion
