@@ -1,52 +1,32 @@
 ##region VARIABLES ##
 import sys, os
 
-script        = sys.argv[0]
-scriptpath    = os.path.dirname(script)
-scriptname    = os.path.basename(script)
+script     = sys.argv[0]
+scriptpath = os.path.dirname(script)
+scriptname = os.path.basename(script)
 
-isPython2     = sys.version_info.major == 2
-isPyInstaller = getattr(sys, 'frozen', None)
+isPython2  = sys.version_info.major == 2
 #endregion
 
 ##region IMPORTS ##
-
-# before importing we check for external module dependencies
-import imp
-try:
-    import importlib.util
-except ImportError:
-    pass
-
-modules   = ['colorama', 'colorlog', 'crcmod', 'docopt']
-not_found = []
 modulemsg = (
-'Required external module(s) not found! You can install the package(s) with...',
-'',
-'pip install [--target "{scriptpath}"] {module}'
+'`{script}` needs external module `{module}`.',
+'You can install the missing package with...',
+'`pip install [--target "{scriptpath}"] {module}`'
 )
 
-for module in modules:
+try:
+    import logging, colorama, colorlog       ## LOGGING
+    import traceback                         ## TRACEBACK
+    import gettext                           ## INTERNATIONALIZATION
+    import inspect                           ## DEBUGGING
+    import binascii, time, crcmod, platform  ## VERSION
 
-    try:
-        if importlib.util.find_spec(module) is None:
-            not_found.append(module)
-    except (AttributeError, NameError):  # fallback for Python2 and Python3 < 3.4
-        try:
-            imp.find_module(module)
-        except ImportError:
-            not_found.append(module)
-
-# PyInstaller includes all dependencies
-if not_found and not isPyInstaller:
-    sys.exit('\n'.join(modulemsg).format(scriptpath = scriptpath,
-                                         module     = " ".join(not_found)))
-
-import logging, colorama, colorlog       ## LOGGING
-import traceback                         ## TRACEBACK
-import gettext                           ## INTERNATIONALIZATION
-import inspect                           ## DEBUGGING
-import binascii, time, crcmod, platform  ## VERSION
+except ImportError as exception:
+    print('ERROR:', exception)
+    sys.exit('\n'.join(modulemsg).format(script     = scriptname,
+                                         scriptpath = scriptpath,
+                                         module     = str(exception).split()[-1].strip("'")))
 #endregion
 
 ##region LOGGING ##
@@ -86,9 +66,9 @@ gettext.install(scriptname, localedir = os.path.join(scriptpath, '_translations'
 #endregion
 
 ##region DEBUGGING ##
-def _traceit(frame, event, arg):
-    tracemsg = '+[{lineno}]: {code}'
+tracemsg = '+[{lineno}]: {code}'
 
+def _traceit(frame, event, arg):
     if (frame.f_globals['__name__'] == '__main__' and
         event in ['call', 'line']):
 
@@ -96,7 +76,6 @@ def _traceit(frame, event, arg):
 
         logger.debug(tracemsg.format(lineno = frame.f_lineno,
                                      code   = code_context))
-
     return _traceit
 
 def setupdebugging(debug):
