@@ -4,7 +4,7 @@ script=$0
 scriptname=$(basename $0)
 
 help="\
-$scriptname does something
+\`$scriptname\` does something
 
 Usage:
  $scriptname
