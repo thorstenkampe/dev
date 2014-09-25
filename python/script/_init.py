@@ -1,4 +1,4 @@
-## region VARIABLES ##
+##region VARIABLES ##
 import sys, os
 
 script        = sys.argv[0]
@@ -9,7 +9,7 @@ isPython2     = sys.version_info.major == 2
 isPyInstaller = getattr(sys, 'frozen', None)
 #endregion
 
-## region IMPORTS ##
+##region IMPORTS ##
 
 # before importing we check for external module dependencies
 import imp
@@ -49,7 +49,7 @@ import inspect                           ## DEBUGGING
 import binascii, time, crcmod, platform  ## VERSION
 #endregion
 
-## region LOGGING ##
+##region LOGGING ##
 colorama.init()
 
 logger  = logging.getLogger()
@@ -66,7 +66,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 #endregion
 
-## region TRACEBACK ##
+##region TRACEBACK ##
 def _notraceback(type, value, trace_back):
     logger.critical(''.join(traceback.format_exception_only(type, value)).rstrip())
 
@@ -81,11 +81,11 @@ if os.getenv('DEBUG') is not None:
         logger.info('Install `colored_traceback` for colored tracebacks')
 #endregion
 
-## region INTERNATIONALIZATION ##
+##region INTERNATIONALIZATION ##
 gettext.install(scriptname, localedir = os.path.join(scriptpath, '_translations'))
 #endregion
 
-## region DEBUGGING ##
+##region DEBUGGING ##
 def _traceit(frame, event, arg):
     tracemsg = '+[{lineno}]: {code}'
 
@@ -105,9 +105,9 @@ def setupdebugging(debug):
         sys.settrace(_traceit)
 #endregion
 
-## region VERSION ##
+##region VERSION ##
 # Script and Python version
-# version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
+# script version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
 version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version} on {platform})'
 modification_time = time.gmtime(os.path.getmtime(script))
 version_date      = time.strftime('%y%m%d', modification_time)
