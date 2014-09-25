@@ -23,14 +23,6 @@ fi
 if [[ $shell = bash ]]
 then
     function debug {
-    PS4='%B%F{cyan}+%b%f%1N[%I]%B%F{cyan}:%b%f '
-
-    print -P "%B%F{cyan}DEBUG:%b%f Trace:" >&2
-
-    trap "setopt xtrace" EXIT
-    }
-else
-    function debug {
     lcyan=$'\e[1;36m'
     reset=$'\e[m'
     PS4='\[$lcyan\]+\[$reset\]$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]\[$lcyan\]:\[$reset\] '
@@ -38,6 +30,14 @@ else
     printf "${lcyan}DEBUG:$reset Trace:\n" >&2
 
     shopt -os xtrace
+    }
+else
+    function debug {
+    PS4='%B%F{cyan}+%b%f%1N[%I]%B%F{cyan}:%b%f '
+
+    print -P "%B%F{cyan}DEBUG:%b%f Trace:" >&2
+
+    trap "setopt xtrace" EXIT
     }
 fi
 
@@ -63,8 +63,14 @@ else
 fi
 
 function version {
-printf "%s %s.%04x ($shell %s)\n" $scriptname                                \
-                      $(date --reference $script --utc +%y%m%d.%H%M)  \
-                      $(sum $script | cut --fields 1 --delimiter " ") \
-                      $shell_version
+printf "%s %s.%04x (%s %s on %s)\n" \
+       $scriptname                  \
+       $(date --reference $script   \
+              --utc +%y%m%d.%H%M)   \
+       $(sum $script |
+         cut --fields 1             \
+             --delimiter " ")       \
+       $shell                       \
+       $shell_version               \
+       $(uname --operating-system)
 }
