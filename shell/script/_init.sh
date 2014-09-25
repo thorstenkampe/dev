@@ -1,5 +1,5 @@
 ## OS SPECIFIC STUFF ##
-if [[ $OSTYPE = darwin12 || $OSTYPE = darwin12.0]]
+if [[ $OSTYPE = darwin12 || $OSTYPE = darwin12.0 ]]
 then
     printf "OSX not supported\n"
     exit 2
