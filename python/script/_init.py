@@ -1,7 +1,7 @@
-##region VARIABLES ##
 from __future__ import division, print_function, unicode_literals
 import sys, os
 
+##region VARIABLES ##
 script     = sys.argv[0]
 scriptpath = os.path.dirname(script)
 scriptname = os.path.basename(script)
@@ -10,12 +10,12 @@ isPython2  = sys.version_info.major == 2
 #endregion
 
 ##region IMPORTS ##
-modulemsg = (
-'ERROR: {exception}',
-'`{script}` needs external module `{module}`.',
-'You can install the missing package with...',
-'`pip install [--target "{scriptpath}"] {module}`'
-)
+modulemsg = """\
+ERROR: {exception}
+`{script}` needs external module `{module}`.
+You can install the missing package with...
+`pip install [--target "{scriptpath}"] {module}`
+"""
 
 try:
     import logging, colorama, colorlog       ## LOGGING
@@ -25,22 +25,22 @@ try:
     import binascii, time, crcmod, platform  ## VERSION
 
 except ImportError as exception:
-    sys.exit('\n'.join(modulemsg).format(exception  = exception,
-                                         script     = scriptname,
-                                         scriptpath = scriptpath,
-                                         module     = str(exception).split()[-1].strip("'")))
+    sys.exit(modulemsg.format(exception  = exception,
+                              script     = scriptname,
+                              scriptpath = scriptpath,
+                              module     = str(exception).split()[-1].strip("'")))
 #endregion
 
 ##region LOGGING ##
-colorama.init()
-
-logger  = logging.getLogger()
-handler = logging.StreamHandler()
 if isPython2:
     logmsg = '%(log_color)s%(levelname)s:%(reset)s %(message)s'
 else:
     logmsg = '{log_color}{levelname}:{reset} {message}'
 
+colorama.init()
+
+logger  = logging.getLogger()
+handler = logging.StreamHandler()
 handler.setFormatter(colorlog.ColoredFormatter(logmsg, style = '{'))
 logger.addHandler(handler)
 
