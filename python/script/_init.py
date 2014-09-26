@@ -88,8 +88,9 @@ def setupdebugging(debug):
 
 ##region VERSION ##
 # Script and Python version
+
 # script version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
-version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version} on {platform})'
+version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version} {arch} on {platform})'
 modification_time = time.gmtime(os.path.getmtime(script))
 version_date      = time.strftime('%y%m%d', modification_time)
 version_time      = time.strftime('%H%M', modification_time)
@@ -115,5 +116,6 @@ version_msg = version_msg.format(scriptname = scriptname,
                                  time       = version_time,
                                  crc        = crcmod.predefined.mkCrcFun('crc-8')(scriptfile),
                                  version    = platform.python_version(),
+                                 arch       = platform.architecture()[0],
                                  platform   = os_platform)
 #endregion
