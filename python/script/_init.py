@@ -5,8 +5,6 @@ import sys, os
 script     = sys.argv[0]
 scriptpath = os.path.dirname(script)
 scriptname = os.path.basename(script)
-
-isPython2  = sys.version_info.major == 2
 #endregion
 
 ##region IMPORTS ##
@@ -32,16 +30,14 @@ except ImportError as exception:
 #endregion
 
 ##region LOGGING ##
-if isPython2:
-    logmsg = '%(log_color)s%(levelname)s:%(reset)s %(message)s'
-else:
-    logmsg = '{log_color}{levelname}:{reset} {message}'
+logmsg = '%(log_color)s%(levelname)s:%(reset)s %(message)s'
 
 colorama.init()
 
 logger  = logging.getLogger()
 handler = logging.StreamHandler()
-handler.setFormatter(colorlog.ColoredFormatter(logmsg, style = '{'))
+# Python2 does not support `style = '{')` in `[Colored]Formatter` (for `logmsg`)
+handler.setFormatter(colorlog.ColoredFormatter(logmsg))
 logger.addHandler(handler)
 
 # set default log level to `info` so info messages can be seen
@@ -56,8 +52,8 @@ def _notraceback(type, value, trace_back):
 sys.excepthook = _notraceback
 
 if os.getenv('DEBUG') is not None:
-    # enable tracebacks for internal development
     try:
+        # enable tracebacks for internal development
         import colored_traceback.auto
     except ImportError:
         logger.info('Install `colored_traceback` for colored tracebacks')
@@ -87,7 +83,7 @@ def setupdebugging(debug):
 #endregion
 
 ##region VERSION ##
-# script version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
+# version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
 version_msg       = '{scriptname} {date}.{time}.{crc:02x}'
 modification_time = time.gmtime(os.path.getmtime(script))
 version_date      = time.strftime('%y%m%d', modification_time)
