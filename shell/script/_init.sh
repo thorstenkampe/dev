@@ -1,12 +1,10 @@
 ##
 if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
 then
-    function ps {
-    procps $*
-    }
+    shell=$(procps --pid $$ --format comm=)
+else
+    shell=$(ps --pid $$ --format comm=)
 fi
-
-shell=$(ps --pid $$ --format comm=)
 
 ## OPTIONS ##
 if [[ $shell = bash ]]
@@ -58,5 +56,4 @@ version=$(printf "%s %s.%04x"      \
                --utc +%y%m%d.%H%M) \
         $(sum $script |
           cut --fields 1           \
-              --delimiter " ")
-)
+              --delimiter " "))
