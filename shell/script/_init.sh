@@ -53,7 +53,8 @@ fi
 version=$(printf "%s %s.%04x"      \
         $scriptname                \
         $(date --reference $script \
-               --utc +%y%m%d.%H%M) \
+               --utc               \
+               +%y%m%d.%H%M)       \
         $(sum $script |
           cut --fields 1           \
               --delimiter " "))
