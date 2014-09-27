@@ -49,7 +49,7 @@ then
 fi
 
 ## VERSION ##
-# version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
+# version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
 version=$(printf "%s %s.%04x"      \
         $scriptname                \
         $(date --reference $script \
