@@ -18,11 +18,11 @@ You can install the missing package with...
 """
 
 try:
-    import logging, colorama, colorlog                      ## LOGGING
-    import traceback                                        ## TRACEBACK
-    import gettext                                          ## INTERNATIONALIZATION
-    import inspect                                          ## DEBUGGING
-    import binascii, time, crcmod, platform, pkg_resources  ## VERSION
+    import logging, colorama, colorlog       ## LOGGING
+    import traceback                         ## TRACEBACK
+    import gettext                           ## INTERNATIONALIZATION
+    import inspect                           ## DEBUGGING
+    import binascii, time, crcmod, platform  ## VERSION
 
 except ImportError as exception:
     sys.exit(modulemsg.format(exception  = exception,
@@ -87,8 +87,7 @@ def setupdebugging(debug):
 #endregion
 
 ##region VERSION ##
-version_msg       = ('{scriptname} {date}.{time}.{crc:02x} (Python {version} {arch} on {platform})\n'
-                     '({module_versions})')
+version_msg       = '{scriptname} {date}.{time}.{crc:02x} (Python {version} {arch} on {platform})'
 
 # Script version
 # script version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
@@ -111,25 +110,12 @@ elif sys.platform == 'cygwin':
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(release = platform.mac_ver()[0])
 
-# module versions
-modules = ['colorama', 'colorlog', 'crcmod', 'docopt', 'colored_traceback']
-
-for index, module in enumerate(modules):
-    try:
-        modules[index] += ' {version}'.format(version = pkg_resources.get_distribution(module).version)
-    except pkg_resources.DistributionNotFound:
-        try:
-            modules[index] += ' {version}'.format(version = sys.modules[module].__version__)
-        except (AttributeError, KeyError):
-            pass
-
 #
-version_msg = version_msg.format(scriptname      = scriptname,
-                                 date            = version_date,
-                                 time            = version_time,
-                                 crc             = crcmod.predefined.mkCrcFun('crc-8')(scriptfile),
-                                 version         = platform.python_version(),
-                                 arch            = platform.architecture()[0],
-                                 platform        = os_platform,
-                                 module_versions = ', '.join(modules))
+version_msg = version_msg.format(scriptname = scriptname,
+                                 date       = version_date,
+                                 time       = version_time,
+                                 crc        = crcmod.predefined.mkCrcFun('crc-8')(scriptfile),
+                                 version    = platform.python_version(),
+                                 arch       = platform.architecture()[0],
+                                 platform   = os_platform)
 #endregion
