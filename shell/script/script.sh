@@ -23,7 +23,7 @@ do
         (d)  debug;;
         (h)  gettext $help
              exit;;
-        (v)  version
+        (v)  printf "$version\n"
              exit;;
         (\?) exit 2;;
     esac
