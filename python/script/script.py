@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+#region
 """
 `{script}` does something
 
@@ -19,10 +20,10 @@ arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version_msg)
 
 _init.setupdebugging(arguments['--debug'])
+#endregion
 
 def main():
-    ##region MAIN CODE STARTS HERE ##
+    ## MAIN CODE STARTS HERE ##
     pass
-    #endregion
 
 main()
