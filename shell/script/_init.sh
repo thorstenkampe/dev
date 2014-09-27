@@ -68,14 +68,15 @@ else
 fi
 
 function version {
-printf "%s %s.%04x (%s %s on %s)\n" \
-       $scriptname                  \
-       $(date --reference $script   \
-              --utc +%y%m%d.%H%M)   \
+printf "%s %s.%04x (%s %s on %s %s)\n" \
+       $scriptname                     \
+       $(date --reference $script      \
+              --utc +%y%m%d.%H%M)      \
        $(sum $script |
-         cut --fields 1             \
-             --delimiter " ")       \
-       $shell                       \
-       $shell_version               \
-       $(uname --operating-system)
+         cut --fields 1                \
+             --delimiter " ")          \
+       $shell                          \
+       $shell_version                  \
+       $(uname --operating-system)     \
+       $(uname --machine)
 }
