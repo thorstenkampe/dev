@@ -8,37 +8,31 @@ scriptname = os.path.basename(script)
 #endregion
 
 ##region IMPORTS ##
-modulemsg = """\
-ERROR: {exception}
-`{script}` needs external module `{module}`.
-You can install the missing package with...
-`pip install [--target "{scriptpath}"] {module}`
-"""
-
 try:
     import logging, colorama, colorlog  ## LOGGING
     import traceback                    ## TRACEBACK
     import gettext                      ## INTERNATIONALIZATION
     import inspect                      ## DEBUGGING
-    import binascii, time, crcmod       ## VERSION
-
+    import time, crcmod                 ## VERSION
 except ImportError as exception:
-    sys.exit(modulemsg.format(exception  = exception,
-                              script     = scriptname,
-                              scriptpath = scriptpath,
-                              module     = str(exception).split()[-1].strip("'")))
+    sys.exit(
+'ERROR: {exception}\n'
+'`{script}` needs external modules `colorama`, `colorlog`, `docopt`, and `crcmod`.'.format(
+        exception = exception,
+        script    = scriptname))
 #endregion
 
 ##region LOGGING ##
-logmsg = '%(log_color)s%(levelname)s:%(reset)s %(message)s'
-
 colorama.init()
 
 logger  = logging.getLogger()
 handler = logging.StreamHandler()
-# Python2 does not support `style = '{')` in `[Colored]Formatter` (for `logmsg`)
-handler.setFormatter(colorlog.ColoredFormatter(logmsg))
-logger.addHandler(handler)
+
+# Python2 does not support `style = '{'` in `[Colored]Formatter`
+handler.setFormatter(colorlog.ColoredFormatter(
+    '%(log_color)s%(levelname)s:%(reset)s %(message)s'))
+
+logging.getLogger().addHandler(handler)
 
 # set default log level to `info` so info messages can be seen
 logger.setLevel(logging.INFO)
@@ -46,7 +40,8 @@ logger.setLevel(logging.INFO)
 
 ##region TRACEBACK ##
 def _notraceback(type, value, trace_back):
-    logger.critical(''.join(traceback.format_exception_only(type, value)).rstrip())
+    logger.critical(
+        ''.join(traceback.format_exception_only(type, value)).rstrip())
 
 # no tracebacks, just the exception on error
 sys.excepthook = _notraceback
@@ -56,24 +51,23 @@ if os.getenv('DEBUG') is not None:
         # enable tracebacks for internal development
         import colored_traceback.auto
     except ImportError:
-        logger.info('Install `colored_traceback` for colored tracebacks')
+        logger.info(
+            'Install `colored_traceback` for colored tracebacks')
 #endregion
 
 ##region INTERNATIONALIZATION ##
-gettext.install(scriptname, localedir = os.path.join(scriptpath, '_translations'))
+gettext.install(
+    scriptname, localedir = os.path.join(scriptpath, '_translations'))
 #endregion
 
 ##region DEBUGGING ##
-tracemsg = '+[{lineno}]: {code}'
-
 def _traceit(frame, event, arg):
     if (frame.f_globals['__name__'] == '__main__' and
         event in ['call', 'line']):
 
-        code_context = inspect.getframeinfo(frame).code_context[0].rstrip()
-
-        logger.debug(tracemsg.format(lineno = frame.f_lineno,
-                                     code   = code_context))
+        logger.debug('+[{lineno}]: {code}'.format(
+            lineno = frame.f_lineno,
+            code   = inspect.getframeinfo(frame).code_context[0].rstrip()))
     return _traceit
 
 def setupdebugging(debug):
@@ -83,16 +77,11 @@ def setupdebugging(debug):
 #endregion
 
 ##region VERSION ##
-# version is DATE.TIME.CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
-version_msg       = '{scriptname} {date}.{time}.{crc:02x}'
-modification_time = time.gmtime(os.path.getmtime(script))
-version_date      = time.strftime('%y%m%d', modification_time)
-version_time      = time.strftime('%H%M', modification_time)
-
-scriptfile        = open(script, 'rb').read()
-
-version_msg       = version_msg.format(scriptname = scriptname,
-                                       date       = version_date,
-                                       time       = version_time,
-                                       crc        = crcmod.predefined.mkCrcFun('crc-8')(scriptfile))
+# version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
+version_msg = '{scriptname} {datetime}.{crc:02x}'.format(
+    scriptname = scriptname,
+    datetime   = time.strftime('%y%m%d.%H%M',
+                     time.gmtime(os.path.getmtime(script))),
+    crc        = crcmod.predefined.mkCrcFun('crc-8')(
+                     open(script, 'rb').read()))
 #endregion
