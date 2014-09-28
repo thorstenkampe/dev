@@ -16,8 +16,9 @@ Options:
 from __future__ import division, print_function, unicode_literals
 import _init, docopt
 
-arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
-                          version = _init.version_msg)
+arguments = docopt.docopt(
+                (__doc__.format(script = _init.scriptname)),
+                version = _init.version_msg)
 
 _init.setupdebugging(arguments['--debug'])
 #endregion
