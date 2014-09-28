@@ -50,7 +50,7 @@ fi
 
 ## VERSION ##
 # version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
-version="
+version="\
 $scriptname \
 $(date --reference $script --utc +%y%m%d.%H%M).\
 $(printf %04x $(sum $script | cut --fields 1 --delimiter " "))\
