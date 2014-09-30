@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import division, print_function, unicode_literals
 import collections, itertools, math, operator, string
 
 ##region##
@@ -32,13 +33,13 @@ def perm(n, k):
 ##region##
 def combination (seq_or_n, k, repeat = False):
     # combinations are unordered
-    if repeat == False:
+    if repeat is False:
         try:
             return list(itertools.combinations(seq_or_n, k))
         except TypeError:
             return comb(seq_or_n, k)
 
-    elif repeat == True:
+    elif repeat is True:
         try:
             return list(itertools.combinations_with_replacement(seq_or_n, k))
         except TypeError:
@@ -49,13 +50,13 @@ def permutation(seq_or_n, k, repeat = False):
     # k-permutations are sometimes called variations and then only
     # "full" n-permutations without replacement are called permutations
     # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
-    if repeat == False:
+    if repeat is False:
         try:
             return list(itertools.permutations(seq_or_n, k))
         except TypeError:
             return perm(seq_or_n, k)
 
-    elif repeat == True:
+    elif repeat is True:
         try:
             return list(itertools.product(seq_or_n, repeat = k))
         except TypeError:
