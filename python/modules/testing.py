@@ -1,7 +1,7 @@
 from __future__ import division, print_function, unicode_literals
 import random, gc, time
 
-##
+##region##
 def dim(seq):
     dimension = []
     while isinstance(seq, (list, tuple)):
@@ -33,8 +33,9 @@ def isorderable(seq):
 
 def odd(integer):
     return bool(integer % 2)
+#endregion
 
-##
+##region##
 def randseq(start, end, count = None, repeat = False):
     if count is None:
         count = end - start + 1
@@ -74,3 +75,4 @@ def timer(iteration, *func_and_args):
 
     print('cpu: %.3f'   % (time.clock() - start_time_cpu),
           'total: %.3f' % (time.time()  - start_time_total))
+#endregion
