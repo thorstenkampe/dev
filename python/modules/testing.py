@@ -1,6 +1,7 @@
+from __future__ import division, print_function, unicode_literals
 import random, gc, time
 
-#
+##
 def dim(seq):
     dimension = []
     while isinstance(seq, (list, tuple)):
@@ -33,15 +34,15 @@ def isorderable(seq):
 def odd(integer):
     return bool(integer % 2)
 
-#
+##
 def randseq(start, end, count = None, repeat = False):
-    if count == None:
+    if count is None:
         count = end - start + 1
 
-    if repeat == False:
+    if repeat is False:
         return random.sample(range(start, end + 1), count)
 
-    elif repeat == True:
+    elif repeat is True:
         return [random.randint(start, end) for counter in range(count)]
 
 def rows(table):
