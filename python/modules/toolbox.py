@@ -35,13 +35,13 @@ def combination (seq_or_n, k, repeat = False):
     # combinations are unordered
     if repeat is False:
         try:
-            return list(itertools.combinations(seq_or_n, k))
+            return itertools.combinations(seq_or_n, k)
         except TypeError:
             return comb(seq_or_n, k)
 
     elif repeat is True:
         try:
-            return list(itertools.combinations_with_replacement(seq_or_n, k))
+            return itertools.combinations_with_replacement(seq_or_n, k)
         except TypeError:
             return comb(seq_or_n + k - 1, k)
 
@@ -52,31 +52,31 @@ def permutation(seq_or_n, k, repeat = False):
     # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
     if repeat is False:
         try:
-            return list(itertools.permutations(seq_or_n, k))
+            return itertools.permutations(seq_or_n, k)
         except TypeError:
             return perm(seq_or_n, k)
 
     elif repeat is True:
         try:
-            return list(itertools.product(seq_or_n, repeat = k))
+            return itertools.product(seq_or_n, repeat = k)
         except TypeError:
             return seq_or_n ** k
 #endregion
 
 ##region SET OPERATIONS ON MULTISETS ##
 def union(seq1, seq2):
-    return list((collections.Counter(seq1) | collections.Counter(seq2)).elements())
+    return (collections.Counter(seq1) | collections.Counter(seq2)).elements()
 
 def intersection(seq1, seq2):
-    return list((collections.Counter(seq1) & collections.Counter(seq2)).elements())
+    return (collections.Counter(seq1) & collections.Counter(seq2)).elements()
 
 def difference(seq1, seq2):
-    return list((collections.Counter(seq1) - collections.Counter(seq2)).elements())
+    return (collections.Counter(seq1) - collections.Counter(seq2)).elements()
 
 def symmetric_difference(seq1, seq2):
     seq1 = collections.Counter(seq1)
     seq2 = collections.Counter(seq2)
-    return list(((seq1 | seq2) - (seq1 & seq2)).elements())
+    return ((seq1 | seq2) - (seq1 & seq2)).elements()
 #endregion
 
 ##region##
@@ -175,7 +175,7 @@ def dictsort(adict, sortby):
 def makeset(seq):
     """ make seq a true set by removing duplicates """
     try:
-        return list(set(seq))
+        return set(seq)
     except TypeError:  # seq has unhashable elements
         return [part[0] for part in QuotientSet(seq).partition()]
 
