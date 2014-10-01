@@ -84,11 +84,12 @@ class QuotientSet(object):
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
+
+    What are the most common word lengths in word list of 310,000 words?
+    >>> qs = QuotientSet(bigstring.splitlines(), len)
+    >>> dictsort(qs.counter(), sortby = 'value')
+    [... (8, 43555), (10, 46919), (9, 48228)]
     """
-    # What are the most common word lengths in word list of 310,000 words?
-    # >>> qs = QuotientSet(bigstring.splitlines(), len)
-    # >>> dictsort(qs.counter(), sortby = 'value')
-    # [... (8, 43555), (10, 46919), (9, 48228)]
 
     def __init__(inst, seq, keyfunc = ident):
         inst._seq       = seq
@@ -115,10 +116,12 @@ class QuotientSet(object):
         inst._qs = dict(inst._qs)
 
     def _orderable(inst):
-        inst._qs = [(proj_value, list(equiv_class)) for proj_value, equiv_class in
-                    itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
+        inst._qs = [(proj_value, list(equiv_class))
+                    for proj_value, equiv_class in
+                    itertools.groupby(
+                        sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
 
-    def _unorderable(inst):  # Python 3
+    def _unorderable(inst):
         inst._qs    = []
         proj_values = []
 
@@ -129,7 +132,7 @@ class QuotientSet(object):
             except ValueError:
                 inst._qs.append([obj])
                 proj_values.append(proj_value)
-        inst._qs = list(zip(proj_values, inst._qs))                 # inserted list() for Python 3
+        inst._qs = list(zip(proj_values, inst._qs))
 
     def counter(inst):
         if isinstance(inst._qs, dict):
@@ -138,13 +141,14 @@ class QuotientSet(object):
                 counter[proj_value] = len(inst._qs[proj_value])
             return counter
         else:
-            return [(proj_value, len(equiv_class)) for proj_value, equiv_class in inst._qs]
+            return [(proj_value, len(equiv_class))
+                    for proj_value, equiv_class in inst._qs]
 
     def equivalenceclass(inst, key):
         if isinstance(inst._qs, dict):
             return inst._qs[key]
         else:
-            return inst._qs[list(zip(*inst._qs))[0].index(key)][1]  # inserted list() for Python 3
+            return inst._qs[list(zip(*inst._qs))[0].index(key)][1]
 
     def max(inst):
         return inst._extr(max)
@@ -154,9 +158,9 @@ class QuotientSet(object):
 
     def partition(inst):
         if isinstance(inst._qs, dict):
-            return list(inst._qs.values())                          # inserted list() for Python 3
+            return inst._qs.values()
         else:
-            return list(list(zip(*inst._qs))[1])                    # inserted list() for Python 3
+            return list(zip(*inst._qs))[1]
 
     def quotientset(inst):
         return inst._qs
@@ -170,7 +174,8 @@ def cartes(seq0, seq1):
 
 def dictsort(adict, sortby):
     """ sort dictionary by key or value """
-    return collections.OrderedDict(sorted(adict.items(), key = operator.itemgetter(sortby == 'value')))
+    return collections.OrderedDict(
+        sorted(adict.items(), key = operator.itemgetter(sortby == 'value')))
 
 def makeset(seq):
     """ make seq a true set by removing duplicates """
