@@ -95,44 +95,43 @@ class QuotientSet(object):
         inst._seq       = seq
         inst._canonproj = keyfunc
         try:
-            inst._hashable()
+            inst._qs = inst._qshashable()
         except TypeError:
             try:
-                inst._orderable()
+                inst._qs = inst._qsorderable()
             except TypeError:
-                inst._unorderable()
+                inst._qs = inst._qsunorderable()
 
-    def _extr(inst, min_or_max):
-        extremum = min_or_max(inst._qs)
-        if isinstance(inst._qs, dict):  # hashable
-            return {extremum: inst._qs[extremum]}
-        else:                           # _qs orderable or unorderable (but not hashable)
-            return [extremum]
-
-    def _hashable(inst):
-        inst._qs = collections.defaultdict(list)
+    def _qshashable(inst):
+        qs = collections.defaultdict(list)
         for obj in inst._seq:
-            inst._qs[inst._canonproj(obj)].append(obj)
-        inst._qs = dict(inst._qs)
+            qs[inst._canonproj(obj)].append(obj)
+        return dict(qs)
 
-    def _orderable(inst):
-        inst._qs = [(proj_value, list(equiv_class))
-                    for proj_value, equiv_class in
-                    itertools.groupby(
-                        sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
+    def _qsorderable(inst):
+        return [(proj_value, list(equiv_class))
+                for proj_value, equiv_class in
+                itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
 
-    def _unorderable(inst):
-        inst._qs    = []
+    def _qsunorderable(inst):
+        qs          = []
         proj_values = []
 
         for obj in inst._seq:
             proj_value = inst._canonproj(obj)
             try:
-                inst._qs[proj_values.index(proj_value)].append(obj)
+                qs[proj_values.index(proj_value)].append(obj)
             except ValueError:
-                inst._qs.append([obj])
+                qs.append([obj])
                 proj_values.append(proj_value)
-        inst._qs = list(zip(proj_values, inst._qs))
+        return list(zip(proj_values, qs))
+
+    def _extr(inst, min_or_max):
+        extremum = min_or_max(inst._qs)
+        if isinstance(inst._qs, dict):  # _qs hashable
+            return {extremum: inst._qs[extremum]}
+        else:                           # _qs not hashable
+            return [extremum]
 
     def counter(inst):
         if isinstance(inst._qs, dict):
