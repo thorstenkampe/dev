@@ -1,10 +1,13 @@
 # coding: utf-8
-from __future__ import division, print_function, unicode_literals
-import collections, itertools, math, operator, string
+from __future__ import (division as _division,
+                        print_function as _print_function,
+                        unicode_literals as _unicode_literals)
+import collections as _collections, itertools as _itertools, \
+       math as _math, operator as _operator, string as _string
 
 ##region##
 def base(digitstr, oldbase, newbase):
-    digits       = string.digits + string.ascii_uppercase
+    digits       = _string.digits + _string.ascii_uppercase
     newdigits    = ''
     numberbase10 = int(digitstr, oldbase)
 
@@ -24,10 +27,10 @@ def periodic(counter, counter_at_sop, sop, eop):
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
 
 def comb(n, k):
-    return math.factorial(n) // (math.factorial(k) * math.factorial(n - k))
+    return _math.factorial(n) // (_math.factorial(k) * _math.factorial(n - k))
 
 def perm(n, k):
-    return math.factorial(n) // math.factorial(n - k)
+    return _math.factorial(n) // _math.factorial(n - k)
 #endregion
 
 ##region##
@@ -35,13 +38,13 @@ def combination (seq_or_n, k, repeat = False):
     # combinations are unordered
     if repeat is False:
         try:
-            return itertools.combinations(seq_or_n, k)
+            return _itertools.combinations(seq_or_n, k)
         except TypeError:
             return comb(seq_or_n, k)
 
     elif repeat is True:
         try:
-            return itertools.combinations_with_replacement(seq_or_n, k)
+            return _itertools.combinations_with_replacement(seq_or_n, k)
         except TypeError:
             return comb(seq_or_n + k - 1, k)
 
@@ -52,30 +55,30 @@ def permutation(seq_or_n, k, repeat = False):
     # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
     if repeat is False:
         try:
-            return itertools.permutations(seq_or_n, k)
+            return _itertools.permutations(seq_or_n, k)
         except TypeError:
             return perm(seq_or_n, k)
 
     elif repeat is True:
         try:
-            return itertools.product(seq_or_n, repeat = k)
+            return _itertools.product(seq_or_n, repeat = k)
         except TypeError:
             return seq_or_n ** k
 #endregion
 
 ##region SET OPERATIONS ON MULTISETS ##
 def union(seq1, seq2):
-    return (collections.Counter(seq1) | collections.Counter(seq2)).elements()
+    return (_collections.Counter(seq1) | _collections.Counter(seq2)).elements()
 
 def intersection(seq1, seq2):
-    return (collections.Counter(seq1) & collections.Counter(seq2)).elements()
+    return (_collections.Counter(seq1) & _collections.Counter(seq2)).elements()
 
 def difference(seq1, seq2):
-    return (collections.Counter(seq1) - collections.Counter(seq2)).elements()
+    return (_collections.Counter(seq1) - _collections.Counter(seq2)).elements()
 
 def symmetric_difference(seq1, seq2):
-    seq1 = collections.Counter(seq1)
-    seq2 = collections.Counter(seq2)
+    seq1 = _collections.Counter(seq1)
+    seq2 = _collections.Counter(seq2)
     return ((seq1 | seq2) - (seq1 & seq2)).elements()
 #endregion
 
@@ -103,15 +106,15 @@ class QuotientSet(object):
                 inst._qs = inst._qsunorderable()
 
     def _qshashable(inst):
-        qs = collections.defaultdict(list)
+        qs = _collections.defaultdict(list)
         for obj in inst._seq:
             qs[inst._canonproj(obj)].append(obj)
-        return dict(qs)
+        return qs
 
     def _qsorderable(inst):
         return [(proj_value, list(equiv_class))
                 for proj_value, equiv_class in
-                itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
+                _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
 
     def _qsunorderable(inst):
         qs          = []
@@ -173,8 +176,8 @@ def cartes(seq0, seq1):
 
 def dictsort(adict, sortby):
     """ sort dictionary by key or value """
-    return collections.OrderedDict(
-        sorted(adict.items(), key = operator.itemgetter(sortby == 'value')))
+    return _collections.OrderedDict(
+        sorted(adict.items(), key = _operator.itemgetter(sortby == 'value')))
 
 def makeset(seq):
     """ make seq a true set by removing duplicates """
