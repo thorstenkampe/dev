@@ -21,6 +21,10 @@ def even(integer):
 def odd(integer):
     return bool(integer % 2)
 
+def baseclass(seq, keyfunc = _toolbox.ident):
+    return {'ishashable': ishashable(seq, keyfunc),
+            'isorderable': isorderable(seq, keyfunc)}
+
 def ishashable(seq, keyfunc = _toolbox.ident):
     try:
         dict(zip(map(keyfunc, seq), range(len(seq))))
@@ -81,7 +85,7 @@ def timer(iteration, *func_and_args):
 #endregion
 
 ##region TEST TYPES##
-smalldict    = {1: 11, '2': 22, 3: '33', '4': '44'}
+smalldict    = {1: '11', 2: '22', 4: '33', 3: '44'}
 
 bigfile      = 'F:/Program Files/tools/cain/Wordlists/Wordlist.txt'
 
@@ -98,6 +102,8 @@ table        = [['a1', 'b1', 'c1', 'd1', 'e1'],
                 ['a2', 'b2', 'c2', 'd2', 'e2'],
                 ['a3', 'b3', 'c3', 'd3', 'e3'],
                 ['a4', 'b4', 'c4', 'd4', 'e4']]
+
+dictitem     = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
 #endregion
 
 ##region HASH AND SORT##
