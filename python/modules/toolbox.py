@@ -5,7 +5,7 @@ from __future__ import (division as _division,
 import collections as _collections, itertools as _itertools, \
        math as _math, operator as _operator, string as _string
 
-##region##
+##region UTILITIES##
 def base(digitstr, oldbase, newbase):
     digits       = _string.digits + _string.ascii_uppercase
     newdigits    = ''
@@ -33,7 +33,7 @@ def perm(n, k):
     return _math.factorial(n) // _math.factorial(n - k)
 #endregion
 
-##region##
+##region COMBINATIONS AND PERMUTATIONS##
 def combination (seq_or_n, k, repeat = False):
     # combinations are unordered
     if repeat is False:
@@ -82,7 +82,7 @@ def symmetric_difference(seq1, seq2):
     return ((seq1 | seq2) - (seq1 & seq2)).elements()
 #endregion
 
-##region##
+##region QUOTIENTSET##
 class QuotientSet(object):
     """
     partition seq into equivalence classes
@@ -109,7 +109,7 @@ class QuotientSet(object):
         qs = _collections.defaultdict(list)
         for obj in inst._seq:
             qs[inst._canonproj(obj)].append(obj)
-        return qs
+        return dict(qs)
 
     def _qsorderable(inst):
         return [(proj_value, list(equiv_class))
@@ -138,10 +138,8 @@ class QuotientSet(object):
 
     def counter(inst):
         if isinstance(inst._qs, dict):
-            counter = {}
-            for proj_value in inst._qs:
-                counter[proj_value] = len(inst._qs[proj_value])
-            return counter
+            return {proj_value: len(inst._qs[proj_value])
+                    for proj_value in inst._qs}
         else:
             return [(proj_value, len(equiv_class))
                     for proj_value, equiv_class in inst._qs]
@@ -150,7 +148,7 @@ class QuotientSet(object):
         if isinstance(inst._qs, dict):
             return inst._qs[key]
         else:
-            return inst._qs[list(zip(*inst._qs))[0].index(key)][1]
+            return DictItems(inst._qs)[key]
 
     def max(inst):
         return inst._extr(max)
@@ -162,22 +160,48 @@ class QuotientSet(object):
         if isinstance(inst._qs, dict):
             return inst._qs.values()
         else:
-            return list(zip(*inst._qs))[1]
+            return DictItems(inst._qs).values()
 
     def quotientset(inst):
         return inst._qs
 #endregion
 
-##region##
+##region MISCELLANEOUS##
 def cartes(seq0, seq1):
     """ return the Cartesian Product of two sequences """
     # "single column" sequences have to be specified as [item] or (item,) - not (item)
     return [item0 + item1 for item0 in seq0 for item1 in seq1]
 
+class DictItems(object):
+    def __init__(inst, dictitems):
+        inst._items = dictitems
+
+    def __getitem__(inst, key):
+        return inst._items[list(zip(*inst._items))[0].index(key)][1]
+
+    def sort(inst, sortby):
+        """ sort by key or value """
+        return dictsort(inst._items, sortby)
+
+    def list(inst):
+        return inst._items
+
+    def keys(inst):
+        return list(zip(*inst._items))[0]
+
+    def values(inst):
+        return list(zip(*inst._items))[1]
+
 def dictsort(adict, sortby):
-    """ sort dictionary by key or value """
-    return _collections.OrderedDict(
-        sorted(adict.items(), key = _operator.itemgetter(sortby == 'value')))
+    """ sort dictionary or dictitems by key or value """
+
+    keyfunc = _operator.itemgetter(sortby == 'value')
+
+    if isinstance(adict, dict):
+        return _collections.OrderedDict(
+            sorted(adict.items(), key = keyfunc))
+    else:
+        return sorted(adict, key = keyfunc)
 
 def makeset(seq):
     """ make seq a true set by removing duplicates """
