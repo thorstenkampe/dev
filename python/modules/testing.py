@@ -115,9 +115,9 @@ dictitem     = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
 ##region HASH AND SORT##
 hashable     = [11, '22', 33]
 
-nonhashable  = [11, [22], 33]
+unhashable  = [11, [22], 33]
 
 orderable    = [[11], [22], [33]]
 
-nonorderable = [11, ['22'], 33]
+unorderable = [11, ['22'], 33]
 #endregion
