@@ -1,10 +1,12 @@
-from __future__ import (division as _division,
-                        print_function as _print_function,
-                        unicode_literals as _unicode_literals)
-import random as _random, gc as _gc, time as _time,\
-       toolbox as _toolbox
+from __future__ import (
+    division         as _division,
+    print_function   as _print_function,
+    unicode_literals as _unicode_literals)
 
 ##region TESTING FUNCTIONS##
+def _ident(x):
+    return x
+
 def dim(seq):
     dimension = []
     while isinstance(seq, (list, tuple)):
@@ -21,11 +23,11 @@ def even(integer):
 def odd(integer):
     return bool(integer % 2)
 
-def baseclass(seq, keyfunc = _toolbox.ident):
+def baseclass(seq, keyfunc = _ident):
     return {'ishashable': ishashable(seq, keyfunc),
             'isorderable': isorderable(seq, keyfunc)}
 
-def ishashable(seq, keyfunc = _toolbox.ident):
+def ishashable(seq, keyfunc = _ident):
     try:
         dict(zip(map(keyfunc, seq), range(len(seq))))
     except TypeError:
@@ -33,7 +35,7 @@ def ishashable(seq, keyfunc = _toolbox.ident):
     else:
         return True
 
-def isorderable(seq, keyfunc = _toolbox.ident):
+def isorderable(seq, keyfunc = _ident):
     try:
         seq.sort(key = keyfunc)
     except TypeError:
@@ -43,6 +45,10 @@ def isorderable(seq, keyfunc = _toolbox.ident):
 #endregion
 
 ##region UTILITIES##
+import random as _random, \
+       gc     as _gc,     \
+       time   as _time
+
 def randseq(start, end, count = None, repeat = False):
     if count is None:
         count = end - start + 1
