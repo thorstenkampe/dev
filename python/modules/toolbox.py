@@ -49,17 +49,23 @@ def permutation(seq_or_n, k, repeat = False):
 #endregion
 
 ##region SET OPERATIONS ON MULTISETS ##
-def union(seq1, seq2):
-    return (_collections.Counter(seq1) | _collections.Counter(seq2)).elements()
+class MultiSet(object):
 
-def intersection(seq1, seq2):
-    return (_collections.Counter(seq1) & _collections.Counter(seq2)).elements()
+    def __init__(inst, seq1, seq2):
+        inst._seq1 = seq1
+        inst._seq2 = seq2
 
-def difference(seq1, seq2):
-    return (_collections.Counter(seq1) - _collections.Counter(seq2)).elements()
+    def union(inst):
+        return (_collections.Counter(inst._seq1) | _collections.Counter(inst._seq2)).elements()
 
-def symmetric_difference(seq1, seq2):
-    return difference(union(seq1, seq2), intersection(seq1, seq2))
+    def intersection(inst):
+        return (_collections.Counter(inst._seq1) & _collections.Counter(inst._seq2)).elements()
+
+    def difference(inst):
+        return (_collections.Counter(inst._seq1) - _collections.Counter(inst._seq2)).elements()
+
+    def symmetric_difference(inst):
+        return MultiSet(inst.union(), inst.intersection()).difference()
 #endregion
 
 ##region QUOTIENTSET##
