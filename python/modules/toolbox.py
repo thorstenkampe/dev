@@ -1,52 +1,34 @@
 # coding: utf-8
-from __future__ import (division as _division,
-                        print_function as _print_function,
-                        unicode_literals as _unicode_literals)
-import collections as _collections, itertools as _itertools, \
-       math as _math, operator as _operator, string as _string
+from __future__ import (
+    division         as _division,
+    print_function   as _print_function,
+    unicode_literals as _unicode_literals)
 
-##region UTILITIES##
-def base(digitstr, oldbase, newbase):
-    digits       = _string.digits + _string.ascii_uppercase
-    newdigits    = ''
-    numberbase10 = int(digitstr, oldbase)
-
-    while numberbase10:
-        numberbase10, lastdigit = divmod(numberbase10, newbase)
-        newdigits = digits[lastdigit] + newdigits
-    return max(newdigits, '0')
-
-def ident(x):
-    return x
-
-def periodic(counter, counter_at_sop, sop, eop):
-    """
-    wrap counter in range(sop, eop + 1)
-    sop = start of period; eop = end of period
-    """
-    return (counter - counter_at_sop) % (eop - sop + 1) + sop
-
-def comb(n, k):
-    return _math.factorial(n) // (_math.factorial(k) * _math.factorial(n - k))
-
-def perm(n, k):
-    return _math.factorial(n) // _math.factorial(n - k)
-#endregion
+import collections as _collections, \
+       itertools   as _itertools,   \
+       math        as _math,        \
+       operator    as _operator
 
 ##region COMBINATIONS AND PERMUTATIONS##
+def _comb(n, k):
+    return _math.factorial(n) // (_math.factorial(k) * _math.factorial(n - k))
+
+def _perm(n, k):
+    return _math.factorial(n) // _math.factorial(n - k)
+
 def combination (seq_or_n, k, repeat = False):
     # combinations are unordered
     if repeat is False:
         try:
             return _itertools.combinations(seq_or_n, k)
         except TypeError:
-            return comb(seq_or_n, k)
+            return _comb(seq_or_n, k)
 
     elif repeat is True:
         try:
             return _itertools.combinations_with_replacement(seq_or_n, k)
         except TypeError:
-            return comb(seq_or_n + k - 1, k)
+            return _comb(seq_or_n + k - 1, k)
 
 def permutation(seq_or_n, k, repeat = False):
     # permutations are ordered
@@ -57,7 +39,7 @@ def permutation(seq_or_n, k, repeat = False):
         try:
             return _itertools.permutations(seq_or_n, k)
         except TypeError:
-            return perm(seq_or_n, k)
+            return _perm(seq_or_n, k)
 
     elif repeat is True:
         try:
@@ -83,6 +65,9 @@ def symmetric_difference(seq1, seq2):
 #endregion
 
 ##region QUOTIENTSET##
+def _ident(x):
+    return x
+
 class QuotientSet(object):
     """
     partition seq into equivalence classes
@@ -94,7 +79,7 @@ class QuotientSet(object):
     [... (8, 43555), (10, 46919), (9, 48228)]
     """
 
-    def __init__(inst, seq, keyfunc = ident):
+    def __init__(inst, seq, keyfunc = _ident):
         inst._seq       = seq
         inst._canonproj = keyfunc
         try:
