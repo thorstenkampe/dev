@@ -59,9 +59,7 @@ def difference(seq1, seq2):
     return (_collections.Counter(seq1) - _collections.Counter(seq2)).elements()
 
 def symmetric_difference(seq1, seq2):
-    seq1 = _collections.Counter(seq1)
-    seq2 = _collections.Counter(seq2)
-    return ((seq1 | seq2) - (seq1 & seq2)).elements()
+    return difference(union(seq1, seq2), intersection(seq1, seq2))
 #endregion
 
 ##region QUOTIENTSET##
