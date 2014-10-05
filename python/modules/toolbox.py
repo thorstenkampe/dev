@@ -48,21 +48,24 @@ def permutation(seq_or_n, k, repeat = False):
             return seq_or_n ** k
 #endregion
 
-##region SET OPERATIONS ON MULTISETS ##
+##region MULTISETS ##
 class MultiSet(object):
-
+    """Set operations on multisets"""
     def __init__(inst, seq1, seq2):
         inst._seq1 = seq1
         inst._seq2 = seq2
 
     def union(inst):
-        return (_collections.Counter(inst._seq1) | _collections.Counter(inst._seq2)).elements()
+        return (_collections.Counter(inst._seq1) |
+                _collections.Counter(inst._seq2)).elements()
 
     def intersection(inst):
-        return (_collections.Counter(inst._seq1) & _collections.Counter(inst._seq2)).elements()
+        return (_collections.Counter(inst._seq1) &
+                _collections.Counter(inst._seq2)).elements()
 
     def difference(inst):
-        return (_collections.Counter(inst._seq1) - _collections.Counter(inst._seq2)).elements()
+        return (_collections.Counter(inst._seq1) -
+                _collections.Counter(inst._seq2)).elements()
 
     def symmetric_difference(inst):
         return MultiSet(inst.union(), inst.intersection()).difference()
@@ -79,8 +82,8 @@ class QuotientSet(object):
 
     What are the most common word lengths in word list of 310,000 words?
     >>> qs = QuotientSet(bigstring.splitlines(), len)
-    >>> dictsort(qs.counter(), sortby = 'value')
-    [... (8, 43555), (10, 46919), (9, 48228)]
+    >>> dictsort(qs.count(), sortby = 'value')
+    OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
     def __init__(inst, seq, keyfunc = _ident):
@@ -125,7 +128,7 @@ class QuotientSet(object):
         else:                           # _qs not hashable
             return [extremum]
 
-    def counter(inst):
+    def count(inst):
         if isinstance(inst._qs, dict):
             return {proj_value: len(inst._qs[proj_value])
                     for proj_value in inst._qs}
@@ -155,12 +158,7 @@ class QuotientSet(object):
         return inst._qs
 #endregion
 
-##region MISCELLANEOUS##
-def cartes(seq0, seq1):
-    """ return the Cartesian Product of two sequences """
-    # "single column" sequences have to be specified as [item] or (item,) - not (item)
-    return [item0 + item1 for item0 in seq0 for item1 in seq1]
-
+##region DICTITEMS##
 class DictItems(object):
     def __init__(inst, dictitems):
         inst._items = dictitems
@@ -172,7 +170,7 @@ class DictItems(object):
         """ sort by key or value """
         return dictsort(inst._items, sortby)
 
-    def list(inst):
+    def items(inst):
         return inst._items
 
     def keys(inst):
@@ -180,6 +178,13 @@ class DictItems(object):
 
     def values(inst):
         return list(zip(*inst._items))[1]
+#endregion
+
+##region MISCELLANEOUS##
+def cartes(seq0, seq1):
+    """ return the Cartesian Product of two sequences """
+    # "single column" sequences have to be specified as [item] or (item,) - not (item)
+    return [item0 + item1 for item0 in seq0 for item1 in seq1]
 
 def dictsort(adict, sortby):
     """ sort dictionary or dictitems by key or value """
