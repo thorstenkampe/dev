@@ -82,7 +82,7 @@ class QuotientSet(object):
 
     What are the most common word lengths in word list of 310,000 words?
     >>> qs = QuotientSet(bigstring.splitlines(), len)
-    >>> dictsort(qs.count(), sortby = 'value')
+    >>> DictMethods(qs.count()).sort(sortby = 'value')
     OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
@@ -94,8 +94,9 @@ class QuotientSet(object):
         except TypeError:
             try:
                 inst._qs = inst._qsorderable()
-            except TypeError:
-                inst._qs = inst._qsunorderable()
+            except TypeError as exception:
+                inst._qs        = inst._qsunorderable()
+                inst._exception = exception
 
     def _qshashable(inst):
         qs = _collections.defaultdict(list)
@@ -106,7 +107,8 @@ class QuotientSet(object):
     def _qsorderable(inst):
         return [(proj_value, list(equiv_class))
                 for proj_value, equiv_class in
-                _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)]
+                _itertools.groupby(sorted(
+                    inst._seq, key = inst._canonproj), inst._canonproj)]
 
     def _qsunorderable(inst):
         qs          = []
@@ -121,20 +123,11 @@ class QuotientSet(object):
                 proj_values.append(proj_value)
         return list(zip(proj_values, qs))
 
-    def _extr(inst, min_or_max):
-        extremum = min_or_max(inst._qs)
-        if isinstance(inst._qs, dict):  # _qs hashable
-            return {extremum: inst._qs[extremum]}
-        else:                           # _qs not hashable
-            return [extremum]
-
     def count(inst):
         if isinstance(inst._qs, dict):
-            return {proj_value: len(inst._qs[proj_value])
-                    for proj_value in inst._qs}
+            return DictMethods(inst._qs).count()
         else:
-            return [(proj_value, len(equiv_class))
-                    for proj_value, equiv_class in inst._qs]
+            return DictItems(inst._qs).count()
 
     def equivalenceclass(inst, key):
         if isinstance(inst._qs, dict):
@@ -143,10 +136,37 @@ class QuotientSet(object):
             return DictItems(inst._qs)[key]
 
     def max(inst):
-        return inst._extr(max)
+        if isinstance(inst._qs, dict):
+            return DictMethods(inst._qs).max()
+        else:
+            try:
+                # `_exception` exists, that means dictitem could not be ordered
+                raise TypeError(inst._exception)
+            except AttributeError:
+                # dictitem is already sorted, so we just take the last element as slice
+                return inst._qs[-1:]
 
     def min(inst):
-        return inst._extr(min)
+        if isinstance(inst._qs, dict):
+            return DictMethods(inst._qs).min()
+        else:
+            try:
+                # `_exception` exists, that means dictitem could not be ordered
+                raise TypeError(inst._exception)
+            except AttributeError:
+                # dictitem is already sorted, so we just take the first element as slice
+                return inst._qs[:1]
+
+    def sort(inst):
+        if isinstance(inst._qs, dict):
+            return DictMethods(inst._qs).sort()
+        else:
+            try:
+                # `_exception` exists, that means dictitem could not be ordered
+                raise TypeError(inst._exception)
+            except AttributeError:
+                # dictitem is already sorted
+                return inst._qs
 
     def partition(inst):
         if isinstance(inst._qs, dict):
@@ -164,11 +184,24 @@ class DictItems(object):
         inst._items = dictitems
 
     def __getitem__(inst, key):
-        return inst._items[list(zip(*inst._items))[0].index(key)][1]
+        return inst.values()[inst.keys().index(key)]
 
-    def sort(inst, sortby):
-        """ sort by key or value """
-        return dictsort(inst._items, sortby)
+    def _extremum(inst, min_or_max, key = 'key'):
+        if key == 'key':
+            return [min_or_max(inst._items)]
+        else:
+            return min_or_max(inst.values())
+
+    def max(inst, key = 'key'):
+        return inst._extremum(max, key = key)
+
+    def min(inst, key = 'key'):
+        return inst._extremum(min, key = key)
+
+    def sort(inst, sortby = 'key'):
+        """sort by key or value"""
+        return sorted(
+            inst._items, key = _operator.itemgetter(sortby == 'value'))
 
     def items(inst):
         return inst._items
@@ -178,27 +211,48 @@ class DictItems(object):
 
     def values(inst):
         return list(zip(*inst._items))[1]
+
+    def count(inst):
+        """returns the count of a multidictitem"""
+        return [(key, len(values)) for key, values in inst._items]
+#endregion
+
+##region DICTMETHODS ##
+class DictMethods(object):
+    def __init__(inst, adict):
+        inst._adict = adict
+
+    def _extremum(inst, min_or_max, key = 'key'):
+        if key == 'key':
+            extremum = min_or_max(inst._adict)
+            return {extremum: inst._adict[extremum]}
+        else:
+            return min_or_max(inst._adict.values())
+
+    def max(inst, key = 'key'):
+        return inst._extremum(max, key = key)
+
+    def min(inst, key = 'key'):
+        return inst._extremum(min, key = key)
+
+    def sort(inst, sortby = 'key'):
+        """sort dictionary by key or value"""
+        return _collections.OrderedDict(
+               sorted(inst._adict.items(), key = _operator.itemgetter(sortby == 'value')))
+
+    def count(inst):
+        """returns the count of a multidict"""
+        return {key: len(inst._adict[key]) for key in inst._adict}
 #endregion
 
 ##region MISCELLANEOUS##
 def cartes(seq0, seq1):
-    """ return the Cartesian Product of two sequences """
+    """return the Cartesian Product of two sequences"""
     # "single column" sequences have to be specified as [item] or (item,) - not (item)
     return [item0 + item1 for item0 in seq0 for item1 in seq1]
 
-def dictsort(adict, sortby):
-    """ sort dictionary or dictitems by key or value """
-
-    keyfunc = _operator.itemgetter(sortby == 'value')
-
-    if isinstance(adict, dict):
-        return _collections.OrderedDict(
-            sorted(adict.items(), key = keyfunc))
-    else:
-        return sorted(adict, key = keyfunc)
-
 def makeset(seq):
-    """ make seq a true set by removing duplicates """
+    """make seq a true set by removing duplicates"""
     try:
         return set(seq)
     except TypeError:  # seq has unhashable elements
