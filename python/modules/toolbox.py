@@ -89,14 +89,15 @@ class QuotientSet(object):
     def __init__(inst, seq, keyfunc = _ident):
         inst._seq       = seq
         inst._canonproj = keyfunc
+        inst._issorted  = False
         try:
             inst._qs = inst._qshashable()
         except TypeError:
             try:
-                inst._qs = inst._qsorderable()
-            except TypeError as exception:
-                inst._qs        = inst._qsunorderable()
-                inst._exception = exception
+                inst._qs       = inst._qsorderable()
+                inst._issorted = True
+            except TypeError:
+                inst._qs = inst._qsunorderable()
 
     def _qshashable(inst):
         qs = _collections.defaultdict(list)
@@ -105,10 +106,8 @@ class QuotientSet(object):
         return dict(qs)
 
     def _qsorderable(inst):
-        return [(proj_value, list(equiv_class))
-                for proj_value, equiv_class in
-                _itertools.groupby(sorted(
-                    inst._seq, key = inst._canonproj), inst._canonproj)]
+        qs = _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)
+        return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
 
     def _qsunorderable(inst):
         qs          = []
@@ -124,125 +123,93 @@ class QuotientSet(object):
         return list(zip(proj_values, qs))
 
     def count(inst):
-        if isinstance(inst._qs, dict):
-            return DictMethods(inst._qs).count()
-        else:
-            return DictItems(inst._qs).count()
+        return GenericDict(inst._qs).count()
 
     def equivalenceclass(inst, key):
-        if isinstance(inst._qs, dict):
-            return inst._qs[key]
-        else:
-            return DictItems(inst._qs)[key]
+        return GenericDict(inst._qs)[key]
 
     def max(inst):
-        if isinstance(inst._qs, dict):
-            return DictMethods(inst._qs).max()
+        if inst._issorted:
+            return inst._qs[-1:]  # last element as slice
         else:
-            try:
-                # `_exception` exists, that means dictitem could not be ordered
-                raise TypeError(inst._exception)
-            except AttributeError:
-                # dictitem is already sorted, so we just take the last element as slice
-                return inst._qs[-1:]
+            return GenericDict(inst._qs).max()
 
     def min(inst):
-        if isinstance(inst._qs, dict):
-            return DictMethods(inst._qs).min()
+        if inst._issorted:
+            return inst._qs[:1]   # first element as slice
         else:
-            try:
-                # `_exception` exists, that means dictitem could not be ordered
-                raise TypeError(inst._exception)
-            except AttributeError:
-                # dictitem is already sorted, so we just take the first element as slice
-                return inst._qs[:1]
+            return GenericDict(inst._qs).min()
 
     def sort(inst):
-        if isinstance(inst._qs, dict):
-            return DictMethods(inst._qs).sort()
+        if inst._issorted:
+            return inst._qs
         else:
-            try:
-                # `_exception` exists, that means dictitem could not be ordered
-                raise TypeError(inst._exception)
-            except AttributeError:
-                # dictitem is already sorted
-                return inst._qs
+            return GenericDict(inst._qs).sort()
 
     def partition(inst):
-        if isinstance(inst._qs, dict):
-            return inst._qs.values()
-        else:
-            return DictItems(inst._qs).values()
+        return GenericDict(inst._qs).values()
 
     def quotientset(inst):
         return inst._qs
 #endregion
 
-##region DICTITEMS##
-class DictItems(object):
-    def __init__(inst, dictitems):
-        inst._items = dictitems
+##region GENERICDICT ##
+class GenericDict(object):
+    def __init__(inst, generic_dict):
+        inst._generic = generic_dict
 
     def __getitem__(inst, key):
-        return inst.values()[inst.keys().index(key)]
-
-    def _extremum(inst, min_or_max, key = 'key'):
-        if key == 'key':
-            return [min_or_max(inst._items)]
+        if isinstance(inst._generic, dict):
+            return inst._generic[key]
         else:
-            return min_or_max(inst.values())
-
-    def max(inst, key = 'key'):
-        return inst._extremum(max, key = key)
-
-    def min(inst, key = 'key'):
-        return inst._extremum(min, key = key)
-
-    def sort(inst, sortby = 'key'):
-        """sort by key or value"""
-        return sorted(
-            inst._items, key = _operator.itemgetter(sortby == 'value'))
-
-    def items(inst):
-        return inst._items
-
-    def keys(inst):
-        return list(zip(*inst._items))[0]
+            return inst.values()[inst.keys().index(key)]
 
     def values(inst):
-        return list(zip(*inst._items))[1]
+        if isinstance(inst._generic, dict):
+            return inst._generic.values()
+        else:
+            return list(zip(*inst._generic))[1]
+
+    def keys(inst):
+            return list(zip(*inst._generic))[0]  # dictitem only
+
+    def items(inst):
+            return inst._generic                 # dictitem only
 
     def count(inst):
         """returns the count of a multidictitem"""
-        return [(key, len(values)) for key, values in inst._items]
-#endregion
+        if isinstance(inst._generic, dict):
+            return {key: len(inst._generic[key]) for key in inst._generic}
+        else:
+            return [(key, len(values)) for key, values in inst._generic]
 
-##region DICTMETHODS ##
-class DictMethods(object):
-    def __init__(inst, adict):
-        inst._adict = adict
+    def sort(inst, sortby = 'key'):
+        """sort by key or value"""
+        if isinstance(inst._generic, dict):
+            return _collections.OrderedDict(sorted(
+                inst._generic.items(), key = _operator.itemgetter(sortby == 'value')))
+        else:
+            return sorted(
+                inst._generic, key = _operator.itemgetter(sortby == 'value'))
 
     def _extremum(inst, min_or_max, key = 'key'):
-        if key == 'key':
-            extremum = min_or_max(inst._adict)
-            return {extremum: inst._adict[extremum]}
+        if isinstance(inst._generic, dict):
+            if key == 'key':
+                extremum = min_or_max(inst._generic)
+                return {extremum: inst._generic[extremum]}
+            else:
+                return min_or_max(inst._generic.values())
         else:
-            return min_or_max(inst._adict.values())
+            if key == 'key':
+                return [min_or_max(inst._generic)]
+            else:
+                return min_or_max(inst.values())
 
     def max(inst, key = 'key'):
         return inst._extremum(max, key = key)
 
     def min(inst, key = 'key'):
         return inst._extremum(min, key = key)
-
-    def sort(inst, sortby = 'key'):
-        """sort dictionary by key or value"""
-        return _collections.OrderedDict(
-               sorted(inst._adict.items(), key = _operator.itemgetter(sortby == 'value')))
-
-    def count(inst):
-        """returns the count of a multidict"""
-        return {key: len(inst._adict[key]) for key in inst._adict}
 #endregion
 
 ##region MISCELLANEOUS##
