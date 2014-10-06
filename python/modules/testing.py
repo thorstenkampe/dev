@@ -66,33 +66,33 @@ def rows(table):
 #endregion
 
 ##region TEST TYPES##
-smalldict    = {1: '11', 2: '22', 4: '33', 3: '44'}
+smalldict   = {1: '11', 2: '22', 4: '33', 3: '44'}
 
-bigfile      = 'F:/Program Files/tools/cain/Wordlists/Wordlist.txt'
+bigfile     = 'F:/Program Files/tools/cain/Wordlists/Wordlist.txt'
 
-smalllist    = ['a', 'b', 'c', 'd', 'e']
-biglist      = range(100)
+smalllist   = ['a', 'b', 'c', 'd', 'e']
+biglist     = range(100)
 
-smallstring  = 'The quick brown fox jumps over the lazy dog'
-bigstring    = open(bigfile).read()
+smallstring = 'The quick brown fox jumps over the lazy dog'
+bigstring   = open(bigfile).read()
 
-smalltuple   = (11, 22, 33, 44)
-bigtuple     = tuple(range(100))
+smalltuple  = (11, 22, 33, 44)
+bigtuple    = tuple(range(100))
 
-table        = [['a1', 'b1', 'c1', 'd1', 'e1'],
-                ['a2', 'b2', 'c2', 'd2', 'e2'],
-                ['a3', 'b3', 'c3', 'd3', 'e3'],
-                ['a4', 'b4', 'c4', 'd4', 'e4']]
+table       = [['a1', 'b1', 'c1', 'd1', 'e1'],
+               ['a2', 'b2', 'c2', 'd2', 'e2'],
+               ['a3', 'b3', 'c3', 'd3', 'e3'],
+               ['a4', 'b4', 'c4', 'd4', 'e4']]
 
-dictitem     = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
+dictitem    = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
 #endregion
 
 ##region HASH AND SORT##
-hashable     = [11, '22', 33]
+hashable    = [11, '22', 33]
 
 unhashable  = [11, [22], 33]
 
-orderable    = [[11], [22], [33]]
+orderable   = [[11], [22], [33]]
 
 unorderable = [11, ['22'], 33]
 #endregion
