@@ -16,39 +16,43 @@ def _comb(n, k):
 def _perm(n, k):
     return _math.factorial(n) // _math.factorial(n - k)
 
-def combination (seq_or_n, k, repeat = False):
-    # combinations are unordered
-    if repeat is False:
-        try:
-            return _itertools.combinations(seq_or_n, k)
-        except TypeError:
-            return _comb(seq_or_n, k)
+class Comb(object):
+    def __init__(inst, seq_or_n):
+        inst._seq_or_n = seq_or_n
 
-    elif repeat is True:
-        try:
-            return _itertools.combinations_with_replacement(seq_or_n, k)
-        except TypeError:
-            return _comb(seq_or_n + k - 1, k)
+    def comb (inst, k, repeat = False):
+        # combinations are unordered
+        if repeat is False:
+            try:
+                return _itertools.combinations(inst._seq_or_n, k)
+            except TypeError:
+                return _comb(inst._seq_or_n, k)
 
-def permutation(seq_or_n, k, repeat = False):
-    # permutations are ordered
-    # k-permutations are sometimes called variations and then only
-    # "full" n-permutations without replacement are called permutations
-    # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
-    if repeat is False:
-        try:
-            return _itertools.permutations(seq_or_n, k)
-        except TypeError:
-            return _perm(seq_or_n, k)
+        elif repeat is True:
+            try:
+                return _itertools.combinations_with_replacement(inst._seq_or_n, k)
+            except TypeError:
+                return _comb(inst._seq_or_n + k - 1, k)
 
-    elif repeat is True:
-        try:
-            return _itertools.product(seq_or_n, repeat = k)
-        except TypeError:
-            return seq_or_n ** k
+    def perm(inst, k, repeat = False):
+        # permutations are ordered
+        # k-permutations are sometimes called variations and then only
+        # "full" n-permutations without replacement are called permutations
+        # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
+        if repeat is False:
+            try:
+                return _itertools.permutations(inst._seq_or_n, k)
+            except TypeError:
+                return _perm(inst._seq_or_n, k)
+
+        elif repeat is True:
+            try:
+                return _itertools.product(inst._seq_or_n, repeat = k)
+            except TypeError:
+                return inst._seq_or_n ** k
 #endregion
 
-##region MULTISETS ##
+##region MULTISET ##
 class MultiSet(object):
     """Set operations on multisets"""
     def __init__(inst, seq1, seq2):
@@ -82,20 +86,18 @@ class QuotientSet(object):
 
     What are the most common word lengths in word list of 310,000 words?
     >>> qs = QuotientSet(bigstring.splitlines(), len)
-    >>> DictMethods(qs.count()).sort(sortby = 'value')
+    >>> GenericDict(qs.count()).sort(sortby = 'value')
     OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
     def __init__(inst, seq, keyfunc = _ident):
         inst._seq       = seq
         inst._canonproj = keyfunc
-        inst._issorted  = False
         try:
             inst._qs = inst._qshashable()
         except TypeError:
             try:
                 inst._qs       = inst._qsorderable()
-                inst._issorted = True
             except TypeError:
                 inst._qs = inst._qsunorderable()
 
@@ -123,37 +125,34 @@ class QuotientSet(object):
         return list(zip(proj_values, qs))
 
     def count(inst):
-        return GenericDict(inst._qs).count()
+        return MultiDict(inst._qs).count()
 
     def equivalenceclass(inst, key):
         return GenericDict(inst._qs)[key]
-
-    def max(inst):
-        if inst._issorted:
-            return inst._qs[-1:]  # last element as slice
-        else:
-            return GenericDict(inst._qs).max()
-
-    def min(inst):
-        if inst._issorted:
-            return inst._qs[:1]   # first element as slice
-        else:
-            return GenericDict(inst._qs).min()
-
-    def sort(inst):
-        if inst._issorted:
-            return inst._qs
-        else:
-            return GenericDict(inst._qs).sort()
 
     def partition(inst):
         return GenericDict(inst._qs).values()
 
     def quotientset(inst):
         return inst._qs
+
+    # if `qs` is a dictitem, it is already sorted or cannot be sorted
+    # if `qs` is a dictionary, it is likely already displayed sorted
+    # possible optimizations:
+    # - return first/last slice for `min`/`max`
+    # - return the already sorted list for `sort`
+    def max(inst):
+        return GenericDict(inst._qs).max()
+
+    def min(inst):
+        return GenericDict(inst._qs).min()
+
+    def sort(inst):
+        return GenericDict(inst._qs).sort()
+
 #endregion
 
-##region GENERICDICT ##
+##region DICTIONARY ##
 class GenericDict(object):
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
@@ -175,13 +174,6 @@ class GenericDict(object):
 
     def items(inst):
             return inst._generic                 # dictitem only
-
-    def count(inst):
-        """returns the count of a multidictitem"""
-        if isinstance(inst._generic, dict):
-            return {key: len(inst._generic[key]) for key in inst._generic}
-        else:
-            return [(key, len(values)) for key, values in inst._generic]
 
     def sort(inst, sortby = 'key'):
         """sort by key or value"""
@@ -210,6 +202,17 @@ class GenericDict(object):
 
     def min(inst, key = 'key'):
         return inst._extremum(min, key = key)
+
+class MultiDict(object):
+    def __init__(inst, multidict):
+        inst._multi = multidict
+
+    def count(inst):
+        """returns the count of a multidict"""
+        if isinstance(inst._multi, dict):
+            return {key: len(inst._multi[key]) for key in inst._multi}
+        else:
+            return [(key, len(values)) for key, values in inst._multi]
 #endregion
 
 ##region MISCELLANEOUS##
