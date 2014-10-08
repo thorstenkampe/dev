@@ -93,36 +93,27 @@ class QuotientSet(object):
     def __init__(inst, seq, keyfunc = _ident):
         inst._seq       = seq
         inst._canonproj = keyfunc
+        # we're dispatching on performance: hashable -> orderable, unorderable
+        # (dictionary.get -> itertools.groupby, list.index)
+        inst._qs = {}
         try:
-            inst._qs = inst._qshashable()
+            inst._qs = inst._qsinit()
         except TypeError:
             try:
-                inst._qs       = inst._qsorderable()
+                inst._qs = inst._qsorderable()
             except TypeError:
-                inst._qs = inst._qsunorderable()
+                inst._qs = []
+                inst._qs = inst._qsinit()
 
-    def _qshashable(inst):
-        qs = _collections.defaultdict(list)
+    def _qsinit(inst):
+        qs = GenericDict(inst._qs)
         for obj in inst._seq:
-            qs[inst._canonproj(obj)].append(obj)
-        return dict(qs)
+            qs.setdefault(inst._canonproj(obj), []).append(obj)
+        return qs.items()
 
     def _qsorderable(inst):
         qs = _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)
         return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
-
-    def _qsunorderable(inst):
-        qs          = []
-        proj_values = []
-
-        for obj in inst._seq:
-            proj_value = inst._canonproj(obj)
-            try:
-                qs[proj_values.index(proj_value)].append(obj)
-            except ValueError:
-                qs.append([obj])
-                proj_values.append(proj_value)
-        return list(zip(proj_values, qs))
 
     def count(inst):
         return MultiDict(inst._qs).count()
@@ -149,11 +140,11 @@ class QuotientSet(object):
 
     def sort(inst):
         return GenericDict(inst._qs).sort()
-
 #endregion
 
 ##region DICTIONARY ##
 class GenericDict(object):
+    """a GenericDict is a dictionary or a dictitem"""
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
 
@@ -163,17 +154,33 @@ class GenericDict(object):
         else:
             return inst.values()[inst.keys().index(key)]
 
+    def setdefault(inst, key, default = None):
+        if isinstance(inst._generic, dict):
+            return inst._generic.setdefault(key, default)
+        else:
+            try:
+                return inst.__getitem__(key)
+            except ValueError:
+                inst._generic.append((key, default))
+                return default
+
     def values(inst):
         if isinstance(inst._generic, dict):
             return inst._generic.values()
         else:
-            return list(zip(*inst._generic))[1]
+            try:
+                return list(zip(*inst._generic))[1]
+            except IndexError:  # empty GenericDict
+                return ()
 
     def keys(inst):
-            return list(zip(*inst._generic))[0]  # dictitem only
+            try:
+                return list(zip(*inst._generic))[0]  # dictitem only
+            except IndexError:  # empty GenericDict
+                return ()
 
     def items(inst):
-            return inst._generic                 # dictitem only
+            return inst._generic
 
     def sort(inst, sortby = 'key'):
         """sort by key or value"""
@@ -185,6 +192,12 @@ class GenericDict(object):
                 inst._generic, key = _operator.itemgetter(sortby == 'value'))
 
     def _extremum(inst, min_or_max, key = 'key'):
+        """
+        returns `{key: value}` or `[(key, value)]` for `key = key` and
+        `value` for `key = value` (as opposed to a standard dictionary).
+        The former is more useful in my opinion and the latter necessary
+        because dict values are not necessarily unique.
+        """
         if isinstance(inst._generic, dict):
             if key == 'key':
                 extremum = min_or_max(inst._generic)
