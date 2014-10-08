@@ -86,7 +86,8 @@ class QuotientSet(object):
 
     What are the most common word lengths in word list of 310,000 words?
     >>> qs = QuotientSet(bigstring.splitlines(), len)
-    >>> GenericDict(qs.count()).sort(sortby = 'value')
+    >>> count = MultiDict(qs.quotientset()).count()
+    >>> GenericDict(count).sort(sortby = 'value')
     OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
@@ -115,9 +116,6 @@ class QuotientSet(object):
         qs = _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)
         return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
 
-    def count(inst):
-        return MultiDict(inst._qs).count()
-
     def equivalenceclass(inst, key):
         return GenericDict(inst._qs)[key]
 
@@ -126,20 +124,6 @@ class QuotientSet(object):
 
     def quotientset(inst):
         return inst._qs
-
-    # if `qs` is a dictitem, it is already sorted or cannot be sorted
-    # if `qs` is a dictionary, it is likely already displayed sorted
-    # possible optimizations:
-    # - return first/last slice for `min`/`max`
-    # - return the already sorted list for `sort`
-    def max(inst):
-        return GenericDict(inst._qs).max()
-
-    def min(inst):
-        return GenericDict(inst._qs).min()
-
-    def sort(inst):
-        return GenericDict(inst._qs).sort()
 #endregion
 
 ##region DICTIONARY ##
