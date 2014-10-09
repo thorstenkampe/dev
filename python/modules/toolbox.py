@@ -4,32 +4,11 @@ from __future__ import (
     print_function   as _print_function,
     unicode_literals as _unicode_literals)
 
+##region QUOTIENTSET##
 import collections as _collections, \
        itertools   as _itertools,   \
-       math        as _math,        \
        operator    as _operator
 
-##region COMBINATIONS AND PERMUTATIONS##
-# combinations (unordered) without repetition: itertools.combinations                  (comb(n, k))
-# combinations (unordered) with    repetition: itertools.combinations_with_replacement (comb(n + k - 1, k))
-# permutations (ordered)   without repetition: itertools.permutations                  (perm(n, k))
-# permutations (ordered)   with    repetition: itertools.product                       (n ** k)
-
-def comb(n, k):
-    return _math.factorial(n) // (_math.factorial(k) * _math.factorial(n - k))
-
-def perm(n, k):
-    return _math.factorial(n) // _math.factorial(n - k)
-#endregion
-
-##region MULTISET ##
-# union:                (collections.Counter | collections.Counter).elements
-# intersection:         (collections.Counter & collections.Counter).elements
-# difference:           (collections.Counter - collections.Counter).elements
-# symmetric difference: difference(union, intersection)
-#endregion
-
-##region QUOTIENTSET##
 def _ident(x):
     return x
 
