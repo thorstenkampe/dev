@@ -55,11 +55,14 @@ class QuotientSet(object):
     def partition(inst):
         return GenericDict(inst._qs).values()
 
+    def canonical_class(inst):
+        return GenericDict(inst._qs).keys()
+
     def quotientset(inst):
         return inst._qs
 
     def representative_class(inst):
-        return [part[0] for part in inst.partition()]
+        return [eq_class[0] for eq_class in inst.partition()]
 #endregion
 
 ##region DICTIONARY ##
@@ -95,8 +98,11 @@ class GenericDict(object):
                 return ()
 
     def keys(inst):
+        if isinstance(inst._generic, dict):
+            return inst._generic.keys()
+        else:
             try:
-                return list(zip(*inst._generic))[0]  # dictitem only
+                return list(zip(*inst._generic))[0]
             except IndexError:  # empty GenericDict
                 return ()
 
@@ -150,8 +156,21 @@ class MultiDict(object):
             return [(key, len(values)) for key, values in inst._multi]
 #endregion
 
-##region MISCELLANEOUS##
+##region PARTITION##
 def partition(seq, split):
+    """
+    split sequence by length or string by separator
+
+    >>> list = ['a', 'b', 'c', 'd', 'e']
+    >>> partition(list, 2)
+    ['a', 'b'], ['c', 'd'], ['e']]
+    >>> partition(list, [1, 2])
+    [['a'], ['b', 'c'], ['d', 'e']]
+    >>> string = 'The quick brown fox jumps over the lazy dog'
+    >>> partition(string, [' ', 'the', 'The'])
+    ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
+    """
+
     if isinstance(split, int):
         return partition(seq, [split] * (len(seq) // split))
 
