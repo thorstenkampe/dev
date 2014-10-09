@@ -151,13 +151,6 @@ class MultiDict(object):
 #endregion
 
 ##region MISCELLANEOUS##
-def makeset(seq):
-    """make seq a true set by removing duplicates"""
-    try:
-        return set(seq)
-    except TypeError:  # seq has unhashable elements
-        return QuotientSet(seq).representative_class()
-
 def partition(seq, split):
     if isinstance(split, int):
         return partition(seq, [split] * (len(seq) // split))
