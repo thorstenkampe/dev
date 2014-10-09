@@ -10,69 +10,23 @@ import collections as _collections, \
        operator    as _operator
 
 ##region COMBINATIONS AND PERMUTATIONS##
-def _comb(n, k):
+# combinations (unordered) without repetition: itertools.combinations                  (comb(n, k))
+# combinations (unordered) with    repetition: itertools.combinations_with_replacement (comb(n + k - 1, k))
+# permutations (ordered)   without repetition: itertools.permutations                  (perm(n, k))
+# permutations (ordered)   with    repetition: itertools.product                       (n ** k)
+
+def comb(n, k):
     return _math.factorial(n) // (_math.factorial(k) * _math.factorial(n - k))
 
-def _perm(n, k):
+def perm(n, k):
     return _math.factorial(n) // _math.factorial(n - k)
-
-class Comb(object):
-    def __init__(inst, seq_or_n):
-        inst._seq_or_n = seq_or_n
-
-    def comb (inst, k, repeat = False):
-        # combinations are unordered
-        if repeat is False:
-            try:
-                return _itertools.combinations(inst._seq_or_n, k)
-            except TypeError:
-                return _comb(inst._seq_or_n, k)
-
-        elif repeat is True:
-            try:
-                return _itertools.combinations_with_replacement(inst._seq_or_n, k)
-            except TypeError:
-                return _comb(inst._seq_or_n + k - 1, k)
-
-    def perm(inst, k, repeat = False):
-        # permutations are ordered
-        # k-permutations are sometimes called variations and then only
-        # "full" n-permutations without replacement are called permutations
-        # http://de.wikipedia.org/wiki/Abzählende_Kombinatorik#Begriffsabgrenzungen
-        if repeat is False:
-            try:
-                return _itertools.permutations(inst._seq_or_n, k)
-            except TypeError:
-                return _perm(inst._seq_or_n, k)
-
-        elif repeat is True:
-            try:
-                return _itertools.product(inst._seq_or_n, repeat = k)
-            except TypeError:
-                return inst._seq_or_n ** k
 #endregion
 
 ##region MULTISET ##
-class MultiSet(object):
-    """Set operations on multisets"""
-    def __init__(inst, seq1, seq2):
-        inst._seq1 = seq1
-        inst._seq2 = seq2
-
-    def union(inst):
-        return (_collections.Counter(inst._seq1) |
-                _collections.Counter(inst._seq2)).elements()
-
-    def intersection(inst):
-        return (_collections.Counter(inst._seq1) &
-                _collections.Counter(inst._seq2)).elements()
-
-    def difference(inst):
-        return (_collections.Counter(inst._seq1) -
-                _collections.Counter(inst._seq2)).elements()
-
-    def symmetric_difference(inst):
-        return MultiSet(inst.union(), inst.intersection()).difference()
+# union:                (collections.Counter | collections.Counter).elements
+# intersection:         (collections.Counter & collections.Counter).elements
+# difference:           (collections.Counter - collections.Counter).elements
+# symmetric difference: difference(union, intersection)
 #endregion
 
 ##region QUOTIENTSET##
@@ -138,6 +92,7 @@ class GenericDict(object):
         else:
             return inst.values()[inst.keys().index(key)]
 
+    # simple methods #
     def setdefault(inst, key, default = None):
         if isinstance(inst._generic, dict):
             return inst._generic.setdefault(key, default)
@@ -166,6 +121,7 @@ class GenericDict(object):
     def items(inst):
             return inst._generic
 
+    # higher level methods #
     def sort(inst, sortby = 'key'):
         """sort by key or value"""
         if isinstance(inst._generic, dict):
