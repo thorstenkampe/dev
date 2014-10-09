@@ -26,7 +26,7 @@ class QuotientSet(object):
 
     def __init__(inst, seq, keyfunc = _ident):
         inst._seq       = seq
-        inst._canonproj = keyfunc
+        inst._canonmap = keyfunc
         # we're dispatching on performance: hashable -> orderable, unorderable
         # (dictionary.get -> itertools.groupby, list.index)
         inst._qs = {}
@@ -42,11 +42,11 @@ class QuotientSet(object):
     def _qsinit(inst):
         qs = GenericDict(inst._qs)
         for obj in inst._seq:
-            qs.setdefault(inst._canonproj(obj), []).append(obj)
+            qs.setdefault(inst._canonmap(obj), []).append(obj)
         return qs.items()
 
     def _qsorderable(inst):
-        qs = _itertools.groupby(sorted(inst._seq, key = inst._canonproj), inst._canonproj)
+        qs = _itertools.groupby(sorted(inst._seq, key = inst._canonmap), inst._canonmap)
         return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
 
     def equivalenceclass(inst, key):
@@ -57,6 +57,9 @@ class QuotientSet(object):
 
     def quotientset(inst):
         return inst._qs
+
+    def representative_class(inst):
+        return [part[0] for part in inst.partition()]
 #endregion
 
 ##region DICTIONARY ##
@@ -148,17 +151,12 @@ class MultiDict(object):
 #endregion
 
 ##region MISCELLANEOUS##
-def cartes(seq0, seq1):
-    """return the Cartesian Product of two sequences"""
-    # "single column" sequences have to be specified as [item] or (item,) - not (item)
-    return [item0 + item1 for item0 in seq0 for item1 in seq1]
-
 def makeset(seq):
     """make seq a true set by removing duplicates"""
     try:
         return set(seq)
     except TypeError:  # seq has unhashable elements
-        return [part[0] for part in QuotientSet(seq).partition()]
+        return QuotientSet(seq).representative_class()
 
 def partition(seq, split):
     if isinstance(split, int):
