@@ -13,7 +13,8 @@ Options:
  -v, --version   show version
 """
 
-from __future__ import division, print_function, unicode_literals
+from __future__ import (
+    division, print_function, unicode_literals)
 import _init, docopt
 
 arguments = docopt.docopt(
