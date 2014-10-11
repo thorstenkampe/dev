@@ -1,26 +1,30 @@
 # coding: utf-8
+
+##region IMPORTS ##
 from __future__ import (
     division         as _division,
     print_function   as _print_function,
     unicode_literals as _unicode_literals)
 
-##region QUOTIENTSET##
-import collections as _collections, \
-       itertools   as _itertools,   \
-       operator    as _operator
+import collections as _collections  ## QUOTIENTSET
+import itertools   as _itertools    ## QUOTIENTSET
+import operator    as _operator     ## QUOTIENTSET
+#endregion
 
+##region QUOTIENTSET ##
 def _ident(x):
     return x
 
-class QuotientSet(object):
+class QuotientSet:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
 
     What are the most common word lengths in word list of 310,000 words?
+    >>> from testing import *
     >>> qs = QuotientSet(bigstring.splitlines(), len)
     >>> count = MultiDict(qs.quotientset()).count()
-    >>> GenericDict(count).sort(sortby = 'value')
+    >>> GenericDict(count).sort(sortby = 'value')  # doctest: +ELLIPSIS
     OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
@@ -62,11 +66,16 @@ class QuotientSet(object):
         return inst._qs
 
     def representative_class(inst):
-        return [eq_class[0] for eq_class in inst.partition()]
+        """
+        >>> def modulo2(x): return x % 2
+        >>> QuotientSet([0, 1, 2, 3, 4], modulo2).representative_class()
+        (0, 1)
+        """
+        return list(zip(*inst.partition()))[0]
 #endregion
 
 ##region DICTIONARY ##
-class GenericDict(object):
+class GenericDict:
     """a GenericDict is a dictionary or a dictitem"""
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
@@ -144,7 +153,7 @@ class GenericDict(object):
     def min(inst, key = 'key'):
         return inst._extremum(min, key = key)
 
-class MultiDict(object):
+class MultiDict:
     def __init__(inst, multidict):
         inst._multi = multidict
 
@@ -156,14 +165,14 @@ class MultiDict(object):
             return [(key, len(values)) for key, values in inst._multi]
 #endregion
 
-##region PARTITION##
+##region PARTITION ##
 def partition(seq, split):
     """
     split sequence by length or string by separator
 
     >>> list = ['a', 'b', 'c', 'd', 'e']
     >>> partition(list, 2)
-    ['a', 'b'], ['c', 'd'], ['e']]
+    [['a', 'b'], ['c', 'd'], ['e']]
     >>> partition(list, [1, 2])
     [['a'], ['b', 'c'], ['d', 'e']]
     >>> string = 'The quick brown fox jumps over the lazy dog'
