@@ -1,7 +1,11 @@
+##begin IMPORTS ##
 from __future__ import (
     division         as _division,
     print_function   as _print_function,
     unicode_literals as _unicode_literals)
+
+import random as _random  ## UTILITIES
+#endregion
 
 ##region TESTING FUNCTIONS##
 def _ident(x):
@@ -45,17 +49,25 @@ def isorderable(seq, keyfunc = _ident):
 #endregion
 
 ##region UTILITIES##
-import random as _random
-
 def randseq(start, end, count = None, repeat = False):
+    """
+    >>> _random.seed(0)
+    >>> randseq(1, 10, repeat = False)
+    [7, 10, 1, 3, 5, 4, 6, 2, 9, 8]
+    >>> randseq(1, 10, repeat = True)
+    [10, 4, 9, 3, 5, 3, 2, 10, 5, 9]
+    """
+
+    intlist = range(start, end + 1)
+
     if count is None:
         count = end - start + 1
 
     if repeat is False:
-        return _random.sample(range(start, end + 1), count)
+        return _random.sample(intlist, count)
 
     elif repeat is True:
-        return [_random.randint(start, end) for counter in range(count)]
+        return [_random.choice(intlist) for counter in range(count)]
 
 def rows(table):
     try:
