@@ -7,8 +7,16 @@ from __future__ import (
 import random as _random  ## UTILITIES
 #endregion
 
-def _ident(x):
+##region SMALL FUNCTIONS ##
+def ident(x):
     return x
+
+def even(integer):
+    return not(odd(integer))
+
+def odd(integer):
+    return bool(integer % 2)
+#endregion
 
 ##region TESTING FUNCTIONS##
 def dim(seq):
@@ -21,22 +29,19 @@ def dim(seq):
             break
     return dimension
 
-def hash_or_order(seq, keyfunc = _ident):
-    result = {}
+def hash_or_order(seq, keyfunc = ident):
+    result = {'ishashable':  True,
+              'isorderable': True}
 
     try:
-        dict(zip(map(keyfunc, seq), range(len(seq))))
+        dict(zip(map(keyfunc, seq), seq))
     except TypeError:
         result['ishashable'] = False
-    else:
-        result['ishashable'] = True
 
     try:
         seq.sort(key = keyfunc)
     except TypeError:
         result['isorderable'] = False
-    else:
-        result['isorderable'] = True
 
     return result
 #endregion
@@ -93,4 +98,18 @@ unhashable  = [11, [22], 33]
 orderable   = [[11], [22], [33]]
 
 unorderable = [11, ['22'], 33]
+#endregion
+
+##region REGRESSION TESTS ##
+__test__ = {
+    'hashable':   """
+>>> hash_or_order(hashable) == {'ishashable': True, 'isorderable': False}
+True
+                  """,
+
+    'unhashable': """
+>>> hash_or_order(unhashable) == {'ishashable': False, 'isorderable': False}
+True
+                  """
+}
 #endregion
