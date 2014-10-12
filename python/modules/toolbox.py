@@ -198,9 +198,9 @@ def partition(seq, split):
 ##region REGRESSION TESTS ##
 __test__ = {
     'representative_class': """
-        >>> from testing import even
-        >>> QuotientSet([0, 1, 2, 3, 4], even).representative_class()
-        (1, 0)
+>>> from testing import even
+>>> QuotientSet([0, 1, 2, 3, 4], even).representative_class()
+(1, 0)
                             """
 }
 #endregion
