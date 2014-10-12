@@ -68,8 +68,8 @@ class QuotientSet:
     def representative_class(inst):
         """
         >>> def modulo2(x): return x % 2
-        >>> QuotientSet([0, 1, 2, 3, 4], modulo2).representative_class()
-        (0, 1)
+        >>> QuotientSet([1, 2, 3, 4, 5], modulo2).representative_class()
+        (2, 1)
         """
         return list(zip(*inst.partition()))[0]
 #endregion
