@@ -66,11 +66,6 @@ class QuotientSet:
         return inst._qs
 
     def representative_class(inst):
-        """
-        >>> def modulo2(x): return x % 2
-        >>> QuotientSet([1, 2, 3, 4, 5], modulo2).representative_class()
-        (2, 1)
-        """
         return list(zip(*inst.partition()))[0]
 #endregion
 
@@ -198,4 +193,14 @@ def partition(seq, split):
         for separator in split[1:]:
             seq = seq.replace(separator, split[0])
         return seq.split(split[0])
+#endregion
+
+##region REGRESSION TESTS ##
+__test__ = {
+    'representative_class': """
+        >>> from testing import even
+        >>> QuotientSet([0, 1, 2, 3, 4], even).representative_class()
+        (1, 0)
+                            """
+}
 #endregion
