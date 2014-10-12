@@ -21,12 +21,6 @@ def dim(seq):
             break
     return dimension
 
-def even(integer):
-    return not(odd(integer))
-
-def odd(integer):
-    return bool(integer % 2)
-
 def baseclass(seq, keyfunc = _ident):
     return {'ishashable': ishashable(seq, keyfunc),
             'isorderable': isorderable(seq, keyfunc)}
