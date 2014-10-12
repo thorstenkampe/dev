@@ -62,13 +62,6 @@ def randseq(start, end, count = None, repeat = False):
 
     elif repeat is True:
         return [_random.choice(intlist) for counter in range(count)]
-
-def rows(table):
-    try:
-        for lineno, row in enumerate(table):
-            print('%*s:' % (len(str(len(table))), lineno + 1), row)
-    except TypeError:
-        print(table)
 #endregion
 
 ##region TEST TYPES##
