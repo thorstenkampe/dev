@@ -7,10 +7,10 @@ from __future__ import (
 import random as _random  ## UTILITIES
 #endregion
 
-##region TESTING FUNCTIONS##
 def _ident(x):
     return x
 
+##region TESTING FUNCTIONS##
 def dim(seq):
     dimension = []
     while isinstance(seq, (list, tuple)):
@@ -21,25 +21,24 @@ def dim(seq):
             break
     return dimension
 
-def baseclass(seq, keyfunc = _ident):
-    return {'ishashable': ishashable(seq, keyfunc),
-            'isorderable': isorderable(seq, keyfunc)}
+def hash_or_order(seq, keyfunc = _ident):
+    result = {}
 
-def ishashable(seq, keyfunc = _ident):
     try:
         dict(zip(map(keyfunc, seq), range(len(seq))))
     except TypeError:
-        return False
+        result['ishashable'] = False
     else:
-        return True
+        result['ishashable'] = True
 
-def isorderable(seq, keyfunc = _ident):
     try:
         seq.sort(key = keyfunc)
     except TypeError:
-        return False
+        result['isorderable'] = False
     else:
-        return True
+        result['isorderable'] = True
+
+    return result
 #endregion
 
 ##region UTILITIES##
