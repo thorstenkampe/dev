@@ -37,7 +37,7 @@ else
 fi
 
 ## INTERNATIONALIZATION ##
-# http://www.gnu.org/software/gettext/manual/gettext.html#sh
+# - http://www.gnu.org/software/gettext/manual/gettext.html#sh
 export TEXTDOMAINDIR=$(dirname $script)/_translations \
        TEXTDOMAIN=$scriptname
 
@@ -49,9 +49,10 @@ then
 fi
 
 ## VERSION ##
-# version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
+# - version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-16_HEX)
+# - bash needs `$((10#...)` because it treats numbers with leading zeroes as octal
 version="\
 $scriptname \
 $(date --reference $script --utc +%y%m%d.%H%M).\
-$(printf %04x $(sum $script | cut --fields 1 --delimiter " "))\
+$(printf %04x $((10#$(sum $script | cut --fields 1 --delimiter " "))))\
 "
