@@ -10,11 +10,11 @@ scriptname = os.path.basename(script)
 
 ##region IMPORTS ##
 try:
-    import logging, colorama, colorlog  ## LOGGING
-    import traceback                    ## TRACEBACK
-    import gettext                      ## INTERNATIONALIZATION
-    import inspect, platform            ## DEBUGGING
-    import time, crcmod                 ## VERSION
+    import logging, colorama, colorlog               ## LOGGING
+    import traceback, colored_traceback              ## TRACEBACK
+    import gettext                                   ## INTERNATIONALIZATION
+    import inspect, platform, pkg_resources, docopt  ## DEBUGGING
+    import time, crcmod                              ## VERSION
 except ImportError as exception:
     sys.exit(
 'ERROR: {exception}\n'
@@ -34,9 +34,6 @@ handler.setFormatter(colorlog.ColoredFormatter(
     '%(log_color)s%(levelname)s:%(reset)s %(message)s'))
 
 logging.getLogger().addHandler(handler)
-
-# set default log level to `info` so info messages can be seen
-logger.setLevel(logging.INFO)
 #endregion
 
 ##region TRACEBACK ##
@@ -48,12 +45,8 @@ def _notraceback(type, value, trace_back):
 sys.excepthook = _notraceback
 
 if os.getenv('DEBUG') is not None:
-    try:
-        # enable tracebacks for internal development
-        import colored_traceback.auto
-    except ImportError:
-        logger.info(
-            'Install `colored_traceback` for colored tracebacks')
+    # enable tracebacks for internal development
+    colored_traceback.add_hook()
 #endregion
 
 ##region INTERNATIONALIZATION ##
@@ -81,6 +74,9 @@ def setupdebugging(debug):
         arch     = platform.architecture()[0],
         platform = os_platform))
 
+    logger.debug('{module_versions}'.format(
+                     module_versions = ', '.join(modules)))
+
 # OS version
 if sys.platform == 'win32':
     os_platform = 'Windows {release}'.format(
@@ -97,6 +93,20 @@ elif sys.platform == 'cygwin':
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
                       release = platform.mac_ver()[0])
+
+# module versions
+modules = ['colorama', 'colorlog', 'crcmod', 'docopt', 'colored_traceback']
+
+for index, module in enumerate(modules):
+    try:
+        modules[index] += ' {version}'.format(
+                              version = pkg_resources.get_distribution(module).version)
+    except pkg_resources.DistributionNotFound:
+        try:
+            modules[index] += ' {version}'.format(
+                                  version = sys.modules[module].__version__)
+        except AttributeError:
+            pass
 #endregion
 
 ##region VERSION ##
