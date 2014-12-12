@@ -13,7 +13,7 @@ try:
     import logging, colorama, colorlog  ## LOGGING
     import traceback                    ## TRACEBACK
     import gettext                      ## INTERNATIONALIZATION
-    import inspect                      ## DEBUGGING
+    import inspect, platform            ## DEBUGGING
     import time, crcmod                 ## VERSION
 except ImportError as exception:
     sys.exit(
@@ -75,6 +75,28 @@ def setupdebugging(debug):
     if debug is True:
         logger.setLevel(logging.DEBUG)
         sys.settrace(_traceit)
+
+    logger.debug('Python {version} {arch} on {platform}'.format(
+        version  = platform.python_version(),
+        arch     = platform.architecture()[0],
+        platform = os_platform))
+
+# OS version
+if sys.platform == 'win32':
+    os_platform = 'Windows {release}'.format(
+                      release = platform.release())
+
+elif sys.platform.startswith('linux'):
+    os_platform = '{distribution}'.format(
+                      distribution = ' '.join(platform.linux_distribution()[:2]))
+
+elif sys.platform == 'cygwin':
+    os_platform = 'Cygwin {release}'.format(
+                      release = platform.release()[:6])
+
+elif sys.platform == 'darwin':
+    os_platform = 'OSX {release}'.format(
+                      release = platform.mac_ver()[0])
 #endregion
 
 ##region VERSION ##
