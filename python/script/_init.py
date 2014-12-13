@@ -1,5 +1,4 @@
-from __future__ import (
-    division, print_function, unicode_literals)
+from __future__ import division, print_function, unicode_literals
 import sys, os
 
 ##region VARIABLES ##
@@ -16,11 +15,7 @@ try:
     import inspect, platform, pkg_resources, docopt  ## DEBUGGING
     import time, crcmod                              ## VERSION
 except ImportError as exception:
-    sys.exit(
-'ERROR: {exception}\n'
-'`{script}` needs external modules `colorama`, `colorlog`, `docopt`, and `crcmod`.'.format(
-        exception = exception,
-        script    = scriptname))
+    sys.exit('ERROR: {exception}'.format(exception = exception))
 #endregion
 
 ##region LOGGING ##
