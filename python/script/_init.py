@@ -64,9 +64,8 @@ def setupdebugging(debug):
         logger.setLevel(logging.DEBUG)
         sys.settrace(_traceit)
 
-    logger.debug('Python {version} {arch} on {platform}'.format(
+    logger.debug('Python {version} on {platform}'.format(
         version  = platform.python_version(),
-        arch     = platform.architecture()[0],
         platform = os_platform))
 
 # OS version
