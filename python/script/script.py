@@ -14,7 +14,7 @@ Options:
 """
 
 from __future__ import division, print_function, unicode_literals
-import _init, docopt
+import _init, docopt, npyscreen
 
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version_msg)
@@ -24,6 +24,20 @@ _init.setupdebugging(arguments['--debug'])
 
 def main():
     ## MAIN CODE STARTS HERE ##
-    pass
+
+    def input(*args):
+        npyscreen.notify_wait('Enter text on next screen',
+                              title = 'INFORMATION')
+
+        MyForm = npyscreen.Form(name = 'Enter text')
+        text   = MyForm.add(npyscreen.TitleText,
+                            name  = 'Text:',
+                            value = 'boilerplate_text')
+        MyForm.edit()
+        return text.value
+
+    # `npyscreen` interferes with tracing: indentation,
+    # broken trace on Windows, no trace after `wrapper_basic()` on Linux
+    print(npyscreen.wrapper_basic(input))
 
 main()
