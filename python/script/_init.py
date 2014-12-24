@@ -8,15 +8,11 @@ scriptname = os.path.basename(script)
 #endregion
 
 ##region IMPORTS ##
-import logging, colorama, colorlog  ## LOGGING
-import traceback                    ## TRACEBACK
-try:  # PyInstaller on Linux
-    import colored_traceback
-except ImportError:
-    pass
-import gettext                      ## INTERNATIONALIZATION
-import inspect, platform            ## DEBUGGING
-import time, crcmod                 ## VERSION
+import logging, colorama, colorlog   ## LOGGING
+import traceback, colored_traceback  ## TRACEBACK
+import gettext                       ## INTERNATIONALIZATION
+import inspect, platform             ## DEBUGGING
+import time, crcmod                  ## VERSION
 #endregion
 
 ##region LOGGING ##
