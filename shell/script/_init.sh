@@ -17,6 +17,10 @@ fi
 IFS=                           # disable word splitting (zsh: for command substitution)
 
 ## DEBUGGING ##
+locale --category-name \
+       --keyword-name  \
+       decimal_point
+
 if [[ $shell = bash ]]
 then
     lcyan=$'\e[1;36m'
