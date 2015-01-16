@@ -17,10 +17,6 @@ fi
 IFS=                           # disable word splitting (zsh: for command substitution)
 
 ## DEBUGGING ##
-locale --category-name \
-       --keyword-name  \
-       decimal_point
-
 if [[ $shell = bash ]]
 then
     lcyan=$'\e[1;36m'
@@ -28,14 +24,20 @@ then
     PS4='\[$lcyan\]+\[$reset\]$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]\[$lcyan\]:\[$reset\] '
 
     function debug {
-    printf "${lcyan}DEBUG:$reset Trace:\n" >&2
+    { printf "${lcyan}DEBUG:$reset %s\n" $(locale --category-name \
+                                                  --keyword-name  \
+                                                  decimal_point)
+      printf "${lcyan}DEBUG:$reset Trace\n";} >&2
     shopt -os xtrace
     }
 else
     PS4='%B%F{cyan}+%b%f%1N[%I]%B%F{cyan}:%b%f '
 
     function debug {
-    print -P "%B%F{cyan}DEBUG:%b%f Trace:" >&2
+    {print -P "%B%F{cyan}DEBUG:%b%f%s" $(locale --category-name \
+                                                --keyword-name  \
+                                                decimal_point)
+     print -P "%B%F{cyan}DEBUG:%b%f Trace"} >&2
     trap "setopt xtrace" EXIT
     }
 fi
