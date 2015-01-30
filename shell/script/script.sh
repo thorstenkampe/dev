@@ -20,12 +20,12 @@ source "$(dirname "$0")"/_init.sh
 while getopts dhv option
 do
     case $option in
-        (d)  debug;;
-        (h)  gettext $help
-             exit;;
-        (v)  printf "$version\n"
-             exit;;
-        (\?) exit 2;;
+        (d) debug;;
+        (h) gettext $help
+            exit;;
+        (v) printf "$version\n"
+            exit;;
+        (?) exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
