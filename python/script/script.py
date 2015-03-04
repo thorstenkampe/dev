@@ -38,6 +38,6 @@ def main():
 
     # `npyscreen` interferes with tracing: indentation,
     # broken trace on Windows, no trace after `wrapper_basic()` on Linux
-    #print(npyscreen.wrapper_basic(input))
+    print(npyscreen.wrapper_basic(input))
 
 main()
