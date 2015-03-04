@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-$Revision: 2ad3dcb8d811 $
+$Revision$
 
 script=$0
 scriptname=$(basename $0)
