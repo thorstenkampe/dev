@@ -1,13 +1,6 @@
 #! /usr/bin/env bash
 
-$Author: blacktrash $
-$Date: 2007/07/17 12:00:47 $
-$Header: /tmp/kwdemo.Oz46E2/demo.txt,v 2ad3dcb8d811 2007/07/17 12:00:47 blacktrash $
-$Id: demo.txt,v 2ad3dcb8d811 2007/07/17 12:00:47 blacktrash $
-$RCSFile: demo.txt,v $
-$RCSfile: demo.txt,v $
 $Revision: 2ad3dcb8d811 $
-$Source: /tmp/kwdemo.Oz46E2/demo.txt,v $
 
 script=$0
 scriptname=$(basename $0)
