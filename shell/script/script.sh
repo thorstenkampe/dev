@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 VERSION='$Revision$'
+DATE='$Date$'
 
 script=$0
 scriptname=$(basename $0)
