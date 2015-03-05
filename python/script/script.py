@@ -16,8 +16,12 @@ Options:
 from __future__ import division, print_function, unicode_literals
 import _init, docopt, npyscreen
 
+__version__ = '$Revision$'
+
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
-                          version = _init.version_msg)
+                          version = '{script} {version}'.format(
+                                        script  = _init.scriptname,
+                                        version = __version__[11:-2]))
 
 _init.setupdebugging(arguments['--debug'])
 #endregion
@@ -38,6 +42,6 @@ def main():
 
     # `npyscreen` interferes with tracing: indentation,
     # broken trace on Windows, no trace after `wrapper_basic()` on Linux
-    #print(npyscreen.wrapper_basic(input))
+    print(npyscreen.wrapper_basic(input))
 
 main()
