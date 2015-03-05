@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 VERSION='$Revision$'
-DATE='$Date: 2015-03-05 14:38:07 +0100 (Thu, 05 Mar 2015) $'
+DATE='$Date: Thu, 05 Mar 2015 13:08:26 +0100 $'
 
-sscript=$0
+script=$0
 scriptname=$(basename $0)
 
 help="\
