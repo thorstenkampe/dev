@@ -68,5 +68,7 @@ export TEXTDOMAINDIR=$(dirname $script)/_translations \
 ## VERSION ##
 # version is the Mercurial revision number
 version() {
-    printf "$scriptname %s\n" ${VERSION:11:3}
+    printf "$scriptname %s (%s)\n" \
+           ${VERSION:11:-2}        \
+           ${DATE:7:-2}
 }

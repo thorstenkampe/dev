@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 VERSION='$Revision$'
-DATE='$Date$'
+DATE='$Date: 2015-03-05 14:38:07 +0100 (Thu, 05 Mar 2015) $'
 
 script=$0
 scriptname=$(basename $0)
