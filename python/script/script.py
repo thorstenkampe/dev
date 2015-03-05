@@ -17,7 +17,7 @@ from __future__ import division, print_function, unicode_literals
 import _init, docopt, npyscreen
 
 __version__ = '$Revision$'
-__date__    = '$Date: Thu, 05 Mar 2015 15:26:15 +0100 $'
+__date__    = '$Date$'
 
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = '{script} {version} ({date})'.format(
