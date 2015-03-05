@@ -12,7 +12,6 @@ import logging, colorama, colorlog   ## LOGGING
 import traceback, colored_traceback  ## TRACEBACK
 import gettext                       ## INTERNATIONALIZATION
 import inspect, platform             ## DEBUGGING
-import time, crcmod                  ## VERSION
 #endregion
 
 ##region LOGGING ##
@@ -81,14 +80,4 @@ elif sys.platform == 'cygwin':
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
                       release = platform.mac_ver()[0])
-#endregion
-
-##region VERSION ##
-# version is MODIFICATION_DATE.TIME.FILE_CHECKSUM (YYMMDD.HHMM_UTC.CRC-8_HEX)
-version_msg = '{scriptname} {datetime}.{crc:02x}'.format(
-    scriptname = scriptname,
-    datetime   = time.strftime('%y%m%d.%H%M',
-                     time.gmtime(os.path.getmtime(script))),
-    crc        = crcmod.predefined.mkCrcFun('crc-8')(
-                     open(script, 'rb').read()))
 #endregion
