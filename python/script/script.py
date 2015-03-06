@@ -19,7 +19,7 @@ import _init, docopt, npyscreen
 __version__ = '$Revision$'
 __date__    = '$Date$'
 
-_arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
+arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version(__version__, __date__))
 
 _init.setupdebugging(arguments['--debug'])
