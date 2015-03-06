@@ -1,3 +1,6 @@
+# $Revision$
+# $Date$
+
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
 then
