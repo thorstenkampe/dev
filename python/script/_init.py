@@ -81,3 +81,11 @@ elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
                       release = platform.mac_ver()[0])
 #endregion
+
+##region VERSION ##
+def version(revision, date):
+    return '{script} {version} ({date})'.format(
+               script  = scriptname,
+               version = revision[11:-2],
+               date    = date[7:-2])
+#endregion

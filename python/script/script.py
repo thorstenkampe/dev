@@ -17,13 +17,10 @@ from __future__ import division, print_function, unicode_literals
 import _init, docopt, npyscreen
 
 __version__ = '$Revision$'
-__date__    = '$Date$'
+__date__    = '$Date: Thursday, March 05 2015 20:17 $'
 
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
-                          version = '{script} {version} ({date})'.format(
-                                        script  = _init.scriptname,
-                                        version = __version__[11:-2],
-                                        date    = __date__[7:-2]))
+                          version = _init.version(__version__, __date__))
 
 _init.setupdebugging(arguments['--debug'])
 #endregion
