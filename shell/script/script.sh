@@ -18,7 +18,7 @@ Options:
  -v   Show version
 "
 
-ssource "$(dirname "$0")"/_init.sh
+source "$(dirname "$0")"/_init.sh
 
 while getopts dhv option
 do
