@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-#region
+##region START ##
 """
 `{script}` does something
 
@@ -13,34 +13,23 @@ Options:
  -v, --version   show version
 """
 
+# For Python2
 from __future__ import division, print_function, unicode_literals
-import _init, docopt, npyscreen
 
 __version__ = '$Revision$'
 __date__    = '$Date$'
 
+import _init, docopt
+
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version(__version__, __date__))
 
+# Debugging should be always available
 _init.setupdebugging(arguments['--debug'])
 #endregion
 
 def main():
     ## MAIN CODE STARTS HERE ##
-
-    def input(*args):
-        npyscreen.notify_wait('Enter text on next screen',
-                              title = 'INFORMATION')
-
-        MyForm = npyscreen.Form(name = 'Enter text')
-        text   = MyForm.add(npyscreen.TitleText,
-                            name  = 'Text:',
-                            value = 'boilerplate_text')
-        MyForm.edit()
-        return text.value
-
-    # `npyscreen` interferes with tracing: indentation,
-    # broken trace on Windows, no trace after `wrapper_basic()` on Linux
-    print(npyscreen.wrapper_basic(input))
+    pass
 
 main()
