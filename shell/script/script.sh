@@ -3,7 +3,7 @@
 VERSION='$Revision$'
 DATE='$Date: Thursday, March 05 2015 15:15 $'
 
-sscript=$0
+script=$0
 scriptname=$(basename $0)
 
 help="\
