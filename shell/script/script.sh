@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 VERSION='$Revision$'
-DATE='$Date: Thursday, March 05 2015 15:15 $'
+DATE='$Date$'
 
 script=$0
 scriptname=$(basename $0)
@@ -18,7 +18,7 @@ Options:
  -v   Show version
 "
 
-source "$(dirname "$0")"/_init.sh
+ssource "$(dirname "$0")"/_init.sh
 
 while getopts dhv option
 do
