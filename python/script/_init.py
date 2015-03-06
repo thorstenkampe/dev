@@ -1,10 +1,10 @@
 from __future__ import division, print_function, unicode_literals
 import sys, os
 
-##region VARIABLES ##
 __version__ = '$Revision$'
 __date__    = '$Date$'
 
+##region VARIABLES ##
 script     = sys.argv[0]
 scriptpath = os.path.dirname(script)
 scriptname = os.path.basename(script)
