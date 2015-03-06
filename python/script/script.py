@@ -22,7 +22,7 @@ __date__    = '$Date: Friday, March 06 2015 11:46 $'
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version(__version__, __date__))
 
-__init.setupdebugging(arguments['--debug'])
+_init.setupdebugging(arguments['--debug'])
 #endregion
 
 def main():
