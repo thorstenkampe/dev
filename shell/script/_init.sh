@@ -6,20 +6,30 @@
 # https://docs.python.org/3/library/logging.html
 verbosity=30                   # default level is `warning`
 
+declare -A colors
+# Assigning associative array elements via subscript is the only
+# syntax bash and zsh share
+colors[red]=$'\e[0;31m'
+colors[brightred]=$'\e[1;31m'
+colors[green]=$'\e[0;32m'
+colors[yellow]=$'\e[0;33m'
+colors[white]=$'\e[0;37m'
+colors[reset]=$'\e[m'
+
 log() {
     # Colors are the same as Python's `colorlog`. For color codes see
     # http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     case $1 in
         (CRITICAL) loglevel=10
-                   color=$'\e[1;31m' ;;  # bright red
+                   color=${colors[brightred]} ;;
         (ERROR)    loglevel=20
-                   color=$'\e[0;31m' ;;  # red
+                   color=${colors[red]}       ;;
         (WARNING)  loglevel=30
-                   color=$'\e[0;33m' ;;  # yellow
+                   color=${colors[yellow]}    ;;
         (INFO)     loglevel=40
-                   color=$'\e[0;32m' ;;  # green
+                   color=${colors[green]}     ;;
         (DEBUG)    loglevel=50
-                   color=$'\e[0;37m' ;;  # white
+                   color=${colors[white]}     ;;
         (*)        log ERROR \
 "unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
 \`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
@@ -29,9 +39,9 @@ log() {
     if ((loglevel <= verbosity))
     then
         # wrap at 70 characters, indent wrapped lines
-        { printf "$color$1:\e[m $2\n" | \
-          fold --spaces                 \
-               --width 70             | \
+        { printf "$color$1:${colors[reset]} $2\n" | \
+          fold --spaces                             \
+               --width 70                         | \
           sed '2~1s/^/  /'
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
