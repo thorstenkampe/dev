@@ -104,4 +104,3 @@ version() {
            ${VERSION:11:-2}        \
            ${DATE:7:-2}
 }
-
