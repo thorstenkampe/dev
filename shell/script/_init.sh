@@ -7,12 +7,19 @@
 verbosity=30                   # default level is `warning`
 
 log() {
+    # Colors are the same as Python's `colorlog`. For color codes see
+    # http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     case $1 in
-        (CRITICAL) loglevel=10 ;;
-        (ERROR)    loglevel=20 ;;
-        (WARNING)  loglevel=30 ;;
-        (INFO)     loglevel=40 ;;
-        (DEBUG)    loglevel=50 ;;
+        (CRITICAL) loglevel=10
+                   color=$'\e[1;31m' ;;  # bright red
+        (ERROR)    loglevel=20
+                   color=$'\e[0;31m' ;;  # red
+        (WARNING)  loglevel=30
+                   color=$'\e[0;33m' ;;  # yellow
+        (INFO)     loglevel=40
+                   color=$'\e[0;32m' ;;  # green
+        (DEBUG)    loglevel=50
+                   color=$'\e[0;37m' ;;  # white
         (*)        log ERROR \
 "unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
 \`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
@@ -22,9 +29,9 @@ log() {
     if ((loglevel <= verbosity))
     then
         # wrap at 70 characters, indent wrapped lines
-        { printf "$1: $2\n" | \
-          fold --spaces       \
-               --width 70   | \
+        { printf "$color$1:\e[m $2\n" | \
+          fold --spaces                 \
+               --width 70             | \
           sed '2~1s/^/  /'
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
