@@ -21,8 +21,7 @@ log() {
 
     if ((loglevel <= verbosity))
     then
-        # Expand escaped characters, wrap at 70 characters, indent
-        # wrapped lines
+        # wrap at 70 characters, indent wrapped lines
         { printf "$1: $2\n" | \
           fold --spaces       \
                --width 70   | \
