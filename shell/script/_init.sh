@@ -47,7 +47,7 @@ elif [[ $shell = zsh ]]
 then
     is_bash=false
 else
-    log ERROR \
+    log CRITICAL \
 "shell \`$shell\` is not supported. Only \`bash\` and \`zsh\` are \
 supported."
     exit 2                     # indicates "incorrect usage"
