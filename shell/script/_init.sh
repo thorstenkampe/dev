@@ -17,28 +17,28 @@ fi
 verbosity=30                   # default level is `warning`
 
 log() {
-    { case $1 in
-          (CRITICAL) loglevel=10 ;;
-          (ERROR)    loglevel=20 ;;
-          (WARNING)  loglevel=30 ;;
-          (INFO)     loglevel=40 ;;
-          (DEBUG)    loglevel=50 ;;
-          (*)        log ERROR \
+    case $1 in
+        (CRITICAL) loglevel=10 ;;
+        (ERROR)    loglevel=20 ;;
+        (WARNING)  loglevel=30 ;;
+        (INFO)     loglevel=40 ;;
+        (DEBUG)    loglevel=50 ;;
+        (*)        log ERROR \
 "unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
 \`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
-                     exit 2    # indicates "incorrect usage"
-      esac
+                   exit 2      # indicates "incorrect usage"
+    esac
 
-      if ((loglevel <= verbosity))
-      then
-          # Expand escaped characters, wrap at 70 characters, indent
-          # wrapped lines
-          printf "$1: $2\n" | \
+    if ((loglevel <= verbosity))
+    then
+        # Expand escaped characters, wrap at 70 characters, indent
+        # wrapped lines
+        { printf "$1: $2\n" | \
           fold --spaces       \
                --width 70   | \
           sed '2~1s/^/  /'
-      fi
-    } > /dev/stderr            # `> /dev/stderr` is equivalent to `>&2`
+        } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
+    fi
 }
 
 if [[ $shell = bash ]]
