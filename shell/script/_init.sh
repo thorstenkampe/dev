@@ -1,16 +1,6 @@
 # $Revision$
 # $Date$
 
-## SHELL ##
-if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
-then
-    shell=$(procps --pid $$ \
-                   --format comm=)
-else
-    shell=$(ps --pid $$     \
-               --format comm=)
-fi
-
 ## LOGGING ##
 # Modeled after Python's module `logging`
 # https://docs.python.org/3/library/logging.html
@@ -40,6 +30,16 @@ log() {
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
 }
+
+## SHELL ##
+if [[ $OSTYPE = cygwin ]]      # `ps` is `procps` on Cygwin
+then
+    shell=$(procps --pid $$ \
+                   --format comm=)
+else
+    shell=$(ps --pid $$     \
+               --format comm=)
+fi
 
 if [[ $shell = bash ]]
 then
