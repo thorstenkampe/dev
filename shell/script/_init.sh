@@ -11,6 +11,36 @@ else
                --format comm=)
 fi
 
+## LOGGING ##
+# Modeled after Python's module `logging`
+# https://docs.python.org/3/library/logging.html
+verbosity=30                   # default level is `warning`
+
+log() {
+    { case $1 in
+          (CRITICAL) loglevel=10 ;;
+          (ERROR)    loglevel=20 ;;
+          (WARNING)  loglevel=30 ;;
+          (INFO)     loglevel=40 ;;
+          (DEBUG)    loglevel=50 ;;
+          (*)        log ERROR \
+"unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
+\`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
+                     exit 2    # indicates "incorrect usage"
+      esac
+
+      if ((loglevel <= verbosity))
+      then
+          # Expand escaped characters, wrap at 70 characters, indent
+          # wrapped lines
+          printf "$1: $2\n" | \
+          fold --spaces       \
+               --width 70   | \
+          sed '2~1s/^/  /'
+      fi
+    } > /dev/stderr            # `> /dev/stderr` is equivalent to `>&2`
+}
+
 if [[ $shell = bash ]]
 then
     is_bash=true
@@ -18,9 +48,9 @@ elif [[ $shell = zsh ]]
 then
     is_bash=false
 else
-    { printf "ERROR: Shell \`$shell\` is not supported.\n"
-      printf 'Only `bash` and `zsh` are supported.\n'
-    } > /dev/stderr
+    log ERROR \
+"shell \`$shell\` is not supported. Only \`bash\` and \`zsh\` are \
+supported."
     exit 2                     # indicates "incorrect usage"
 fi
 
@@ -36,10 +66,7 @@ IFS=                           # disable word splitting (zsh: for command substi
 
 ## DEBUGGING ##
 debug() {
-    decimal_point=$(locale --category-name \
-                           --keyword-name  \
-                           decimal_point)
-    platform="$(uname --operating-system) $(uname --machine)"
+    verbosity=50               # debug level
 
     if $is_bash
     then
@@ -50,10 +77,13 @@ debug() {
         PS4='+%1N[%I]: '
     fi
 
-    { printf "DEBUG: $shell $shell_version on $platform\n"
-      printf "DEBUG: $decimal_point\n"
-      printf "DEBUG: Trace\n"
-    } > /dev/stderr            # `> /dev/stderr` is equivalent to `>&2`
+    log DEBUG \
+"$shell $shell_version on $(uname --operating-system) $(uname \
+--machine)"
+    log DEBUG $(locale --category-name \
+                       --keyword-name  \
+                       decimal_point)
+    log DEBUG "Trace"
 
     if $is_bash
     then
@@ -75,3 +105,4 @@ version() {
            ${VERSION:11:-2}        \
            ${DATE:7:-2}
 }
+
