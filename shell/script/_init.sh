@@ -2,8 +2,7 @@
 # $Date$
 
 ## LOGGING ##
-# Modeled after Python's module `logging`
-# https://docs.python.org/3/library/logging.html
+# Modeled after Python modules `logging` and `colorlog`
 verbosity=30                   # default level is `warning`
 
 declare -A colors
@@ -17,7 +16,7 @@ colors[white]=$'\e[0;37m'
 colors[reset]=$'\e[m'
 
 log() {
-    # Colors are the same as Python's `colorlog`. For color codes see
+    # For color codes see
     # http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     case $1 in
         (CRITICAL) loglevel=10
@@ -39,10 +38,10 @@ log() {
     if ((loglevel <= verbosity))
     then
         # wrap at 70 characters, indent wrapped lines
-        { printf "$color$1:${colors[reset]} $2\n" | \
-          fold --spaces                             \
-               --width 70                         | \
-          sed '2~1s/^/  /'
+        { printf "$color$1:${colors[reset]} $2\n" \
+            | fold --spaces                       \
+                   --width 70                     \
+            | sed '2~1s/^/  /'
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
 }
