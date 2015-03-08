@@ -37,11 +37,8 @@ log() {
 
     if ((loglevel <= verbosity))
     then
-        # wrap at 70 characters, indent wrapped lines
-        { printf "$color$1:${colors[reset]} $2\n" \
-            | fold --spaces                       \
-                   --width 70                     \
-            | sed '2~1s/^/  /'
+        { printf "$color$1:${colors[reset]} $2\n" | fold --spaces \
+                                                         --width 70
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
 }
