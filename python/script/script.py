@@ -13,23 +13,24 @@ Options:
  -v, --version   show version
 """
 
-# For Python2
 from __future__ import division, print_function, unicode_literals
+import _init, docopt
 
 __version__ = '$Revision$'
 __date__    = '$Date$'
 
-import _init, docopt
-
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
-                          version = _init.version(__version__, __date__))
+                          version = _init.version(_init.scriptname,
+                                                  __version__,
+                                                  __date__))
 
-# Debugging should be always available
-_init.setupdebugging(arguments['--debug'])
+# Debugging should always be available
+_init.setupdebugging(arguments['--debug'], __date__, __version__)
 #endregion
 
+##region MAIN CODE STARTS HERE ##
 def main():
-    ## MAIN CODE STARTS HERE ##
     pass
+#endregion
 
 main()
