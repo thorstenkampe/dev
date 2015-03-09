@@ -1,21 +1,18 @@
-##region START ##
-# $Revision$
-# $Date$
+##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
-
-import sys, os
+import sys, os                                ## VARIABLES
+import logging, colorama, colorlog            ## LOGGING
+import sys, os, traceback, colored_traceback  ## TRACEBACK
+import os, gettext                            ## INTERNATIONALIZATION
+import sys, inspect, platform                 ## DEBUGGING
 #endregion
 
 ##region VARIABLES ##
+__version__ = '$Revision$'
+__date__    = '$Date$'
+
 scriptpath = os.path.dirname(sys.argv[0])
 scriptname = os.path.basename(sys.argv[0])
-#endregion
-
-##region IMPORTS ##
-import logging, colorama, colorlog   ## LOGGING
-import traceback, colored_traceback  ## TRACEBACK
-import gettext                       ## INTERNATIONALIZATION
-import inspect, platform             ## DEBUGGING
 #endregion
 
 ##region LOGGING ##
@@ -78,10 +75,14 @@ elif sys.platform == 'darwin':
                       release = platform.mac_ver()[0])
 
 # enable debugging for main script
-def setupdebugging(debug):
+def setupdebugging(debug, script_date, script_version):
     if debug is True:
         logger.setLevel(logging.DEBUG)
         sys.settrace(_traceit)
+
+    logger.debug(version(scriptname, script_version, script_date))
+
+    logger.debug(version('_init.py', __version__, __date__))
 
     logger.debug('Python {version} on {platform}'.format(
         version  = platform.python_version(),
@@ -89,9 +90,9 @@ def setupdebugging(debug):
 #endregion
 
 ##region VERSION ##
-def version(revision, date):
+def version(file, revision, date):
     return '{script} {version} ({date})'.format(
-               script  = scriptname,
+               script  = file,
                version = revision[11:-2],
                date    = date[7:-2])
 #endregion
