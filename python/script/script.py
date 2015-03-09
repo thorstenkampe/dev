@@ -25,7 +25,7 @@ arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                                                   __date__))
 
 # Debugging should always be available
-_init.setupdebugging(arguments['--debug'], __date__, __version__)
+_init.setupdebugging(arguments['--debug'], __version__, __date__)
 #endregion
 
 ##region MAIN CODE STARTS HERE ##

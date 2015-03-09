@@ -75,7 +75,7 @@ elif sys.platform == 'darwin':
                       release = platform.mac_ver()[0])
 
 # enable debugging for main script
-def setupdebugging(debug, script_date, script_version):
+def setupdebugging(debug, script_version, script_date):
     if debug is True:
         logger.setLevel(logging.DEBUG)
         sys.settrace(_traceit)
