@@ -1,5 +1,5 @@
-# $Revision$
-# $Date$
+_INIT_VERSION='$Revision$'
+_INIT_DATE='$Date$'
 
 ## LOGGING ##
 # Modeled after Python modules `logging` and `colorlog`
@@ -89,12 +89,18 @@ debug() {
         PS4='+%1N[%I]: '
     fi
 
+    log DEBUG $(version)
+
+    log DEBUG "_init.sh ${_INIT_VERSION:11:-2} (${_INIT_DATE:7:-2})"
+
     log DEBUG \
 "$shell $shell_version on $(uname --operating-system) $(uname \
 --machine)"
+
     log DEBUG $(locale --category-name \
                        --keyword-name  \
                        decimal_point)
+
     log DEBUG "Trace"
 
     if $is_bash
