@@ -103,12 +103,15 @@ debug() {
 
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
-# - OS X needs `gettext` (from Homebrew, Fink, or MacPorts), and
-#   `gettext` needs to be in $PATH
-#   `PATH=$(brew --prefix)/opt/gettext/bin:$PATH` for Homebrew for
-#   instance
 export TEXTDOMAINDIR=$(dirname $script)/_translations \
        TEXTDOMAIN=$scriptname
+
+if ! which gettext &> /dev/null
+then
+    gettext() {
+        printf $*
+    }
+fi
 
 ## VERSION ##
 # version is the Mercurial revision number
