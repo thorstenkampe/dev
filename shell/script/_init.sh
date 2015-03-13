@@ -1,34 +1,26 @@
 _INIT_VERSION='$Revision$'
 _INIT_DATE='$Date$'
 
+## short instead of long options are used for OS X compatibility
+
 ## LOGGING ##
 # Modeled after Python modules `logging` and `colorlog`
 verbosity=30                   # default level is `warning`
-
-declare -A colors
-# Assigning associative array elements via subscript is the only
-# syntax bash and zsh share
-colors[red]=$'\e[0;31m'
-colors[brightred]=$'\e[1;31m'
-colors[green]=$'\e[0;32m'
-colors[yellow]=$'\e[0;33m'
-colors[white]=$'\e[0;37m'
-colors[reset]=$'\e[m'
 
 log() {
     # For color codes see
     # http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     case $1 in
         (CRITICAL) loglevel=10
-                   color=${colors[brightred]} ;;
+                   color=$'\e[1;31m' ;;  # brightred
         (ERROR)    loglevel=20
-                   color=${colors[red]}       ;;
+                   color=$'\e[0;31m' ;;  # red
         (WARNING)  loglevel=30
-                   color=${colors[yellow]}    ;;
+                   color=$'\e[0;33m' ;;  # yellow
         (INFO)     loglevel=40
-                   color=${colors[green]}     ;;
+                   color=$'\e[0;32m' ;;  # green
         (DEBUG)    loglevel=50
-                   color=${colors[white]}     ;;
+                   color=$'\e[0;37m' ;;  # white
         (*)        log ERROR \
 "unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
 \`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
@@ -37,8 +29,7 @@ log() {
 
     if ((loglevel <= verbosity))
     then
-        { printf "$color$1:${colors[reset]} $2\n" | fold --spaces \
-                                                         --width 70
+        { printf "$color$1:\e[m $2\n" | fold -sw 70
         } > /dev/stderr        # `> /dev/stderr` is equivalent to `>&2`
     fi
 }
@@ -49,22 +40,18 @@ then
     shell=$(procps --pid $$ \
                    --format comm=)
 else
-    shell=$(ps --pid $$     \
-               --format comm=)
+    # `ps` shows full path on OS X
+    shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-if [[ $shell = bash ]]
-then
-    is_bash=true
-elif [[ $shell = zsh ]]
-then
-    is_bash=false
-else
-    log CRITICAL \
+case $shell in
+    (bash) is_bash=true  ;;
+    (zsh)  is_bash=false ;;
+    (*)    log CRITICAL \
 "shell \`$shell\` is not supported. Only \`bash\` and \`zsh\` are \
 supported."
-    exit 2                     # indicates "incorrect usage"
-fi
+           exit 2              # indicates "incorrect usage"
+esac
 
 ## OPTIONS ##
 if $is_bash
@@ -89,17 +76,20 @@ debug() {
         PS4='+%1N[%I]: '
     fi
 
+    if [[ $OSTYPE = darwin* ]]
+    then
+        os=$(uname -sm)
+    else
+        os="$(uname --operating-system) $(uname --machine)"
+    fi
+
     log DEBUG $(version)
 
     log DEBUG "_init.sh ${_INIT_VERSION:11:-2} (${_INIT_DATE:7:-2})"
 
-    log DEBUG \
-"$shell $shell_version on $(uname --operating-system) $(uname \
---machine)"
+    log DEBUG "$shell $shell_version on $os"
 
-    log DEBUG $(locale --category-name \
-                       --keyword-name  \
-                       decimal_point)
+    log DEBUG $(locale -ck decimal_point)
 
     log DEBUG "Trace"
 
@@ -113,6 +103,10 @@ debug() {
 
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
+# - OS X needs `gettext` (from Homebrew, Fink, or MacPorts), and
+#   `gettext` needs to be in $PATH
+#   `PATH=$(brew --prefix)/opt/gettext/bin:$PATH` for Homebrew for
+#   instance
 export TEXTDOMAINDIR=$(dirname $script)/_translations \
        TEXTDOMAIN=$scriptname
 
