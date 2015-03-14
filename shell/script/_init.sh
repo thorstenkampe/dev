@@ -5,31 +5,30 @@ _INIT_DATE='$Date$'
 
 ## LOGGING ##
 # Modeled after Python modules `logging` and `colorlog`
-verbosity=30  # default level is `WARNING`
+verbosity=WARNING  # default level
+
+declare -A loglevel
+# Assigning associative array elements via subscript is the only
+# syntax bash and zsh share
+loglevel[CRITICAL]=10
+loglevel[ERROR]=20
+loglevel[WARNING]=30
+loglevel[INFO]=40
+loglevel[DEBUG]=50
+
+declare -A color
+# For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+color[CRITICAL]=$'\e[1;31m'  # brightred
+color[ERROR]=$'\e[0;31m'     # red
+color[WARNING]=$'\e[0;33m'   # yellow
+color[INFO]=$'\e[0;32m'      # green
+color[DEBUG]=$'\e[0;37m'     # white
 
 log() {
-    # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    case $1 in
-        (CRITICAL) loglevel=10
-                   color=$'\e[1;31m' ;;  # brightred
-        (ERROR)    loglevel=20
-                   color=$'\e[0;31m' ;;  # red
-        (WARNING)  loglevel=30
-                   color=$'\e[0;33m' ;;  # yellow
-        (INFO)     loglevel=40
-                   color=$'\e[0;32m' ;;  # green
-        (DEBUG)    loglevel=50
-                   color=$'\e[0;37m' ;;  # white
-        (*)        log ERROR \
-"unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
-\`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
-                   exit 2  # indicates "incorrect usage"
-    esac
-
-    if ((loglevel <= verbosity))
+    if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
     then
         # `> /dev/stderr` is equivalent to `>&2`
-        printf "$color$1:\e[m $2\n" > /dev/stderr
+        printf "${color[$1]}$1:\e[m $2\n" > /dev/stderr
     fi
 }
 
@@ -136,7 +135,7 @@ os_version() {
 
 ## DEBUGGING ##
 debug() {
-    verbosity=50  # debug level
+    verbosity=DEBUG
 
     if $is_bash
     then
