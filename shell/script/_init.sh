@@ -137,7 +137,7 @@ os_version() {
     case $OSTYPE in
         (darwin*)   printf $(mac_version)   ;;
         (linux-gnu) printf $(linux_version) ;;
-        (cygwin)    printf $(uname --operating-system)
+        (cygwin)    printf Cygwin
     esac
 }
 
