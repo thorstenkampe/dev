@@ -27,7 +27,7 @@ do
         (d) debug ;;
         (h) gettext $help
             exit  ;;
-        (v) script_version
+        (v) printf "$scriptname $(script_version $VERSION $DATE)\n"
             exit  ;;
         (?) exit 2  # indicates "incorrect usage"
     esac

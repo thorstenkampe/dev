@@ -64,14 +64,8 @@ IFS=                           # disable word splitting (zsh: for command substi
 
 ## VERSION ##
 # version is the Mercurial revision number
-file_version() {
-    printf "$1 ${2:11:-2} (${3:7:-2})\n"
-}
-
 script_version() {
-    file_version $scriptname \
-                 $VERSION   \
-                 $DATE
+    printf "${1:11:-2} (${2:7:-2})"
 }
 
 shell_version() {
@@ -152,9 +146,9 @@ debug() {
         PS4='+%1N[%I]: '
     fi
 
-    log DEBUG $(script_version)
+    log DEBUG "$scriptname $(script_version $VERSION $DATE)"
 
-    log DEBUG $(file_version _init.sh $_INIT_VERSION $_INIT_DATE)
+    log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
 
     log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
 
