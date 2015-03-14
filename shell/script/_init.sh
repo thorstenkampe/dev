@@ -123,7 +123,6 @@ linux_version() {
     then
         python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))"
-
     fi
 }
 
