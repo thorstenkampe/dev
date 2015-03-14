@@ -27,7 +27,7 @@ do
         (d) debug ;;
         (h) gettext $help
             exit  ;;
-        (v) version
+        (v) script_version
             exit  ;;
         (?) exit 2  # indicates "incorrect usage"
     esac
