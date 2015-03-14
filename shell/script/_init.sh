@@ -135,10 +135,9 @@ fi
 
 os_version() {
     case $OSTYPE in
-        (darwin*)   printf "$(mac_version) $(uname -m)"          ;;
-        (linux-gnu) printf "$(linux_version) $(uname --machine)" ;;
-        (cygwin)    printf \
-"$(uname --operating-system) $(uname --machine)"
+        (darwin*)   printf $(mac_version)   ;;
+        (linux-gnu) printf $(linux_version) ;;
+        (cygwin)    printf $(uname --operating-system)
     esac
 }
 
@@ -157,7 +156,7 @@ debug() {
 
     log DEBUG $(file_version _init.sh $_INIT_VERSION $_INIT_DATE)
 
-    log DEBUG "$shell $(shell_version) on $(os_version)"
+    log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
 
     log DEBUG $(locale -ck decimal_point)
 
