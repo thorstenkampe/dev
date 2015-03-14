@@ -5,11 +5,10 @@ _INIT_DATE='$Date$'
 
 ## LOGGING ##
 # Modeled after Python modules `logging` and `colorlog`
-verbosity=30                             # default level is `warning`
+verbosity=30  # default level is `warning`
 
 log() {
-    # For color codes see
-    # http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     case $1 in
         (CRITICAL) loglevel=10
                    color=$'\e[1;31m' ;;  # brightred
@@ -24,18 +23,18 @@ log() {
         (*)        log ERROR \
 "unknown logging level \"$1\". Specify logging level \`CRITICAL\`, \
 \`ERROR\`, \`WARNING\`, \`INFO\`, OR \`DEBUG\`."
-                   exit 2                # indicates "incorrect usage"
+                   exit 2  # indicates "incorrect usage"
     esac
 
     if ((loglevel <= verbosity))
     then
-        { printf "$color$1:\e[m $2\n" | fold -sw 70
-        } > /dev/stderr                  # `> /dev/stderr` is equivalent to `>&2`
+        # `> /dev/stderr` is equivalent to `>&2`
+        printf "$color$1:\e[m $2\n" > /dev/stderr
     fi
 }
 
 ## SHELL ##
-if [[ $OSTYPE = cygwin ]]                # `ps` is `procps` on Cygwin
+if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
 then
     shell=$(procps --pid $$ \
                    --format comm=)
@@ -50,18 +49,18 @@ case $shell in
     (*)    log CRITICAL \
 "shell \`$shell\` is not supported. Only \`bash\` and \`zsh\` are \
 supported."
-           exit 2                        # indicates "incorrect usage"
+           exit 2  # indicates "incorrect usage"
 esac
 
 ## OPTIONS ##
 if $is_bash
 then
-    shopt -os errexit nounset            # stop when an error occurs
+    shopt -os errexit nounset  # stop when an error occurs
 else
-    emulate -R zsh                       # set all options to their defaults
-    setopt errexit nounset               # stop when an error occurs
+    emulate -R zsh             # set all options to their defaults
+    setopt errexit nounset     # stop when an error occurs
 fi
-IFS=                                     # disable word splitting (zsh: for command substitution)
+IFS=                           # disable word splitting (zsh: for command substitution)
 
 ## VERSION ##
 # version is the Mercurial revision number
@@ -112,25 +111,26 @@ NR == 3 {print $3}  # print third field from third line' \
 linux_version() {
     python_version=$(python -V 2>&1)
 
-    # `platform.linux_distribution` is from Python 2.6 available
-    if [[ $python_version > "Python 2.6" || \
-          $python_version = "Python 2.6" ]]
+    if [[ -r /etc/lsb-release ]]       # Ubuntu
+    then
+        ubuntu_version
+
+    elif [[ -r /etc/redhat-release ]]  # RHEL, XenServer
+    then
+        redhat_version
+
+    elif [[ -r /etc/SuSE-release ]]    # SLES
+    then
+        suse_version
+
+    # `platform.linux_distribution` is from Python 2.6 on available
+    elif [[ $python_version > "Python 2.6" || \
+            $python_version = "Python 2.6" ]]
     then
         python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))"
 
-    elif [[ -r /etc/lsb-release ]]       # Ubuntu
-        then
-            ubuntu_version
-
-    elif [[ -r /etc/redhat-release ]]    # RHEL, XenServer
-    then
-        redhat_version
-
-    elif [[ -r /etc/SuSE-release ]]      # SLES
-    then
-        suse_version
-fi
+    fi
 }
 
 os_version() {
@@ -143,7 +143,7 @@ os_version() {
 
 ## DEBUGGING ##
 debug() {
-    verbosity=50                         # debug level
+    verbosity=50  # debug level
 
     if $is_bash
     then
