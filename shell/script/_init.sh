@@ -5,7 +5,7 @@ _INIT_DATE='$Date$'
 
 ## LOGGING ##
 # Modeled after Python modules `logging` and `colorlog`
-verbosity=30  # default level is `warning`
+verbosity=30  # default level is `WARNING`
 
 log() {
     # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
