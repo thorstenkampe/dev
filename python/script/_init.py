@@ -72,7 +72,7 @@ elif sys.platform == 'cygwin':
 
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
-                      release = platform.mac_ver()[0])
+                      release = platform.mac_ver()[0][3:])
 
 # enable debugging for main script
 def setupdebugging(debug, script_version, script_date):
@@ -84,8 +84,9 @@ def setupdebugging(debug, script_version, script_date):
 
     logger.debug(version('_init.py', __version__, __date__))
 
-    logger.debug('Python {version} on {platform}'.format(
+    logger.debug('Python {version} {arch} on {platform}'.format(
         version  = platform.python_version(),
+        arch     = platform.architecture()[0],
         platform = os_platform))
 #endregion
 
