@@ -123,7 +123,7 @@ linux_version() {
     then
         suse_version
 
-    # `platform.linux_distribution` is from Python 2.6 on available
+    # `platform.linux_distribution` is available from Python 2.6 on
     elif [[ $python_version > "Python 2.6" || \
             $python_version = "Python 2.6" ]]
     then
