@@ -7,7 +7,7 @@ _INIT_DATE='$Date$'
 # Modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
 
-declare -A loglevel
+declare -A loglevel color
 # Assigning associative array elements via subscript is the only
 # syntax bash and zsh share
 # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
