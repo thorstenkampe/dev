@@ -10,19 +10,12 @@ verbosity=WARNING  # default level
 declare -A loglevel
 # Assigning associative array elements via subscript is the only
 # syntax bash and zsh share
-loglevel[CRITICAL]=10
-loglevel[ERROR]=20
-loglevel[WARNING]=30
-loglevel[INFO]=40
-loglevel[DEBUG]=50
-
-declare -A color
 # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-color[CRITICAL]=$'\e[1;31m'  # brightred
-color[ERROR]=$'\e[0;31m'     # red
-color[WARNING]=$'\e[0;33m'   # yellow
-color[INFO]=$'\e[0;32m'      # green
-color[DEBUG]=$'\e[0;37m'     # white
+loglevel[CRITICAL]=10 ; color[CRITICAL]=$'\e[1;31m'  # brightred
+loglevel[ERROR]=20    ; color[ERROR]=$'\e[0;31m'     # red
+loglevel[WARNING]=30  ; color[WARNING]=$'\e[0;33m'   # yellow
+loglevel[INFO]=40     ; color[INFO]=$'\e[0;32m'      # green
+loglevel[DEBUG]=50    ; color[DEBUG]=$'\e[0;37m'     # white
 
 log() {
     if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
@@ -42,20 +35,12 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-case $shell in
-    (bash) is_bash=true  ;;
-    (zsh)  is_bash=false ;;
-    (*)    log CRITICAL \
-"shell \`$shell\` is not supported. Only \`bash\` and \`zsh\` are \
-supported."
-           exit 2  # indicates "incorrect usage"
-esac
-
 ## OPTIONS ##
-if $is_bash
+if [[ $shell = bash ]]
 then
     shopt -os errexit nounset  # stop when an error occurs
-else
+elif [[ $shell = zsh ]]
+then
     emulate -R zsh             # set all options to their defaults
     setopt errexit nounset     # stop when an error occurs
 fi
@@ -68,10 +53,11 @@ script_version() {
 }
 
 shell_version() {
-    if $is_bash
+    if [[ $shell = bash ]]
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
-    else
+    elif [[ $shell = zsh ]]
+    then
         printf $ZSH_VERSION
     fi
 }
@@ -102,27 +88,19 @@ NR == 3 {print $3}  # print third field from third line' \
 }
 
 linux_version() {
-    python_version=$(python -V 2>&1)
+    { if   linuxver=$(ubuntu_version)  # Ubuntu
+      then :
+      elif linuxver=$(redhat_version)  # RHEL, XenServer
+      then :
+      elif linuxer=$(suse_version)     # SLES
+      then :
+      # `platform.linux_distribution` is available from Python 2.6 on
+      elif linuxver=$(python -c \
+"import platform; print(' '.join(platform.linux_distribution()[:2]))")
+      then :
+      fi } 2> /dev/null
 
-    if [[ -r /etc/lsb-release ]]       # Ubuntu
-    then
-        ubuntu_version
-
-    elif [[ -r /etc/redhat-release ]]  # RHEL, XenServer
-    then
-        redhat_version
-
-    elif [[ -r /etc/SuSE-release ]]    # SLES
-    then
-        suse_version
-
-    # `platform.linux_distribution` is available from Python 2.6 on
-    elif [[ $python_version > "Python 2.6" || \
-            $python_version = "Python 2.6" ]]
-    then
-        python -c \
-"import platform; print(' '.join(platform.linux_distribution()[:2]))"
-    fi
+    printf $linuxver
 }
 
 os_version() {
@@ -137,10 +115,11 @@ os_version() {
 debug() {
     verbosity=DEBUG
 
-    if $is_bash
+    if [[ $shell = bash ]]
     then
         PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
-    else
+    elif [[ $shell = zsh ]]
+    then
         PS4='+%1N[%I]: '
     fi
 
@@ -150,10 +129,11 @@ debug() {
     log DEBUG $(locale -ck decimal_point)
     log DEBUG Trace
 
-    if $is_bash
+    if [[ $shell = bash ]]
     then
         shopt -os xtrace
-    else
+    elif [[ $shell = zsh ]]
+    then
         trap "setopt xtrace" EXIT
     fi
 }
@@ -175,6 +155,6 @@ gethelp() {
     gettext $help
 }
 
-getversion(){
+getversion() {
     printf "$scriptname $(script_version $VERSION $DATE)\n"
 }
