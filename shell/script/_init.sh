@@ -145,13 +145,9 @@ debug() {
     fi
 
     log DEBUG "$scriptname $(script_version $VERSION $DATE)"
-
     log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
-
     log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-
     log DEBUG $(locale -ck decimal_point)
-
     log DEBUG Trace
 
     if $is_bash
