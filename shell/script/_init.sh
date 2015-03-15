@@ -169,3 +169,12 @@ then
         printf $*
     }
 fi
+
+## WRAPPERS ##
+gethelp() {
+    gettext $help
+}
+
+getversion(){
+    printf "$scriptname $(script_version $VERSION $DATE)\n"
+}

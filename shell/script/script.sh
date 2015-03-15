@@ -15,20 +15,18 @@ Usage:
  $scriptname
 
 Options:
- -d   Show debug messages
- -h   Show help
- -v   Show version
+ -d   show debug messages
+ -h   show help
+ -v   show version
 "
 ##
 
 while getopts dhv option
 do
     case $option in
-        (d) debug ;;
-        (h) gettext $help
-            exit  ;;
-        (v) printf "$scriptname $(script_version $VERSION $DATE)\n"
-            exit  ;;
+        (d) debug            ;;
+        (h) gethelp;    exit ;;
+        (v) getversion; exit ;;
         (?) exit 2  # indicates "incorrect usage"
     esac
 done
