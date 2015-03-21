@@ -31,6 +31,6 @@ _init.setupdebugging(arguments['--debug'], __version__, __date__)
 ##region MAIN CODE STARTS HERE ##
 def main():
     pass
-#endregion
 
 main()
+#endregion
