@@ -27,7 +27,7 @@ do
         (d) debug            ;;
         (h) gethelp;    exit ;;
         (v) getversion; exit ;;
-        (?)             exit 2  # indicates "incorrect usage"
+        (?)             exit 1
     esac
 done
 shift $((OPTIND - 1))
