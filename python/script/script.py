@@ -34,34 +34,3 @@ def main():
 #endregion
 
 main()
-
-##region REFERENCE ##
-# - File and directory access: https://docs.python.org/3/library/filesys.html
-#
-# - Directory and file operations: https://docs.python.org/3/library/shutil.html
-#   copy, copytree, rmtree, move, make_archive, unpack_archive
-#
-# - Compressed files and archives: https://docs.python.org/3/library/archiving.html
-#   gzip, bz2, xz, zip, tar
-#
-# - Files and directories: https://docs.python.org/3/library/os.html#os-file-dir
-#   chdir, mkdir, remove, rmdir, symlink
-#
-#   Wrapper - Unipath: https://github.com/mikeorr/Unipath
-#   also look at https://github.com/mikeorr/Unipath#comparision-with-osospathshutil-and-pathpy
-#
-# - subprocess: https://docs.python.org/3/library/subprocess.html
-#   call, check_call, check_output
-#
-#   Wrapper - Sarge: http://sarge.readthedocs.org/en/latest/
-#
-# - Paramiko: http://docs.paramiko.org/
-#     - Chapter 5, SSH in "Python for Unix and Linux System
-#       Administration"
-#     - examples in the package archive
-#
-#   Wrappers:
-#     - scpclient: https://bitbucket.org/ericvsmith/scpclient
-#     - pysftp: https://bitbucket.org/dundeemt/pysftp
-#     - openssh-wrapper: https://github.com/NetAngels/openssh-wrapper
-#endregion
