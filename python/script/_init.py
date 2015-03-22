@@ -74,7 +74,7 @@ elif sys.platform == 'cygwin':
 
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
-                      release = platform.mac_ver()[0][3:])
+                      release = platform.mac_ver()[0])
 
 # enable debugging for main script
 def setupdebugging(debug, script_version, script_date):

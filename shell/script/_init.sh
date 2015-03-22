@@ -64,7 +64,7 @@ shell_version() {
 
 mac_version() {
     printf \
-"OS X $(python -c 'import platform; print(platform.mac_ver()[0][3:])')"
+"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
 }
 
 ubuntu_version() {

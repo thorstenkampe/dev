@@ -34,10 +34,6 @@ def main():
     # setting debug  mode via `-d` will activate debug statements in
     # `sarge` and `pysftp`
 
-    #
-    import sarge
-    sarge.get_stdout('ssh -V')
-
     # Using Paramiko for authentication with `Pageant` or `ssh-agent`
     # for key in paramiko.agent.Agent().get_keys():
     #     try: [connect with key]
