@@ -8,11 +8,13 @@ import sys, inspect, platform                 ## DEBUGGING
 #endregion
 
 ##region VARIABLES ##
-__version__ = '$Revision$'
-__date__    = '$Date$'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 
-scriptpath = os.path.dirname(sys.argv[0])
-scriptname = os.path.basename(sys.argv[0])
+scriptpath    = os.path.dirname(sys.argv[0])
+scriptname    = os.path.basename(sys.argv[0])
+
+isPyInstaller = getattr(sys, 'frozen', None)
 #endregion
 
 ##region LOGGING ##
@@ -78,7 +80,12 @@ elif sys.platform == 'darwin':
 def setupdebugging(debug, script_version, script_date):
     if debug is True:
         logger.setLevel(logging.DEBUG)
-        sys.settrace(_traceit)
+        if isPyInstaller:
+            # under PyInstaller we have no trace with `_traceit`, so
+            # we want at least (colored) tracebacks
+            colored_traceback.add_hook()
+        else:
+            sys.settrace(_traceit)
 
     logger.debug(version(scriptname, script_version, script_date))
 
