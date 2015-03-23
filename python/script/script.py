@@ -38,6 +38,7 @@ def main():
 
     import pysftp
 
+    # obfuscate password with `decode('rot13')`
     connection = pysftp.Connection('test.rebex.net',
                                    username = 'demo',
                                    password = 'password')
