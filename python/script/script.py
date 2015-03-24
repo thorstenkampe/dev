@@ -26,22 +26,15 @@ arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
 
 # Debugging should always be available
 _init.setupdebugging(arguments['--debug'], __version__, __date__)
+
+# make logging available without module prefix
+logger  = _init.logger
+logging = _init.logging
 #endregion
 
 ##region MAIN CODE STARTS HERE ##
 def main():
-    # Using Paramiko for authentication with `Pageant` or `ssh-agent`
-    # for key in paramiko.agent.Agent().get_keys():
-    #     try: [connect with key]
-    #     except paramiko.AuthenticationException: pass
-    #     else: break
-
-    import pysftp
-
-    # obfuscate password with `decode('rot13')`
-    connection = pysftp.Connection('test.rebex.net',
-                                   username = 'demo',
-                                   password = 'password')
+    pass
 
 main()
 #endregion
