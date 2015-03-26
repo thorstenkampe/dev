@@ -1,5 +1,14 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
+
+try:
+    import win_unicode_console
+except ImportError:
+    # `win_unicode_console` works only on Python3 and Windows
+    pass
+else:
+    win_unicode_console.enable()
+
 import sys, os                                ## VARIABLES
 import logging, colorama, colorlog            ## LOGGING
 import sys, os, traceback, colored_traceback  ## TRACEBACK
