@@ -9,13 +9,14 @@ import sys, inspect, platform                 ## DEBUGGING
 #endregion
 
 ##region VARIABLES ##
-__version__ = '$Revision$'
-__date__    = '$Date$'
+__version__    = '$Revision$'
+__date__       = '$Date$'
 
-scriptpath  = os.path.dirname(sys.argv[0])
-scriptname  = os.path.basename(sys.argv[0])
+scriptpath     = os.path.dirname(sys.argv[0])
+scriptname     = os.path.basename(sys.argv[0])
 
-isPython2   = sys.version_info.major < 3
+-isPyInstaller = getattr(sys, 'frozen', None)
+isPython2      = sys.version_info.major < 3
 #endregion
 
 ##region INITIALIZATION ##
