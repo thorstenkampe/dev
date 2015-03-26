@@ -1,7 +1,7 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
 import sys, os                                ## VARIABLES
-import codecs                                 ## INITIALIZATION
+import codecs                                 ## WINDWOWS CONSOLE
 import logging, colorama, colorlog            ## LOGGING
 import sys, os, traceback, colored_traceback  ## TRACEBACK
 import os, gettext                            ## INTERNATIONALIZATION
@@ -19,7 +19,7 @@ scriptname     = os.path.basename(sys.argv[0])
 isPython2      = sys.version_info.major < 3
 #endregion
 
-##region INITIALIZATION ##
+##region WINDOWS CONSOLE ##
 def codepage(name):
     if name == 'cp65001':
         return codecs.lookup('utf-8')
@@ -31,8 +31,8 @@ def setup_win_unicode_console():
         import win_unicode_console
 
     except (ImportError, AttributeError):
-        # - `ImportError`:    not Windows and not Python3
-        # - `AttributeError`: `Py2exe` and Python3
+        # - `ImportError`:    environment not Windows and not Python3
+        # - `AttributeError`: running under `Py2exe` and Python3
         pass
 
     else:
