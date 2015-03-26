@@ -15,7 +15,7 @@ __date__       = '$Date$'
 scriptpath     = os.path.dirname(sys.argv[0])
 scriptname     = os.path.basename(sys.argv[0])
 
--isPyInstaller = getattr(sys, 'frozen', None)
+isPyInstaller = getattr(sys, 'frozen', None)
 isPython2      = sys.version_info.major < 3
 #endregion
 
