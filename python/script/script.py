@@ -19,6 +19,8 @@ import _init, docopt
 __version__ = '$Revision$'
 __date__    = '$Date$'
 
+_init.setup_win_unicode_console()
+
 arguments = docopt.docopt(_(__doc__.format(script = _init.scriptname)),
                           version = _init.version(_init.scriptname,
                                                   __version__,
@@ -34,7 +36,8 @@ logging = _init.logging
 
 ##region MAIN CODE STARTS HERE ##
 def main():
-    pass
+
+    import test_progress
 
 main()
 #endregion

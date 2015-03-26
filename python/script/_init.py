@@ -1,15 +1,7 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
-
-try:
-    import win_unicode_console
-except ImportError:
-    # `win_unicode_console` works only on Python3 and Windows
-    pass
-else:
-    win_unicode_console.enable()
-
 import sys, os                                ## VARIABLES
+import codecs                                 ## INITIALIZATION
 import logging, colorama, colorlog            ## LOGGING
 import sys, os, traceback, colored_traceback  ## TRACEBACK
 import os, gettext                            ## INTERNATIONALIZATION
@@ -17,13 +9,39 @@ import sys, inspect, platform                 ## DEBUGGING
 #endregion
 
 ##region VARIABLES ##
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__ = '$Revision$'
+__date__    = '$Date$'
 
-scriptpath    = os.path.dirname(sys.argv[0])
-scriptname    = os.path.basename(sys.argv[0])
+scriptpath  = os.path.dirname(sys.argv[0])
+scriptname  = os.path.basename(sys.argv[0])
 
-isPyInstaller = getattr(sys, 'frozen', None)
+isPython2   = sys.version_info.major < 3
+#endregion
+
+##region INITIALIZATION ##
+def codepage(name):
+    if name == 'cp65001':
+        return codecs.lookup('utf-8')
+
+# `win_unicode_console` is not compatible with `Py2exe` or
+# `PyInstaller`
+def setup_win_unicode_console():
+    try:
+        import win_unicode_console
+
+    except (ImportError, AttributeError):
+        # - `ImportError`:    not Windows and not Python3
+        # - `AttributeError`: `Py2exe` and Python3
+        pass
+
+    else:
+        win_unicode_console.enable()
+
+# from http://stackoverflow.com/a/3259271
+if isPython2 and sys.platform == 'win32':
+    codecs.register(codepage)
+
+setup_win_unicode_console()
 #endregion
 
 ##region LOGGING ##
