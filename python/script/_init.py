@@ -1,7 +1,7 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
 import sys, os                                ## VARIABLES
-import codecs                                 ## WINDOWS CONSOLE
+import codecs, signal                         ## CONSOLE
 import logging, colorama, colorlog            ## LOGGING
 import sys, os, traceback, colored_traceback  ## TRACEBACK
 import os, gettext                            ## INTERNATIONALIZATION
@@ -20,7 +20,10 @@ isPy2exe      = getattr(sys, 'frozen', None) == 'console_exe'
 isPython2     = sys.version_info.major < 3
 #endregion
 
-##region WINDOWS CONSOLE ##
+##region CONSOLE ##
+# properly handle Ctrl-C
+signal.signal(signal.SIGINT, lambda *args: sys.exit())
+
 # Python3
 def setup_win_unicode_console():
     if sys.platform == 'win32' and not (isPython2 or isPy2exe):
