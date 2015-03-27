@@ -1,7 +1,7 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
 import sys, os                                ## VARIABLES
-import codecs, signal                         ## CONSOLE
+import signal                                 ## CONSOLE
 import logging, colorama, colorlog            ## LOGGING
 import sys, os, traceback, colored_traceback  ## TRACEBACK
 import os, gettext                            ## INTERNATIONALIZATION
@@ -21,7 +21,7 @@ isPython2     = sys.version_info.major < 3
 #endregion
 
 ##region CONSOLE ##
-# properly handle Ctrl-C
+# no traceback on Ctrl-C
 signal.signal(signal.SIGINT, lambda *args: sys.exit())
 
 # Python3
@@ -29,16 +29,6 @@ def setup_win_unicode_console():
     if sys.platform == 'win32' and not (isPython2 or isPy2exe):
         import win_unicode_console
         win_unicode_console.enable()
-
-# Python2
-# register codepage 65001 (for `chcp 65001`)
-# - http://stackoverflow.com/a/3259271
-def cp65001(name):
-    if name == 'cp65001':
-        return codecs.lookup('utf-8')
-
-if isPython2 and sys.platform == 'win32':
-    codecs.register(cp65001)
 #endregion
 
 ##region LOGGING ##
