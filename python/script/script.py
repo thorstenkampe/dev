@@ -14,6 +14,11 @@ Options:
 """
 
 from __future__ import division, print_function, unicode_literals
+
+# no byte compiled files (`.pyc`, `.pyo`, or `__pycache__`)
+import sys
+sys.dont_write_bytecode = True
+
 import _init, docopt
 
 __version__ = '$Revision$'
