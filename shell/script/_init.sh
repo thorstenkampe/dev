@@ -165,12 +165,10 @@ spinner() {
     spin='-\|/'
 
     i=0
-    # `[[ -d /proc/$pid ]]` on Linux and Cygwin
     while kill -0 $pid 2> /dev/null
     do
-        i=$(((i + 1) % 4))
-        printf "\r$1 [${spin:$i:1}]"
-        sleep .1
+        printf "\r$1 [${spin:$(((i += 1) % 4)):1}]"
+        sleep 0.1
     done
     printf "\n"
 }
