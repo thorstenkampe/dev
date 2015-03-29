@@ -134,7 +134,7 @@ def show_spinner(*args):
         spinner.next()
         time.sleep(0.1)
 
+    executor.shutdown()
     spinner.finish()
     print()
-    executor.shutdown()
 #endregion
