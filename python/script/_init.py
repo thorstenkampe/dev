@@ -127,7 +127,7 @@ def show_spinner(*args):
     executor = concurrent.futures.ThreadPoolExecutor(max_workers = 1)
     future   = executor.submit(*args)
     # Python2 backport `pythonfutures` needs a delay after
-    #  `executor.submit()` for `future.running()`
+    # `executor.submit()` for `future.running()`
     time.sleep(0.001)
 
     while future.running():
