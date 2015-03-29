@@ -158,3 +158,19 @@ gethelp() {
 getversion() {
     printf "$scriptname $(script_version $VERSION $DATE)\n"
 }
+
+# taken from http://stackoverflow.com/a/12498305
+spinner() {
+    pid=$!
+    spin='-\|/'
+
+    i=0
+    # `[[ -d /proc/$pid ]]` on Linux and Cygwin
+    while kill -0 $pid 2> /dev/null
+    do
+        i=$(((i + 1) % 4))
+        printf "\r$1 [${spin:$i:1}]"
+        sleep .1
+    done
+    printf "\n"
+}
