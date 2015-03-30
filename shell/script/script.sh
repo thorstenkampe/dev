@@ -24,9 +24,9 @@ Options:
 while getopts dhv option
 do
     case $option in
-        (d) debug            ;;
-        (h) gethelp;    exit ;;
-        (v) getversion; exit ;;
+        (d) debug              ;;
+        (h) gethelp;    exit   ;;
+        (v) getversion; exit   ;;
         (?)             exit 1
     esac
 done
