@@ -42,8 +42,7 @@ logging = _init.logging
 ##region MAIN CODE STARTS HERE ##
 def main():
 
-    #import progressbar
-    import concurrency
+    pass
 
 if __name__ == '__main__':
     main()
