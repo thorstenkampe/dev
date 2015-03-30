@@ -1,5 +1,3 @@
-# coding: utf-8
-
 ##region IMPORTS ##
 from __future__ import (
     division         as _division,
@@ -29,7 +27,7 @@ class QuotientSet:
     """
 
     def __init__(inst, seq, keyfunc = _ident):
-        inst._seq       = seq
+        inst._seq      = seq
         inst._canonmap = keyfunc
         # we're dispatching on performance: hashable -> orderable, unorderable
         # (dictionary.get -> itertools.groupby, list.index)
