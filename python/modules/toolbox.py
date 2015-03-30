@@ -67,7 +67,7 @@ class QuotientSet:
         return list(zip(*inst.partition()))[0]
 #endregion
 
-##region DICTIONARY ##
+##region GENERICDICT ##
 class GenericDict:
     """a GenericDict is a dictionary or a dictitem"""
     def __init__(inst, generic_dict):
@@ -79,7 +79,7 @@ class GenericDict:
         else:
             return inst.values()[inst.keys().index(key)]
 
-    # simple methods #
+    # simple methods
     def setdefault(inst, key, default = None):
         if isinstance(inst._generic, dict):
             return inst._generic.setdefault(key, default)
@@ -111,7 +111,7 @@ class GenericDict:
     def items(inst):
             return inst._generic
 
-    # higher level methods #
+    # higher level methods
     def sort(inst, sortby = 'key'):
         """sort by key or value"""
         if isinstance(inst._generic, dict):
@@ -145,7 +145,9 @@ class GenericDict:
 
     def min(inst, key = 'key'):
         return inst._extremum(min, key = key)
+#endregion
 
+##region MULTIDICT ##
 class MultiDict:
     def __init__(inst, multidict):
         inst._multi = multidict
