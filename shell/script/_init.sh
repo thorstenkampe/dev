@@ -146,7 +146,7 @@ export TEXTDOMAINDIR=$(dirname $script)/_translations \
 if ! which gettext &> /dev/null
 then
     gettext() {
-        printf $*
+        printf $@
     }
 fi
 
@@ -161,13 +161,15 @@ getversion() {
 
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
-    pid=$!
+    # errors of the backgrounded commanded will not influence script
+    # execution
+    eval $@ &
     spin='-\|/'
 
     i=0
-    while kill -0 $pid 2> /dev/null
+    while kill -0 $! 2> /dev/null
     do
-        printf "\r$1 [${spin:$(((i += 1) % 4)):1}]"
+        printf "\r[${spin:$(((i += 1) % 4)):1}]"
         sleep 0.1
     done
     printf "\n"
