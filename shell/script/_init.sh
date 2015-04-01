@@ -161,8 +161,7 @@ getversion() {
 
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
-    # errors of the backgrounded commanded will not influence script
-    # execution
+    # error of the backgrounded command will not abort script
     eval $@ &
     spin='-\|/'
 
