@@ -22,8 +22,16 @@ isPython2     = sys.version_info.major < 3
 #endregion
 
 ##region CONSOLE ##
-# no traceback on Ctrl-C
-signal.signal(signal.SIGINT, lambda *args: sys.exit())
+# no traceback on Ctrl-C;
+# cleaning up on termination can be done with `atexit.register()`
+termsignals = signal.SIGINT, signal.SIGTERM
+try:
+    termsignals += signal.SIGHUP,
+except AttributeError:  # Windows has no `SIGHUP`
+    pass
+
+for termsignal in termsignals:
+    signal.signal(termsignal, lambda *args: sys.exit())
 
 # Python3
 def setup_win_unicode_console():

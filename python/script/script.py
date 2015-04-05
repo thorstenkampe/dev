@@ -41,7 +41,6 @@ logging = _init.logging
 
 ##region MAIN CODE STARTS HERE ##
 def main():
-
     pass
 
 if __name__ == '__main__':

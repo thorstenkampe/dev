@@ -159,6 +159,7 @@ getversion() {
     printf "$scriptname $(script_version $VERSION $DATE)\n"
 }
 
+## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
     # error of the backgrounded command will not abort script
@@ -173,3 +174,19 @@ spinner() {
     done
     printf "\n"
 }
+
+## TRAPS ##
+# create your own cleanup function in the main script
+cleanup() {
+    return
+}
+
+if [[ $shell = bash ]]
+then
+    trap cleanup EXIT
+
+elif [[ $shell = zsh ]]
+then
+    setopt trapsasync
+    trap "cleanup; exit 1" EXIT INT HUP TERM
+fi
