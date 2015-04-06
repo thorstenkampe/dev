@@ -1,13 +1,10 @@
 #! /usr/bin/env bash
 
-script=$0
-scriptname=$(basename $0)
-source "$(dirname "$0")"/_init.sh
-
 ##
 VERSION='$Revision$'
 DATE='$Date$'
 
+scriptname=$(basename $0)
 help="\
 \`$scriptname\` does something
 
@@ -20,6 +17,9 @@ Options:
  -v   show version
 "
 ##
+
+script=$0
+source "$(dirname "$0")"/_init.sh
 
 while getopts dhv option
 do
