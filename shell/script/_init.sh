@@ -28,8 +28,7 @@ log() {
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
 then
-    shell=$(procps --pid $$ \
-                   --format comm=)
+    shell=$(procps --pid $$ --format comm=)
 else
     # `ps` shows full path on OS X
     shell=$(basename $(ps -p $$ -o comm=))
@@ -89,15 +88,20 @@ NR == 3 {print $3}  # print third field from third line' \
 
 linux_version() {
     { if   linuxver=$(ubuntu_version)  # Ubuntu
-      then :
+      then   # if `ubuntu_version` didn't generate an error, do
+          :  # nothing, otherwise continue with `elif` and try
+             # `redhat_version`
       elif linuxver=$(redhat_version)  # RHEL, XenServer
-      then :
-      elif linuxer=$(suse_version)     # SLES
-      then :
+      then
+          :
+      elif linuxver=$(suse_version)    # SLES
+      then
+          :
       # `platform.linux_distribution` is available from Python 2.6 on
       elif linuxver=$(python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))")
-      then :
+      then
+          :
       fi } 2> /dev/null
 
     printf $linuxver
@@ -105,9 +109,14 @@ linux_version() {
 
 os_version() {
     case $OSTYPE in
-        (darwin*)   printf $(mac_version)   ;;
-        (linux-gnu) printf $(linux_version) ;;
-        (cygwin)    printf Cygwin
+        darwin*)
+            printf $(mac_version)
+            ;;
+        linux-gnu)
+            printf $(linux_version)
+            ;;
+        cygwin)
+            printf Cygwin
     esac
 }
 
