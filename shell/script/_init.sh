@@ -34,7 +34,7 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-## OPTIONS ##
+## SHELL OPTIONS ##
 if [[ $shell = bash ]]
 then
     shopt -os errexit nounset  # stop when an error occurs
