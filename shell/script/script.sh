@@ -24,10 +24,19 @@ Options:
 while getopts dhv option
 do
     case $option in
-        (d) debug              ;;
-        (h) gethelp;    exit   ;;
-        (v) getversion; exit   ;;
-        (?)             exit 1
+        d)
+            debug
+            ;;
+        h)
+            gethelp
+            exit
+            ;;
+        v)
+            getversion
+            exit
+            ;;
+        ?)
+            exit 1
     esac
 done
 shift $((OPTIND - 1))
