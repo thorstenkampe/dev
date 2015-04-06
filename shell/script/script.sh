@@ -12,7 +12,7 @@ Usage:
 
 Options:
 "
-# options (`-d`, `-v`, and `-h` are always available
+# options `-d`, `-v`, and `-h` are always available
 
 script=$0
 source "$(dirname "$0")"/_init.sh
