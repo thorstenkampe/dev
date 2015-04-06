@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-##
 VERSION='$Revision$'
 DATE='$Date$'
 
@@ -12,33 +11,19 @@ Usage:
  $scriptname
 
 Options:
- -d   show debug messages
- -h   show help
- -v   show version
 "
-##
+# options (`-d`, `-v`, and `-h` are always available
 
 script=$0
 source "$(dirname "$0")"/_init.sh
 
-while getopts dhv option
+while getopts dhv option  # option string needs standard options `dhv`
 do
     case $option in
-        d)
-            debug
-            ;;
-        h)
-            gethelp
-            exit
-            ;;
-        v)
-            getversion
-            exit
-            ;;
-        ?)
+        \?)               # literal `?` indicates unknown option
             exit 1
     esac
 done
-shift $((OPTIND - 1))
+shift $((OPTIND - 1))     # remove options from command line
 
 ## MAIN CODE STARTS HERE ##

@@ -160,6 +160,12 @@ then
 fi
 
 ## WRAPPERS ##
+help+="\
+ -d   show debug messages
+ -h   show help
+ -v   show version
+"
+
 gethelp() {
     gettext $help
 }
@@ -199,3 +205,25 @@ then
     setopt trapsasync
     trap "cleanup; exit 1" EXIT INT HUP TERM
 fi
+
+## STANDARD OPTIONS ##
+# leading `:`: don't report unknown options (which we can't know in
+# advance here)
+while getopts :dhv option
+do
+    case $option in
+        d)
+            debug
+            ;;
+        h)
+            gethelp
+            exit
+            ;;
+        v)
+            getversion
+            exit
+    esac
+done
+
+# reset `OPTIND` for the next round of parsing in main script
+OPTIND=1
