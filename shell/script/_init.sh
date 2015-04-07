@@ -227,3 +227,6 @@ done
 
 # reset `OPTIND` for the next round of parsing in main script
 OPTIND=1
+
+# Associative array for additional user options
+declare -A opts

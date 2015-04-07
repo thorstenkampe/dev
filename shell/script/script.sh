@@ -17,7 +17,6 @@ Options:
 script=$0
 source "$(dirname "$0")"/_init.sh
 
-declare -A opts
 while getopts O:dhv option  # option string needs standard options `dhv`
 do
     case $option in
