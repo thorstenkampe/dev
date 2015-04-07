@@ -1,6 +1,8 @@
 _INIT_VERSION='$Revision$'
 _INIT_DATE='$Date$'
 
+scriptname=$(basename $script)
+
 ## short instead of long options are used for OS X compatibility
 
 ## LOGGING ##
@@ -159,17 +161,24 @@ then
     }
 fi
 
-## WRAPPERS ##
-help+="\
+## HELP ##
+gethelp() {
+    gettext "\
+\`$scriptname\` $description
+
+Usage:
+ $scriptname $usage
+
+Options:
+$options_help
+
  -d   show debug messages
  -h   show help
  -v   show version
 "
-
-gethelp() {
-    gettext $help
 }
 
+## VERSION ##
 getversion() {
     printf "$scriptname $(script_version $VERSION $DATE)\n"
 }
