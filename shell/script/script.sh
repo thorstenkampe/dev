@@ -18,11 +18,11 @@ script=$0
 source "$(dirname "$0")"/_init.sh
 
 declare -A opts
-while getopts o:dhv option  # option string needs standard options `dhv`
+while getopts O:dhv option  # option string needs standard options `dhv`
 do
     case $option in
-        o)                  # test if option is set with `if [[ ${opts[o]+set} ]]`
-            opts[o]=$OPTARG
+        O)                  # test if option is set with `if [[ ${opts[O]+set} ]]`
+            opts[O]=$OPTARG
             ;;
         \?)                 # literal `?` indicates unknown option
             exit 1
