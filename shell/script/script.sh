@@ -11,7 +11,7 @@ Usage:
  $scriptname
 
 Options:
- -o   do optional stuff
+ -O   do optional stuff
 "                           # `-d`, `-v`, and `-h` are always available
 
 script=$0
