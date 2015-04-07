@@ -8,7 +8,7 @@ help="\
 \`$scriptname\` does something
 
 Usage:
- $scriptname
+ $scriptname [-O]
 
 Options:
  -O   do optional stuff
