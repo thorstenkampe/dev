@@ -3,10 +3,10 @@
 VERSION='$Revision$'
 DATE='$Date$'
 
-description="does something"  # expanded to "`SCRIPT` DESCRIPTION"
-usage="[-O]"                  # expanded to "Usage: SCRIPT USAGE"
+description="does something"  # prints "`SCRIPT` DESCRIPTION"
+usage="[-O]"                  # prints "Usage: SCRIPT USAGE"
 options_help="\
- -O   do optional stuff"      # expanded to "Options: OPTIONS_HELP"
+ -O   do optional stuff"      # prints "Options: OPTIONS_HELP"
 
 script=$0
 source "$(dirname "$0")"/_init.sh
@@ -17,7 +17,7 @@ do
         O)                    # test if option is set with `if [[ ${opts[O]+set} ]]`
             opts[O]=$OPTARG
             ;;
-        \?)                   # literal `?` indicates unknown option
+        \?)
             exit 1
     esac
 done
