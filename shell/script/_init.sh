@@ -122,33 +122,6 @@ os_version() {
     esac
 }
 
-## DEBUGGING ##
-debug() {
-    verbosity=DEBUG
-
-    if [[ $shell = bash ]]
-    then
-        PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
-    elif [[ $shell = zsh ]]
-    then
-        PS4='+%1N[%I]: '
-    fi
-
-    log DEBUG "$scriptname $(script_version $VERSION $DATE)"
-    log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
-    log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-    log DEBUG $(locale -ck decimal_point)
-    log DEBUG Trace
-
-    if [[ $shell = bash ]]
-    then
-        shopt -os xtrace
-    elif [[ $shell = zsh ]]
-    then
-        trap "setopt xtrace" EXIT
-    fi
-}
-
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
 export TEXTDOMAINDIR=$(dirname $script)/_translations \
@@ -160,28 +133,6 @@ then
         printf $@
     }
 fi
-
-## HELP ##
-gethelp() {
-    gettext "\
-\`$scriptname\` $description
-
-Usage:
- $scriptname $usage
-
-Options:
-$options_help
-
- -d   show debug messages
- -h   show help
- -v   show version
-"
-}
-
-## VERSION ##
-getversion() {
-    printf "$scriptname $(script_version $VERSION $DATE)\n"
-}
 
 ## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305
@@ -221,15 +172,49 @@ fi
 while getopts :dhv option
 do
     case $option in
-        d)
-            debug
+        d)  # DEBUG
+            verbosity=DEBUG
+
+            if [[ $shell = bash ]]
+            then
+                PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
+            elif [[ $shell = zsh ]]
+            then
+                PS4='+%1N[%I]: '
+            fi
+
+            log DEBUG "$scriptname $(script_version $VERSION $DATE)"
+            log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
+            log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
+            log DEBUG $(locale -ck decimal_point)
+            log DEBUG Trace
+
+            if [[ $shell = bash ]]
+            then
+                shopt -os xtrace
+            elif [[ $shell = zsh ]]
+            then
+                setopt xtrace
+            fi
             ;;
-        h)
-            gethelp
+        h)  # HELP
+            gettext "\
+\`$scriptname\` $description
+
+Usage:
+ $scriptname $usage
+
+Options:
+$options_help
+
+ -d   show debug messages
+ -h   show help
+ -v   show version
+"
             exit
             ;;
-        v)
-            getversion
+        v)  # VERSION
+            printf "$scriptname $(script_version $VERSION $DATE)\n"
             exit
     esac
 done
