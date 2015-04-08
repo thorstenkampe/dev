@@ -17,6 +17,7 @@ do
         O)                    # test if option is set with `if [[ ${opts[O]+set} ]]`
             opts[O]=$OPTARG
             ;;
+
         \?)
             exit 1
     esac

@@ -63,62 +63,56 @@ shell_version() {
     fi
 }
 
-mac_version() {
-    printf \
+os_version() {
+    case $OSTYPE in
+
+        # OS X
+        darwin*)
+            printf \
 "OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
-}
+            ;;
 
-ubuntu_version() {
-    source /etc/lsb-release
-    printf $DISTRIB_DESCRIPTION
-}
+        # LINUX
+        linux-gnu)
+            { # UBUNTU
+              if   linuxver=$(source /etc/lsb-release
+                              printf $DISTRIB_DESCRIPTION)
+              then   # if above command didn't generate an error, do
+                  :  # nothing, otherwise continue with `elif`
 
-redhat_version() {
-    awk '
+              # RHEL, XENSERVER
+              elif linuxver=$(awk '
 {NF--  # print file except last field
  print}' \
-        /etc/redhat-release
-}
+                                  /etc/redhat-release)
+              then
+                  :
 
-suse_version() {
-    awk '
+              # SLES
+              elif linuxver=$(awk '
 NR == 1 {NF--       # print first line except last field
          printf "%s SP ", $0}
 NR == 3 {print $3}  # print third field from third line' \
-        /etc/SuSE-release
-}
+                                  /etc/SuSE-release)
+              then
+                  :
 
-linux_version() {
-    { if   linuxver=$(ubuntu_version)  # Ubuntu
-      then   # if `ubuntu_version` didn't generate an error, do
-          :  # nothing, otherwise continue with `elif` and try
-             # `redhat_version`
-      elif linuxver=$(redhat_version)  # RHEL, XenServer
-      then
-          :
-      elif linuxver=$(suse_version)    # SLES
-      then
-          :
-      # `platform.linux_distribution` is available from Python 2.6 on
-      elif linuxver=$(python -c \
+              # OTHER DISTRIBUTION
+              # `platform.linux_distribution` is available from Python 2.6 on
+              elif linuxver=$(python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))")
-      then
-          :
-      fi } 2> /dev/null
+              then
+                  :
 
-    printf $linuxver
-}
+              fi } 2> /dev/null
 
-os_version() {
-    case $OSTYPE in
-        darwin*)
-            printf $(mac_version)
+            printf $linuxver
             ;;
-        linux-gnu)
-            printf $(linux_version)
-            ;;
+
+        # CYGWIN
         cygwin)
             printf Cygwin
+
     esac
 }
 
@@ -197,6 +191,7 @@ do
                 setopt xtrace
             fi
             ;;
+
         h)  # HELP
             gettext "\
 \`$scriptname\` $description
@@ -216,6 +211,7 @@ $options_help
         v)  # VERSION
             printf "$scriptname $(script_version $VERSION $DATE)\n"
             exit
+
     esac
 done
 
