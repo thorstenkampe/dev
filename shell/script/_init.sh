@@ -106,28 +106,26 @@ NR == 3 {print $3}  # print third field from third line' \
         # LINUX
         linux-gnu)
             { # UBUNTU
-              if   linuxver=$(ubuntu_version)
+              if   ubuntu_version
               then   # if `ubuntu_version` doesn't error, do nothing,
                   :  # otherwise continue with `redhat_version`
 
               # RHEL, XENSERVER
-              elif linuxver=$(redhat_version)
+              elif redhat_version
               then
                   :
 
               # SLES
-              elif linuxver=$(suse_version)
+              elif suse_version
               then
                   :
 
               # OTHER DISTRIBUTION
-              elif linuxver=$(generic_linux)
+              elif generic_linux
               then
                   :
 
               fi } 2> /dev/null
-
-            printf $linuxver
             ;;
 
         # CYGWIN
@@ -152,7 +150,7 @@ fi
 ## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
-    # error of the backgrounded command will not abort script
+    # error of the background job will not abort script
     eval $@ &
     spin='-\|/'
 
