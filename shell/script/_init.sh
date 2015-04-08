@@ -64,43 +64,64 @@ shell_version() {
 }
 
 os_version() {
+
+    mac_version() {
+        printf \
+"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
+    }
+
+    ubuntu_version() {
+        source /etc/lsb-release
+        printf $DISTRIB_DESCRIPTION
+    }
+
+    redhat_version() {
+        awk '
+{NF--  # print file except last field
+ print}' \
+            /etc/redhat-release
+    }
+
+    suse_version() {
+        awk '
+NR == 1 {NF--       # print first line except last field
+         printf "%s SP ", $0}
+NR == 3 {print $3}  # print third field from third line' \
+            /etc/SuSE-release
+    }
+
+    generic_linux() {
+        # `platform.linux_distribution` is available from Python 2.6 on
+        python -c \
+"import platform; print(' '.join(platform.linux_distribution()[:2]))"
+    }
+
     case $OSTYPE in
 
         # OS X
         darwin*)
-            printf \
-"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
+            mac_version
             ;;
 
         # LINUX
         linux-gnu)
             { # UBUNTU
-              if   linuxver=$(source /etc/lsb-release
-                              printf $DISTRIB_DESCRIPTION)
-              then   # if above command didn't generate an error, do
-                  :  # nothing, otherwise continue with `elif`
+              if   linuxver=$(ubuntu_version)
+              then   # if `ubuntu_version` doesn't error, do nothing,
+                  :  # otherwise continue with `redhat_version`
 
               # RHEL, XENSERVER
-              elif linuxver=$(awk '
-{NF--  # print file except last field
- print}' \
-                                  /etc/redhat-release)
+              elif linuxver=$(redhat_version)
               then
                   :
 
               # SLES
-              elif linuxver=$(awk '
-NR == 1 {NF--       # print first line except last field
-         printf "%s SP ", $0}
-NR == 3 {print $3}  # print third field from third line' \
-                                  /etc/SuSE-release)
+              elif linuxver=$(suse_version)
               then
                   :
 
               # OTHER DISTRIBUTION
-              # `platform.linux_distribution` is available from Python 2.6 on
-              elif linuxver=$(python -c \
-"import platform; print(' '.join(platform.linux_distribution()[:2]))")
+              elif linuxver=$(generic_linux)
               then
                   :
 
