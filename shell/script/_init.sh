@@ -72,7 +72,12 @@ os_version() {
 
     ubuntu_version() {
         source /etc/lsb-release
-        printf $DISTRIB_DESCRIPTION
+        # We want to catch `unbound variable`/`parameter not set`
+        # - POSIX - 2.6.2 Parameter Expansion
+        #   http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+        # - Advanced Bash-Scripting Guide - 10.2. Parameter Substitution
+        #   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
+        printf ${DISTRIB_DESCRIPTION=""}
     }
 
     redhat_version() {
