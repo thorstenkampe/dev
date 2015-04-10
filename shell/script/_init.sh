@@ -77,7 +77,7 @@ os_version() {
         #   http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
         # - Advanced Bash-Scripting Guide - 10.2. Parameter Substitution
         #   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
-        printf ${DISTRIB_DESCRIPTION=""}
+        printf ${DISTRIB_DESCRIPTION=}
     }
 
     redhat_version() {
