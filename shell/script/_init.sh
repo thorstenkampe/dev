@@ -65,68 +65,48 @@ shell_version() {
 
 os_version() {
 
-    mac_version() {
-        printf \
-"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
-    }
-
-    ubuntu_version() {
-        source /etc/lsb-release
-        # We want to catch `unbound variable`/`parameter not set`
-        # - POSIX - 2.6.2 Parameter Expansion
-        #   http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
-        # - Advanced Bash-Scripting Guide - 10.2. Parameter Substitution
-        #   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
-        printf ${DISTRIB_DESCRIPTION=}
-    }
-
-    redhat_version() {
-        awk '
-{NF--  # print file except last field
- print}' \
-            /etc/redhat-release
-    }
-
-    suse_version() {
-        awk '
-NR == 1 {NF--       # print first line except last field
-         printf "%s SP ", $0}
-NR == 3 {print $3}  # print third field from third line' \
-            /etc/SuSE-release
-    }
-
-    generic_linux() {
-        # `platform.linux_distribution` is available from Python 2.6 on
-        python -c \
-"import platform; print(' '.join(platform.linux_distribution()[:2]))"
-    }
-
     case $OSTYPE in
 
         # OS X
         darwin*)
-            mac_version
+            printf \
+"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
             ;;
 
         # LINUX
         linux-gnu)
             { # UBUNTU
-              if   ubuntu_version
-              then   # if `ubuntu_version` doesn't error, do nothing,
-                  :  # otherwise continue with `redhat_version`
+              if source /etc/lsb-release
+# We want to catch `unbound variable`/`parameter not set`
+# - POSIX - 2.6.2 Parameter Expansion
+#   http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+# - Advanced Bash-Scripting Guide - 10.2. Parameter Substitution
+#   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
+                 printf ${DISTRIB_DESCRIPTION=}
+              then   # if above doesn't error, do nothing, otherwise
+                  :  # continue with `èlif`
 
               # RHEL, XENSERVER
-              elif redhat_version
+              elif awk '
+{NF--  # print file except last field
+ print}' \
+                       /etc/redhat-release
               then
                   :
 
               # SLES
-              elif suse_version
+              elif awk '
+NR == 1 {NF--       # print first line except last field
+         printf "%s SP ", $0}
+NR == 3 {print $3}  # print third field from third line' \
+                       /etc/SuSE-release
               then
                   :
 
               # OTHER DISTRIBUTION
-              elif generic_linux
+              elif # `platform.linux_distribution` is available from Python 2.6 on
+                   python -c \
+"import platform; print(' '.join(platform.linux_distribution()[:2]))"
               then
                   :
 
