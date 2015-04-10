@@ -84,7 +84,7 @@ os_version() {
 #   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
                  printf ${DISTRIB_DESCRIPTION=}
               then   # if above doesn't error, do nothing, otherwise
-                  :  # continue with `èlif`
+                  :  # continue with `elif`
 
               # RHEL, XENSERVER
               elif awk '
