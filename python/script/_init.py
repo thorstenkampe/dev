@@ -1,12 +1,12 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
-import sys, os                                     ## VARIABLES
-import signal                                      ## CONSOLE
-import logging, colorama, colorlog                 ## LOGGING
-import sys, os, traceback, colored_traceback       ## TRACEBACK
-import os, gettext                                 ## INTERNATIONALIZATION
-import sys, inspect, platform                      ## DEBUGGING
-import time, progress.spinner, concurrent.futures  ## SPINNER
+import sys, os                                     # VARIABLES
+import signal                                      # CONSOLE
+import logging, colorama, colorlog                 # LOGGING
+import sys, os, traceback, colored_traceback       # TRACEBACK
+import os, gettext                                 # INTERNATIONALIZATION
+import sys, inspect, platform                      # DEBUGGING
+import time, progress.spinner, concurrent.futures  # SPINNER
 #endregion
 
 ##region VARIABLES ##
@@ -104,8 +104,8 @@ def setupdebugging(debug, script_version, script_date):
     if debug is True:
         logger.setLevel(logging.DEBUG)
         if isPyinstaller:
-            # under PyInstaller we have no trace with `_traceit`, so
-            # we want at least (colored) tracebacks
+# under PyInstaller we have no trace with `_traceit`, so we want at
+# least (colored) tracebacks
             colored_traceback.add_hook()
         else:
             sys.settrace(_traceit)
@@ -134,8 +134,8 @@ def show_spinner(*args):
     spinner  = progress.spinner.Spinner()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers = 1)
     future   = executor.submit(*args)
-    # Python2 backport `pythonfutures` needs a delay after
-    # `executor.submit()` for `future.running()`
+# Python2 backport `pythonfutures` needs a delay after
+# `executor.submit()` for `future.running()`
     time.sleep(0.001)
 
     while future.running():
