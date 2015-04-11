@@ -161,7 +161,7 @@ then
 elif [[ $shell = zsh ]]
 then
     setopt trapsasync
-    trap "cleanup; exit 1" EXIT INT HUP TERM
+    trap "cleanup; exit" EXIT INT HUP TERM
 fi
 
 ## STANDARD OPTIONS ##
