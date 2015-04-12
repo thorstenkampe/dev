@@ -83,8 +83,7 @@ shell_version() {
     if [[ $shell = bash ]]
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
-    elif [[ $shell = zsh ]]
-    then
+    else
         printf $ZSH_VERSION
     fi
 }
@@ -156,8 +155,7 @@ do
             then
                 PS4=\
 '+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
-            elif [[ $shell = zsh ]]
-            then
+            else
                 PS4='+%1N[%I]: '
             fi
 
@@ -231,8 +229,7 @@ if [[ $shell = bash ]]
 then
     trap cleanup EXIT
 
-elif [[ $shell = zsh ]]
-then
+else
     setopt trapsasync
     trap "cleanup; exit" EXIT INT HUP TERM
 fi
