@@ -66,7 +66,6 @@ then
 else
 # No associative arrays in Bash 3, so only rudimentary logging
     log() {
-        # `> /dev/stderr` is equivalent to `>&2`
         printf "$1: $2\n" > /dev/stderr
     }
 fi
@@ -75,8 +74,8 @@ fi
 # version is the Mercurial revision number
 script_version() {
 # negative length in parameter(substring) expansion is available from
-# Bash 4.2 and Zsh 4.3.12. Working around that...
-    # offset ist `11` and `7`, length from the right is `-2`
+# Bash 4.2 and Zsh 4.3.12 on. Working around that...
+    # offset is `11` and `7`, length from the right is `-2`
     printf "${1:11:$((${#1} - 11 - 2))} (${2:7:$((${#2} - 7 - 2))})"
 }
 
@@ -91,7 +90,6 @@ shell_version() {
 }
 
 os_version() {
-
     case $OSTYPE in
 
         # OS X
