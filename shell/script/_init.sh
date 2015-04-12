@@ -6,10 +6,19 @@ scriptname=$(basename $script)
 ## short instead of long options are used for OS X compatibility
 
 ## DOCUMENTATION ##
-# - POSIX - 2.6.2 Parameter Expansion
-#   http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
-# - Advanced Bash-Scripting Guide - 10.2. Parameter Substitution
-#   http://www.tldp.org/LDP/abs/html/parameter-substitution.html
+# - Parameter Expansion
+#   - http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+#   - http://www.tldp.org/LDP/abs/html/parameter-substitution.html
+#   - http://wiki.bash-hackers.org/syntax/pe
+
+## SHELL OPTIONS ##
+if # bash: stop when an error occurs
+   ! shopt -os errexit nounset 2> /dev/null
+then
+    emulate -R zsh          # zsh: set all options to their defaults
+    setopt errexit nounset  # zsh: stop when an error occurs
+fi
+IFS= # disable word splitting (zsh: for command substitution)
 
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
@@ -19,29 +28,6 @@ else
     # `ps` shows full path on OS X
     shell=$(basename $(ps -p $$ -o comm=))
 fi
-
-# we treat zsh as equivalent to Bash 4
-if ((${BASH_VERSINFO-4} > 3))
-then
-    is_bash4() {
-        true
-    }
-else
-    is_bash4() {
-        false
-    }
-fi
-
-## SHELL OPTIONS ##
-if [[ $shell = bash ]]
-then
-    shopt -os errexit nounset  # stop when an error occurs
-elif [[ $shell = zsh ]]
-then
-    emulate -R zsh             # set all options to their defaults
-    setopt errexit nounset     # stop when an error occurs
-fi
-IFS=                           # disable word splitting (zsh: for command substitution)
 
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
@@ -56,14 +42,11 @@ then
 fi
 
 ## LOGGING ##
-# No assiociative arrays in Bash 3, so skip logging (instead of
-# implementing it in a Bash 3 compatible way)
-if is_bash4
+if declare -A loglevel color 2> /dev/null
 then
     # Modeled after Python modules `logging` and `colorlog`
     verbosity=WARNING  # default level
 
-    declare -A loglevel color
 # Assigning associative array elements via subscript is the only
 # syntax bash and zsh share
 # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
@@ -80,12 +63,21 @@ then
             printf "${color[$1]}$1:\e[m $2\n" > /dev/stderr
         fi
     }
+else
+# No associative arrays in Bash 3, so only rudimentary logging
+    log() {
+        # `> /dev/stderr` is equivalent to `>&2`
+        printf "$1: $2\n" > /dev/stderr
+    }
 fi
 
 ## VERSION ##
 # version is the Mercurial revision number
 script_version() {
-    printf "${1:11:-2} (${2:7:-2})"
+# negative length in parameter(substring) expansion is available from
+# Bash 4.2 and Zsh 4.3.12. Working around that...
+    # offset ist `11` and `7`, length from the right is `-2`
+    printf "${1:11:$((${#1} - 11 - 2))} (${2:7:$((${#2} - 7 - 2))})"
 }
 
 shell_version() {
@@ -171,31 +163,22 @@ do
                 PS4='+%1N[%I]: '
             fi
 
-# skip logging debug information because we didn't implement `log`
-# function and because of negative substring expression in
-# `script_version`
-            if is_bash4
-            then
-                log DEBUG \
+            log DEBUG \
 "$scriptname $(script_version $VERSION $DATE)"
 
-                log DEBUG \
+            log DEBUG \
 "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
 
-                log DEBUG \
+            log DEBUG \
 "$shell $(shell_version) on $(os_version) $(uname -m)"
 
-                log DEBUG $(locale -ck decimal_point)
+            log DEBUG $(locale -ck decimal_point)
 
-                log DEBUG Trace
-            fi
+            log DEBUG Trace
 
-            if [[ $shell = bash ]]
+            if ! shopt -os xtrace 2> /dev/null  # bash
             then
-                shopt -os xtrace
-            elif [[ $shell = zsh ]]
-            then
-                setopt xtrace
+                setopt xtrace                   # zsh
             fi
             ;;
 
@@ -213,16 +196,10 @@ Options:$options_help
 "
             exit
             ;;
+
         v)  # VERSION
-            if is_bash4
-            then
-                printf \
+            printf \
 "$scriptname $(script_version $VERSION $DATE)\n"
-            else
-                printf \
-"ERROR: version not available in Bash below version 4.2\n" > /dev/stderr
-            fi
-            exit
 
     esac
 done
