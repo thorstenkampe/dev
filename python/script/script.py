@@ -2,7 +2,7 @@
 
 ##region START ##
 """
-`{script}` does something
+`{script}`
 
 Usage:
  {script} [-d]
