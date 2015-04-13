@@ -193,6 +193,8 @@ Options:$options_help
  -d   show debug messages
  -h   show help
  -v   show version
+
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY OR SUPPORT!
 "
             exit
             ;;
