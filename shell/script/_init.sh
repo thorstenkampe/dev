@@ -12,10 +12,11 @@ scriptname=$(basename $script)
 #   - http://wiki.bash-hackers.org/syntax/pe
 
 ## TIMELINE ##
-# Bash 4.0   (February 2009): associative arrays
-# Zsh 4.3.11 (December 2010): `${var:offset:length}`
-# Bash 4.2   (February 2011): `${var:offset:-length}`
-# Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
+# Python 2.6.0 (October 2008):  `platform.linux_distribution`
+# Bash 4.0     (February 2009): associative arrays
+# Zsh 4.3.11   (December 2010): `${var:offset:length}`
+# Bash 4.2     (February 2011): `${var:offset:-length}`
+# Zsh 4.3.12   (May 2011):      `${var:offset:-length}`
 
 ## SHELL OPTIONS ##
 if # bash: stop when an error occurs
@@ -130,7 +131,6 @@ NR == 3 {print $3}  # print third field from third line' \
 
               # OTHER DISTRIBUTION
               elif
-# `platform.linux_distribution` is available from Python 2.6 on
                    python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))"
               then
