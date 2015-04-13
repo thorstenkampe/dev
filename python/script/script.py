@@ -12,7 +12,7 @@ Options:
  -h, --help      show help
  -v, --version   show version
 
-THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY OR SUPPORT!
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 """
 
 from __future__ import division, print_function, unicode_literals

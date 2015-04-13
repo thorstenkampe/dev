@@ -194,7 +194,7 @@ Options:$options_help
  -h   show help
  -v   show version
 
-THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY OR SUPPORT!
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 "
             exit
             ;;
