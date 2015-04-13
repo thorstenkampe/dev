@@ -73,8 +73,9 @@ fi
 ## VERSION ##
 # version is the Mercurial revision number
 script_version() {
-# negative length in parameter(substring) expansion is available from
-# Bash 4.2 and Zsh 4.3.12 on. Working around that...
+# - `${var:offset:length}` was implemented in Zsh 4.3.11 (additionally
+#   to `$var[start,end]`)
+# - negative length was implemented in Bash 4.2 and Zsh 4.3.12
     # offset is `11` and `7`, length from the right is `-2`
     printf "${1:11:$((${#1} - 11 - 2))} (${2:7:$((${#2} - 7 - 2))})"
 }
