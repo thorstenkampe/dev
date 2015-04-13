@@ -17,7 +17,6 @@ scriptname=$(basename $script)
 # Bash 4.2   (February 2011): `${var:offset:-length}`
 # Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
 
-
 ## SHELL OPTIONS ##
 if # bash: stop when an error occurs
    ! shopt -os errexit nounset 2> /dev/null
