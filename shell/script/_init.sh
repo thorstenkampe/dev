@@ -11,6 +11,13 @@ scriptname=$(basename $script)
 #   - http://www.tldp.org/LDP/abs/html/parameter-substitution.html
 #   - http://wiki.bash-hackers.org/syntax/pe
 
+## TIMELINE ##
+# Bash 4.0   (February 2009): assiociative arrays
+# Zsh 4.3.11 (December 2010): `${var:offset:length}`
+# Bash 4.2   (February 2011): `${var:offset:-length}`
+# Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
+
+
 ## SHELL OPTIONS ##
 if # bash: stop when an error occurs
    ! shopt -os errexit nounset 2> /dev/null
@@ -73,9 +80,6 @@ fi
 ## VERSION ##
 # version is the Mercurial revision number
 script_version() {
-# - `${var:offset:length}` was implemented in Zsh 4.3.11 (additionally
-#   to `$var[start,end]`)
-# - negative length was implemented in Bash 4.2 and Zsh 4.3.12
     # offset is `11` and `7`, length from the right is `-2`
     printf "${1:11:$((${#1} - 11 - 2))} (${2:7:$((${#2} - 7 - 2))})"
 }
