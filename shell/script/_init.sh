@@ -17,6 +17,7 @@ scriptname=$(basename $script)
 # Zsh 4.3.11   (December 2010): `${var:offset:length}`
 # Bash 4.2     (February 2011): `${var:offset:-length}`
 # Zsh 4.3.12   (May 2011):      `${var:offset:-length}`
+# Zsh 5.0.6    (August 2014):   `[[ $var ]]` (= `[[ -n $var ]]`)
 
 ## SHELL OPTIONS ##
 if # bash: stop when an error occurs
@@ -92,53 +93,45 @@ shell_version() {
 }
 
 os_version() {
-    case $OSTYPE in
+    # Cygwin has the smallest default installation (no Python)
+    if   # CYGWIN
+         [[ $OSTYPE = cygwin ]]
+    then
+        printf Cygwin
 
-        # OS X
-        darwin*)
-            printf \
-"OS X $(python -c 'import platform; print(platform.mac_ver()[0])')"
-            ;;
+    elif # OS X
+         osver=$(python -c 'import platform; print(platform.mac_ver()[0])')
+         [[ -n $osver ]]
+    then
+        printf "OS X $osver"
 
-        # LINUX
-        linux-gnu)
-            { # UBUNTU
-              if source /etc/lsb-release
-              then
-                  printf $DISTRIB_DESCRIPTION
+    elif # UBUNTU
+         source /etc/lsb-release 2> /dev/null
+    then
+        printf $DISTRIB_DESCRIPTION
 
-              # RHEL, XENSERVER
-              elif awk '
+    elif # RHEL, XENSERVER
+         awk '
 {NF--  # print file except last field
  print}' \
-                       /etc/redhat-release
-              then
-                  :
+             /etc/redhat-release 2> /dev/null
+    then
+        :
 
-              # SLES
-              elif awk '
+    elif # SLES
+         awk '
 NR == 1 {NF--       # print first line except last field
          printf "%s SP ", $0}
 NR == 3 {print $3}  # print third field from third line' \
-                       /etc/SuSE-release
-              then
-                  :
+             /etc/SuSE-release   2> /dev/null
+    then
+        :
 
-              # OTHER DISTRIBUTION
-              elif
-                   python -c \
+    else # OTHER LINUX DISTRIBUTION
+        python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))"
-              then
-                  :
 
-              fi } 2> /dev/null
-            ;;
-
-        # CYGWIN
-        cygwin)
-            printf Cygwin
-
-    esac
+    fi
 }
 
 ## STANDARD OPTIONS ##
