@@ -12,10 +12,10 @@ source "$(dirname "$0")"/_init.sh
 
 while getopts dhv option  # option string needs standard options `dhv`
 do
-    case $option in
-        \?)
-            exit 1
-    esac
+    if [[ $option = "?" ]]
+    then
+        exit 1
+    fi
 done
 shift $((OPTIND - 1))     # remove options from command line
 

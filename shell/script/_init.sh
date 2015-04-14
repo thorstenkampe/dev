@@ -139,39 +139,35 @@ NR == 3 {print $3}  # print third field from third line' \
 # advance here)
 while getopts :dhv option
 do
-    case $option in
-        d)  # DEBUG
-            verbosity=DEBUG
+    if   [[ $option = d ]]  # DEBUG
+    then
+        verbosity=DEBUG
 
-            if [[ $shell = bash ]]
-            then
-                PS4=\
-'+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
-            else
-                PS4='+%1N[%I]: '
-            fi
+        if [[ $shell = bash ]]
+        then
+            PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
+        else
+            PS4='+%1N[%I]: '
+        fi
 
-            log DEBUG \
-"$scriptname $(script_version $VERSION $DATE)"
+        log DEBUG "$scriptname $(script_version $VERSION $DATE)"
 
-            log DEBUG \
-"_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
+        log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
 
-            log DEBUG \
-"$shell $(shell_version) on $(os_version) $(uname -m)"
+        log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
 
-            log DEBUG $(locale -ck decimal_point)
+        log DEBUG $(locale -ck decimal_point)
 
-            log DEBUG Trace
+        log DEBUG Trace
 
-            if ! shopt -os xtrace 2> /dev/null  # bash
-            then
-                setopt xtrace                   # zsh
-            fi
-            ;;
+        if ! shopt -os xtrace 2> /dev/null  # bash
+        then
+            setopt xtrace                   # zsh
+        fi
 
-        h)  # HELP
-            gettext "\
+    elif [[ $option = h ]]  # HELP
+    then
+        gettext "\
 \`$scriptname\` $description
 
 Usage:
@@ -184,14 +180,14 @@ Options:$options_help
 
 THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 "
-            exit
-            ;;
+        exit
 
-        v)  # VERSION
-            printf \
-"$scriptname $(script_version $VERSION $DATE)\n"
+    elif [[ $option = v ]]  # VERSION
+    then
+        printf "$scriptname $(script_version $VERSION $DATE)\n"
+        exit
 
-    esac
+    fi
 done
 
 # reset `OPTIND` for the next round of parsing in main script
