@@ -85,11 +85,9 @@ script_version() {
 }
 
 shell_version() {
-    if [[ $shell = bash ]]
+    if ! printf ${ZSH_VERSION-} 2> /dev/null
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
-    else
-        printf $ZSH_VERSION
     fi
 }
 
@@ -106,11 +104,8 @@ os_version() {
         linux-gnu)
             { # UBUNTU
               if source /etc/lsb-release
-                 # catch `unbound variable`/`parameter not set`
-                 printf ${DISTRIB_DESCRIPTION=}
               then
-# if above doesn't error, do nothing, otherwise continue with `elif`
-                  :
+                  printf $DISTRIB_DESCRIPTION
 
               # RHEL, XENSERVER
               elif awk '
