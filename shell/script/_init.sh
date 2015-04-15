@@ -93,33 +93,33 @@ shell_version() {
 }
 
 os_version() {
+    # CYGWIN
     # Cygwin has the smallest default installation (no Python)
-    if   # CYGWIN
-         [[ $OSTYPE = cygwin ]]
+    if   [[ $OSTYPE = cygwin ]]
     then
         printf Cygwin
 
-    elif # OS X
-         osver=$(python -c 'import platform; print(platform.mac_ver()[0])')
+    # OS X
+    elif osver=$(python -c 'import platform; print(platform.mac_ver()[0])')
          [[ -n $osver ]]
     then
         printf "OS X $osver"
 
-    elif # UBUNTU
-         source /etc/lsb-release 2> /dev/null
+    # UBUNTU
+    elif source /etc/lsb-release 2> /dev/null
     then
         printf $DISTRIB_DESCRIPTION
 
-    elif # RHEL, XENSERVER
-         awk '
+    # RHEL, XENSERVER
+    elif awk '
 {NF--  # print file except last field
  print}' \
              /etc/redhat-release 2> /dev/null
     then
         :
 
-    elif # SLES
-         awk '
+    # SLES
+    elif awk '
 NR == 1 {NF--       # print first line except last field
          printf "%s SP ", $0}
 NR == 3 {print $3}  # print third field from third line' \
@@ -127,8 +127,8 @@ NR == 3 {print $3}  # print third field from third line' \
     then
         :
 
-    else # OTHER LINUX DISTRIBUTION
-        python -c \
+    # OTHER LINUX DISTRIBUTION
+    else python -c \
 "import platform; print(' '.join(platform.linux_distribution()[:2]))"
 
     fi
@@ -139,7 +139,8 @@ NR == 3 {print $3}  # print third field from third line' \
 # advance here)
 while getopts :dhv option
 do
-    if   [[ $option = d ]]  # DEBUG
+    # DEBUG
+    if   [[ $option = d ]]
     then
         verbosity=DEBUG
 
@@ -151,13 +152,9 @@ do
         fi
 
         log DEBUG "$scriptname $(script_version $VERSION $DATE)"
-
         log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
-
         log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-
         log DEBUG $(locale -ck decimal_point)
-
         log DEBUG Trace
 
         if ! shopt -os xtrace 2> /dev/null  # bash
@@ -165,7 +162,8 @@ do
             setopt xtrace                   # zsh
         fi
 
-    elif [[ $option = h ]]  # HELP
+    # HELP
+    elif [[ $option = h ]]
     then
         gettext "\
 \`$scriptname\` $description
@@ -182,7 +180,8 @@ THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 "
         exit
 
-    elif [[ $option = v ]]  # VERSION
+    # VERSION
+    elif [[ $option = v ]]
     then
         printf "$scriptname $(script_version $VERSION $DATE)\n"
         exit
