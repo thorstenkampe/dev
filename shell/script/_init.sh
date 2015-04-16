@@ -95,7 +95,7 @@ shell_version() {
 os_version() {
     # CYGWIN
     # Cygwin has the smallest default installation (no Python)
-    if   [[ $OSTYPE = cygwin ]]
+    if [[ $OSTYPE = cygwin ]]
     then
         printf Cygwin
 
@@ -140,7 +140,7 @@ NR == 3 {print $3}  # print third field from third line' \
 while getopts :dhv option
 do
     # DEBUG
-    if   [[ $option = d ]]
+    if [[ $option = d ]]
     then
         verbosity=DEBUG
 
@@ -214,11 +214,9 @@ cleanup() {
     return
 }
 
-if [[ $shell = bash ]]
+if setopt trapsasync 2> /dev/null
 then
-    trap cleanup EXIT
-
-else
-    setopt trapsasync
     trap "cleanup; exit" EXIT INT HUP TERM
+else
+    trap cleanup EXIT
 fi
