@@ -4,8 +4,8 @@ VERSION='$Revision$'
 DATE='$Date$'
 
 description=              # prints "`SCRIPT` DESCRIPTION"
-usage=                    # prints "Usage: SCRIPT USAGE"
-options_help=             # prints "Options:\nOPTIONS_HELP"
+usage=                    # prints "Usage:\nSCRIPT USAGE"
+options_help=             # prints "Options:OPTIONS_HELP"
 
 script=$0
 source "$(dirname "$0")"/_init.sh
