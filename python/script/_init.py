@@ -93,7 +93,7 @@ elif sys.platform.startswith('linux'):
 
 elif sys.platform == 'cygwin':
     os_platform = 'Cygwin {release}'.format(
-                      release = platform.release()[:6])
+                      release = platform.release()[:5])
 
 elif sys.platform == 'darwin':
     os_platform = 'OSX {release}'.format(
