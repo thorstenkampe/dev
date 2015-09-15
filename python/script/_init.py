@@ -88,8 +88,7 @@ if sys.platform == 'win32':
                       release = platform.release())
 
 elif sys.platform.startswith('linux'):
-    os_platform = '{distribution}'.format(
-                      distribution = ' '.join(platform.linux_distribution()[:2]))
+    os_platform = 'Linux'
 
 elif sys.platform == 'cygwin':
     os_platform = 'Cygwin {release}'.format(
