@@ -5,28 +5,12 @@ scriptname=$(basename $script)
 
 ## short instead of long options are used for OS X compatibility
 
-## DOCUMENTATION ##
-# - Parameter Expansion
-#   - http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
-#   - http://www.tldp.org/LDP/abs/html/parameter-substitution.html
-#   - http://wiki.bash-hackers.org/syntax/pe
-
 ## TIMELINE ##
-# Python 2.6.0 (October 2008):  `platform.linux_distribution`
-# Bash 4.0     (February 2009): associative arrays
-# Zsh 4.3.11   (December 2010): `${var:offset:length}`
-# Bash 4.2     (February 2011): `${var:offset:-length}`
-# Zsh 4.3.12   (May 2011):      `${var:offset:-length}`
-# Zsh 5.0.6    (August 2014):   `[[ $var ]]` (= `[[ -n $var ]]`)
-
-## SHELL OPTIONS ##
-if # bash: stop when an error occurs
-   ! shopt -os errexit nounset 2> /dev/null
-then
-    emulate -R zsh          # zsh: set all options to their defaults
-    setopt errexit nounset  # zsh: stop when an error occurs
-fi
-IFS= # disable word splitting (zsh: for command substitution)
+# Bash 4.0   (February 2009): associative arrays
+# Zsh 4.3.11 (December 2010): `${var:offset:length}`
+# Bash 4.2   (February 2011): `${var:offset:-length}`
+# Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
+# Zsh 5.0.6  (August 2014):   `[[ $var ]]` (= `[[ -n $var ]]`)
 
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
@@ -36,6 +20,23 @@ else
     # `ps` shows full path on OS X
     shell=$(basename $(ps -p $$ -o comm=))
 fi
+
+if [[ $shell = bash ]]
+then
+    isbash=true
+else
+    isbash=false
+fi
+
+## SHELL OPTIONS ##
+if $isbash
+then
+    shopt -os errexit nounset  # stop when an error occurs
+else
+    emulate -R zsh             # set all options to their defaults
+    setopt errexit nounset     # stop when an error occurs
+fi
+IFS= # disable word splitting (zsh: for command substitution)
 
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
@@ -50,8 +51,15 @@ then
 fi
 
 ## LOGGING ##
-if declare -A loglevel color 2> /dev/null
+if $isbash && ((BASH_VERSINFO <= 3))
 then
+    # No associative arrays in Bash 3, so only rudimentary logging
+    log() {
+        printf "$1: $2\n" > /dev/stderr
+    }
+else
+    declare -A loglevel color
+
     # Modeled after Python modules `logging` and `colorlog`
     verbosity=WARNING  # default level
 
@@ -71,11 +79,6 @@ then
             printf "${color[$1]}$1:\e[m $2\n" > /dev/stderr
         fi
     }
-else
-# No associative arrays in Bash 3, so only rudimentary logging
-    log() {
-        printf "$1: $2\n" > /dev/stderr
-    }
 fi
 
 ## VERSION ##
@@ -86,9 +89,11 @@ script_version() {
 }
 
 shell_version() {
-    if ! printf ${ZSH_VERSION-} 2> /dev/null
+    if $isbash
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
+    else
+        printf $ZSH_VERSION
     fi
 }
 
@@ -128,8 +133,7 @@ NR == 3 {print $3}  # print third field from third line' \
         :
 
     # OTHER LINUX DISTRIBUTION
-    else python -c \
-"import platform; print(' '.join(platform.linux_distribution()[:2]))"
+    else printf "Unknown"
 
     fi
 }
@@ -144,7 +148,7 @@ do
     then
         verbosity=DEBUG
 
-        if [[ $shell = bash ]]
+        if $isbash
         then
             PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
         else
@@ -157,9 +161,11 @@ do
         log DEBUG $(locale -ck decimal_point)
         log DEBUG Trace
 
-        if ! shopt -os xtrace 2> /dev/null  # bash
+        if $isbash
         then
-            setopt xtrace                   # zsh
+            shopt -os xtrace
+        else
+            setopt xtrace
         fi
 
     # HELP
@@ -214,9 +220,10 @@ cleanup() {
     return
 }
 
-if setopt trapsasync 2> /dev/null
+if $isbash
 then
-    trap "cleanup; exit" EXIT INT HUP TERM
-else
     trap cleanup EXIT
+else
+    setopt trapsasync
+    trap "cleanup; exit" EXIT INT HUP TERM
 fi
