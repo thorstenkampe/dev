@@ -18,24 +18,29 @@ scriptname    = os.path.basename(sys.argv[0])
 
 isPyinstaller = getattr(sys, 'frozen', None) == True
 isPy2exe      = getattr(sys, 'frozen', None) == 'console_exe'
+
 isPython2     = sys.version_info.major < 3
+
+isCygwin      = sys.platform == 'cygwin'
+isLinux       = sys.platform.startswith('linux')
+isOSX         = sys.platform == 'darwin'
+isWindows     = sys.platform == 'win32'
 #endregion
 
 ##region CONSOLE ##
 # no traceback on Ctrl-C;
 # cleaning up on termination can be done with `atexit.register()`
-termsignals = signal.SIGINT, signal.SIGTERM
-try:
-    termsignals += signal.SIGHUP,
-except AttributeError:  # Windows has no `SIGHUP`
-    pass
+if isWindows:  # Windows has no `SIGHUP`
+    termsignals = signal.SIGINT, signal.SIGTERM
+else:
+    termsignals = signal.SIGINT, signal.SIGTERM, signal.SIGHUP
 
 for termsignal in termsignals:
     signal.signal(termsignal, lambda *args: sys.exit())
 
-# Python3
 def setup_win_unicode_console():
-    if sys.platform == 'win32' and not (isPython2 or isPy2exe):
+    # still issues on Cygwin with Python3
+    if isWindows and not isPy2exe:
         import win_unicode_console
         win_unicode_console.enable()
 #endregion
@@ -83,18 +88,18 @@ def _traceit(frame, event, arg):
     return _traceit
 
 # OS version
-if sys.platform == 'win32':
+if isWindows:
     os_platform = 'Windows {release}'.format(
                       release = platform.release())
 
-elif sys.platform.startswith('linux'):
+elif isLinux:
     os_platform = 'Linux'
 
-elif sys.platform == 'cygwin':
+elif isCygwin:
     os_platform = 'Cygwin {release}'.format(
                       release = platform.release()[:5])
 
-elif sys.platform == 'darwin':
+elif isOSX:
     os_platform = 'OSX {release}'.format(
                       release = platform.mac_ver()[0])
 
