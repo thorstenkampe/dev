@@ -21,20 +21,15 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
+## SHELL OPTIONS ##
 if [[ $shell = bash ]]
 then
-    isbash=true
-else
-    isbash=false
-fi
-
-## SHELL OPTIONS ##
-if $isbash
-then
     shopt -os errexit nounset  # stop when an error occurs
+    isbash=true
 else
     emulate -R zsh             # set all options to their defaults
     setopt errexit nounset     # stop when an error occurs
+    isbash=false
 fi
 IFS= # disable word splitting (zsh: for command substitution)
 
@@ -148,13 +143,6 @@ do
     then
         verbosity=DEBUG
 
-        if $isbash
-        then
-            PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
-        else
-            PS4='+%1N[%I]: '
-        fi
-
         log DEBUG "$scriptname $(script_version $VERSION $DATE)"
         log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
         log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
@@ -163,8 +151,10 @@ do
 
         if $isbash
         then
+            PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
             shopt -os xtrace
         else
+            PS4='+%1N[%I]: '
             setopt xtrace
         fi
 
