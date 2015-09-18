@@ -14,10 +14,7 @@ __date__     = '$Date$'
 
 arguments = docopt.docopt(_(_init.help.format(description  = description,
                                               usage        = usage,
-                                              options_help = options_help)),
-                          version = _init.version(_init.scriptname,
-                                                  __version__,
-                                                  __date__))
+                                              options_help = options_help)))
 
 _init.setup_win_unicode_console()
 _init.setupdebugging(arguments['--debug'], __version__, __date__)

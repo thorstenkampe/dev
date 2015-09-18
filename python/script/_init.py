@@ -19,7 +19,6 @@ Usage:
 Options:{{options_help}}
  -d, --debug     show debug messages
  -h, --help      show help
- -v, --version   show version
 
 THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 """
