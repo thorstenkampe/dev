@@ -134,7 +134,7 @@ NR == 3 {print $3}  # print third field from third line' \
 ## STANDARD OPTIONS ##
 # leading `:`: don't report unknown options (which we can't know in
 # advance here)
-while getopts :dhv option
+while getopts :dh option
 do
     # DEBUG
     if [[ $option = d ]]
@@ -168,16 +168,9 @@ Usage:
 Options:$options_help
  -d   show debug messages
  -h   show help
- -v   show version
 
 THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 "
-        exit
-
-    # VERSION
-    elif [[ $option = v ]]
-    then
-        printf "$scriptname $(script_version $VERSION $DATE)\n"
         exit
 
     fi

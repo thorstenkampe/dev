@@ -10,7 +10,7 @@ options_help=             # prints "Options:OPTIONS_HELP"
 script=$0
 source "$(dirname "$0")"/_init.sh
 
-while getopts dhv option  # option string needs standard options `dhv`
+while getopts dh option  # option string needs standard options `dh`
 do
     if [[ $option = "?" ]]
     then
