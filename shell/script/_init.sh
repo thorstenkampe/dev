@@ -25,11 +25,9 @@ fi
 if [[ $shell = bash ]]
 then
     shopt -os errexit nounset  # stop when an error occurs
-    isbash=true
 else
     emulate -R zsh             # set all options to their defaults
     setopt errexit nounset     # stop when an error occurs
-    isbash=false
 fi
 IFS= # disable word splitting (zsh: for command substitution)
 
@@ -46,7 +44,7 @@ then
 fi
 
 ## LOGGING ##
-if $isbash && ((BASH_VERSINFO <= 3))
+if [[ $shell = bash ]] && ((BASH_VERSINFO <= 3))
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
@@ -84,7 +82,7 @@ script_version() {
 }
 
 shell_version() {
-    if $isbash
+    if [[ $shell = bash ]]
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
     else
@@ -149,7 +147,7 @@ do
         log DEBUG $(locale -ck decimal_point)
         log DEBUG Trace
 
-        if $isbash
+        if [[ $shell = bash ]]
         then
             PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
             shopt -os xtrace
@@ -210,7 +208,7 @@ cleanup() {
     return
 }
 
-if $isbash
+if [[ $shell = bash ]]
 then
     trap cleanup EXIT
 else
