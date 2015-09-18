@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 
-##region START ##
 from __future__ import division, print_function, unicode_literals
+import sys
+sys.dont_write_bytecode = True
+import _init, docopt
 
 description  = ''  # prints "`SCRIPT` DESCRIPTION"
 usage        = ''  # prints "Usage:\nSCRIPT [-d] USAGE"
@@ -9,12 +11,6 @@ options_help = ''  # prints "Options:OPTIONS_HELP"
 
 __version__  = '$Revision$'
 __date__     = '$Date$'
-
-# no byte compiled files (`.pyc`, `.pyo`, or `__pycache__`)
-import sys
-sys.dont_write_bytecode = True
-
-import _init, docopt
 
 arguments = docopt.docopt(_(_init.help.format(description  = description,
                                               usage        = usage,
@@ -25,12 +21,10 @@ arguments = docopt.docopt(_(_init.help.format(description  = description,
 
 _init.setup_win_unicode_console()
 _init.setupdebugging(arguments['--debug'], __version__, __date__)
-#endregion
 
 ##region MAIN CODE STARTS HERE ##
 def main():
     pass
 
-if __name__ == '__main__':
-    main()
+main()
 #endregion
