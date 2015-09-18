@@ -10,6 +10,19 @@ import time, progress.spinner, concurrent.futures  # SPINNER
 #endregion
 
 ##region VARIABLES ##
+help = """
+`{script}` {{description}}
+
+Usage:
+ {script} [-d] {{usage}}
+
+Options:{{options_help}}
+ -d, --debug     show debug messages
+ -h, --help      show help
+ -v, --version   show version
+
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
+"""
 __version__   = '$Revision$'
 __date__      = '$Date$'
 
@@ -25,6 +38,8 @@ isCygwin      = sys.platform == 'cygwin'
 isLinux       = sys.platform.startswith('linux')
 isOSX         = sys.platform == 'darwin'
 isWindows     = sys.platform == 'win32'
+
+help          = help.format(script = scriptname)
 #endregion
 
 ##region CONSOLE ##
