@@ -10,18 +10,6 @@ import time, progress.spinner, concurrent.futures  # SPINNER
 #endregion
 
 ##region VARIABLES ##
-help = """
-`{script}` {{description}}
-
-Usage:
- {script} [-d] {{usage}}
-
-Options:{{options_help}}
- -d, --debug     show debug messages
- -h, --help      show help
-
-THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
-"""
 __version__   = '$Revision$'
 __date__      = '$Date$'
 
@@ -38,7 +26,18 @@ isLinux       = sys.platform.startswith('linux')
 isOSX         = sys.platform == 'darwin'
 isWindows     = sys.platform == 'win32'
 
-help          = help.format(script = scriptname)
+help = """
+`{script}` {{description}}
+
+Usage:
+ {script} [-d] {{usage}}
+
+Options:{{options_help}}
+ -d, --debug     show debug messages
+ -h, --help      show help
+
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
+""".format(script = scriptname)
 #endregion
 
 ##region CONSOLE ##
