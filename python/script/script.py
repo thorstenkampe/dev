@@ -5,12 +5,12 @@ import sys
 sys.dont_write_bytecode = True
 import _init, docopt
 
+__version__  = '$Revision$'
+__date__     = '$Date$'
+
 description  = ''  # prints "`SCRIPT` DESCRIPTION"
 usage        = ''  # prints "Usage:\nSCRIPT [-d] USAGE"
 options_help = ''  # prints "Options:OPTIONS_HELP"
-
-__version__  = '$Revision$'
-__date__     = '$Date$'
 
 arguments = docopt.docopt(_(_init.help.format(description  = description,
                                               usage        = usage,
