@@ -10,7 +10,6 @@ scriptname=$(basename $script)
 # Zsh 4.3.11 (December 2010): `${var:offset:length}`
 # Bash 4.2   (February 2011): `${var:offset:-length}`
 # Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
-# Zsh 5.0.6  (August 2014):   `[[ $var ]]` (= `[[ -n $var ]]`)
 
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
@@ -33,8 +32,8 @@ IFS= # disable word splitting (zsh: for command substitution)
 
 ## INTERNATIONALIZATION ##
 # - http://www.gnu.org/software/gettext/manual/gettext.html#sh
-export TEXTDOMAINDIR=$(dirname $script)/_translations \
-       TEXTDOMAIN=$scriptname
+export TEXTDOMAIN=$scriptname \
+       TEXTDOMAINDIR=$(dirname $script)/_translations
 
 if ! which gettext &> /dev/null
 then
@@ -92,16 +91,16 @@ shell_version() {
 
 os_version() {
     # CYGWIN
-    # Cygwin has the smallest default installation (no Python)
-    if [[ $OSTYPE = cygwin ]]
+    if   [[ $OSTYPE = cygwin ]]
     then
-        printf Cygwin
+        osver=$(uname --kernel-release)
+        printf "Cygwin ${osver%\(*}"
 
     # OS X
-    elif osver=$(python -c 'import platform; print(platform.mac_ver()[0])')
-         [[ -n $osver ]]
+    elif [[ $OSTYPE =~ ^darwin ]]
     then
-        printf "OS X $osver"
+        printf "OS X %s" \
+        $(python -c 'import platform; print(platform.mac_ver()[0])')
 
     # UBUNTU
     elif source /etc/lsb-release 2> /dev/null
@@ -126,7 +125,7 @@ NR == 3 {print $3}  # print third field from third line' \
         :
 
     # OTHER LINUX DISTRIBUTION
-    else printf "Unknown"
+    else printf Unknown
 
     fi
 }
@@ -137,7 +136,7 @@ NR == 3 {print $3}  # print third field from third line' \
 while getopts :dh option
 do
     # DEBUG
-    if [[ $option = d ]]
+    if   [[ $option = d ]]
     then
         verbosity=DEBUG
 
