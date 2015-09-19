@@ -26,7 +26,7 @@ isLinux       = sys.platform.startswith('linux')
 isOSX         = sys.platform == 'darwin'
 isWindows     = sys.platform == 'win32'
 
-help = """
+help = '''
 `{script}` {{description}}
 
 Usage:
@@ -37,7 +37,7 @@ Options:{{options_help}}
  -h, --help      show help
 
 THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
-""".format(script = scriptname)
+'''.format(script = scriptname)
 #endregion
 
 ##region CONSOLE ##
