@@ -23,15 +23,15 @@ fi
 ## SHELL OPTIONS ##
 if [[ $shell = bash ]]
 then
-    shopt -os errexit nounset  # stop when an error occurs
+    shopt -os errexit nounset pipefail  # stop when an error occurs
 else
-    emulate -R zsh             # set all options to their defaults
-    setopt errexit nounset     # stop when an error occurs
+    emulate -R zsh                      # set all options to default
+    setopt errexit nounset pipefail     # stop when an error occurs
 fi
-IFS= # disable word splitting (zsh: for command substitution)
+IFS=                                    # disable word splitting
 
 ## INTERNATIONALIZATION ##
-# - http://www.gnu.org/software/gettext/manual/gettext.html#sh
+# http://www.gnu.org/software/gettext/manual/gettext.html#sh
 export TEXTDOMAIN=$scriptname \
        TEXTDOMAINDIR=$(dirname $script)/_translations
 
