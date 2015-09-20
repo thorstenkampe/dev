@@ -125,7 +125,8 @@ NR == 3 {print $3}  # print third field from third line' \
         :
 
     # OTHER LINUX DISTRIBUTION
-    else printf Unknown
+    else
+        printf Unknown
 
     fi
 }
