@@ -5,12 +5,6 @@ scriptname=$(basename $script)
 
 ## short instead of long options are used for OS X compatibility
 
-## TIMELINE ##
-# Bash 4.0   (February 2009): associative arrays
-# Zsh 4.3.11 (December 2010): `${var:offset:length}`
-# Bash 4.2   (February 2011): `${var:offset:-length}`
-# Zsh 4.3.12 (May 2011):      `${var:offset:-length}`
-
 ## SHELL ##
 if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
 then
