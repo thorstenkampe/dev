@@ -106,7 +106,8 @@ if isWindows:
                       release = platform.release())
 
 elif isLinux:
-    os_platform = 'Linux'
+    os_platform = '{distribution}'.format(
+                      distribution = ' '.join(platform.linux_distribution()[:2]))
 
 elif isCygwin:
     os_platform = 'Cygwin {release}'.format(
