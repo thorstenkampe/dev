@@ -22,7 +22,6 @@ else
     emulate -R zsh                      # set all options to default
     setopt errexit nounset pipefail     # stop when an error occurs
 fi
-IFS=                                    # disable word splitting
 
 ## INTERNATIONALIZATION ##
 # http://www.gnu.org/software/gettext/manual/gettext.html#sh

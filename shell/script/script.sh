@@ -7,8 +7,9 @@ description=             # prints "`SCRIPT` DESCRIPTION"
 usage=                   # prints "Usage:\nSCRIPT USAGE"
 options_help=            # prints "Options:OPTIONS_HELP"
 
+IFS=                     # disable word splitting
 script=$0
-source "$(dirname "$0")"/_init.sh
+source $(dirname $0)/_init.sh
 
 while getopts dh option  # option string needs standard options `dh`
 do
