@@ -1,6 +1,7 @@
 _INIT_VERSION='$Revision$'
 _INIT_DATE='$Date$'
 
+IFS=  # disable word splitting
 scriptname=$(basename $script)
 
 ## short instead of long options are used for OS X compatibility
