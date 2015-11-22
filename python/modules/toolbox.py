@@ -19,7 +19,8 @@ class QuotientSet:
     see http://en.wikipedia.org/wiki/Equivalence_relation
 
     What are the most common word lengths in word list of 310,000 words?
-    >>> from testing import *
+    >>> from testing import bigstring
+    >>>
     >>> qs = QuotientSet(bigstring.splitlines(), len)
     >>> count = MultiDict(qs.quotientset()).count()
     >>> GenericDict(count).sort(sortby = 'value')  # doctest: +ELLIPSIS
@@ -51,6 +52,11 @@ class QuotientSet:
         qs = _itertools.groupby(sorted(inst._seq, key = inst._canonmap), inst._canonmap)
         return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
 
+    # determines output of `instance` and `print(instance)`
+    def __repr__(inst):
+        return repr(inst._qs)
+
+    #
     def equivalenceclass(inst, key):
         return GenericDict(inst._qs)[key]
 
@@ -69,7 +75,17 @@ class QuotientSet:
 
 ##region GENERICDICT ##
 class GenericDict:
-    """a GenericDict is a dictionary or a dictitem"""
+    """
+    a GenericDict is a dictionary or a list of tuples (when the keys
+    are not hashable)
+    >>> from testing import smalldict, dictitem
+    >>>
+    >>> GenericDict(smalldict)
+    {1: '11', 2: '22', 3: '44', 4: '33'}
+    >>>
+    >>> GenericDict(dictitem)
+    [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
+    """
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
 
@@ -78,6 +94,10 @@ class GenericDict:
             return inst._generic[key]
         else:
             return inst.values()[inst.keys().index(key)]
+
+    # determines output of `instance` and `print(instance)`
+    def __repr__(inst):
+        return repr(inst._generic)
 
     # simple methods
     def setdefault(inst, key, default = None):
@@ -149,9 +169,21 @@ class GenericDict:
 
 ##region MULTIDICT ##
 class MultiDict:
+    """a MultiDict is a GenericDict with keys with multiple values
+    >>> from testing import biglist
+    >>>
+    >>> qs = QuotientSet(biglist[:10], lambda n: n % 2)
+    >>> MultiDict(qs.quotientset())
+    {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}
+    """
     def __init__(inst, multidict):
         inst._multi = multidict
 
+    # determines output of `instance` and `print(instance)`
+    def __repr__(inst):
+        return repr(inst._multi)
+
+    #
     def count(inst):
         """returns the count of a multidict"""
         if isinstance(inst._multi, dict):

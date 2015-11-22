@@ -4,7 +4,12 @@ from __future__ import (
     print_function   as _print_function,
     unicode_literals as _unicode_literals)
 
+import sys as _sys        ## VARIABLES
 import random as _random  ## UTILITIES
+#endregion
+
+##region VARIABLES ##
+isPython2 = _sys.version_info.major < 3
 #endregion
 
 ##region SMALL FUNCTIONS ##
@@ -50,10 +55,15 @@ def hash_or_order(seq, keyfunc = ident):
 def randseq(start, end, count = None, repeat = False):
     """
     >>> _random.seed(0)
-    >>> randseq(1, 10, repeat = False)
-    [7, 10, 1, 3, 5, 4, 6, 2, 9, 8]
-    >>> randseq(1, 10, repeat = True)
-    [10, 4, 9, 3, 5, 3, 2, 10, 5, 9]
+    >>>
+    >>> if isPython2:
+    ...     randseq(1, 10, repeat = False) == [9, 7, 4, 2, 8, 3, 6, 1, 5, 10]
+    ...     randseq(1, 10, repeat = True)  == [10, 6, 3, 8, 7, 3, 10, 10, 9, 10]
+    ... else:
+    ...     randseq(1, 10, repeat = False) == [7, 10, 1, 3, 5, 4, 6, 2, 9, 8]
+    ...     randseq(1, 10, repeat = True)  == [10, 4, 9, 3, 5, 3, 2, 10, 5, 9]
+    True
+    True
     """
 
     intlist = range(start, end + 1)
@@ -103,12 +113,18 @@ unorderable = [11, ['22'], 33]
 ##region REGRESSION TESTS ##
 __test__ = {
     'hashable':   """
->>> hash_or_order(hashable) == {'ishashable': True, 'isorderable': False}
+>>> if isPython2:
+...     hash_or_order(hashable) == {u'ishashable': True, u'isorderable': True}
+... else:
+...     hash_or_order(hashable) == {'ishashable': True, 'isorderable': False}
 True
                   """,
 
     'unhashable': """
->>> hash_or_order(unhashable) == {'ishashable': False, 'isorderable': False}
+>>> if isPython2:
+...     hash_or_order(unhashable) == {u'ishashable': False, u'isorderable': True}
+... else:
+...     hash_or_order(unhashable) == {'ishashable': False, 'isorderable': False}
 True
                   """
 }
