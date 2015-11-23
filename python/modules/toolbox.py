@@ -86,6 +86,7 @@ class GenericDict:
     >>> GenericDict(dictitem)
     [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
     """
+
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
 
@@ -176,6 +177,7 @@ class MultiDict:
     >>> MultiDict(qs.quotientset())
     {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}
     """
+
     def __init__(inst, multidict):
         inst._multi = multidict
 
