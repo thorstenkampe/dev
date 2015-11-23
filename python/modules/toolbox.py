@@ -10,6 +10,15 @@ import itertools   as _itertools    ## QUOTIENTSET
 import operator    as _operator     ## QUOTIENTSET
 #endregion
 
+##region UTILITIES##
+def periodic(counter, counter_at_sop, sop, eop):
+    """
+    wrap counter in range(sop, eop + 1)
+    sop = start of period; eop = end of period
+    """
+    return (counter - counter_at_sop) % (eop - sop + 1) + sop
+#endregion
+
 ##region QUOTIENTSET ##
 def _ident(x):
     return x
