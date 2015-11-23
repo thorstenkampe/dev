@@ -1,4 +1,5 @@
 ##region IMPORTS ##
+# imports aliased with "_" so they don't get tabcompleted
 from __future__ import (
     division         as _division,
     print_function   as _print_function,
@@ -70,6 +71,12 @@ class QuotientSet:
         return inst._qs
 
     def representative_class(inst):
+        """
+        >>> from testing import even
+        >>>
+        >>> QuotientSet(range(4), even).representative_class()
+        (1, 0)
+        """
         return list(zip(*inst.partition()))[0]
 #endregion
 
@@ -143,12 +150,6 @@ class GenericDict:
                 inst._generic, key = _operator.itemgetter(sortby == 'value'))
 
     def _extremum(inst, min_or_max, key = 'key'):
-        """
-        returns `{key: value}` or `[(key, value)]` for `key = key` and
-        `value` for `key = value` (as opposed to a standard dictionary).
-        The former is more useful in my opinion and the latter necessary
-        because dict values are not necessarily unique.
-        """
         if isinstance(inst._generic, dict):
             if key == 'key':
                 extremum = min_or_max(inst._generic)
@@ -162,6 +163,20 @@ class GenericDict:
                 return min_or_max(inst.values())
 
     def max(inst, key = 'key'):
+        """
+        >>> from testing import smalldict, dictitem
+        >>>
+        >>> GenericDict(smalldict)
+        {1: '11', 2: '22', 3: '44', 4: '33'}
+        >>> GenericDict(smalldict).max()
+        {4: '33'}
+        >>>
+        >>> GenericDict(dictitem)
+        [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
+        >>>
+        >>> GenericDict(dictitem).max(key = 'value')
+        '44'
+        """
         return inst._extremum(max, key = key)
 
     def min(inst, key = 'key'):
@@ -171,11 +186,11 @@ class GenericDict:
 ##region MULTIDICT ##
 class MultiDict:
     """a MultiDict is a GenericDict with keys with multiple values
-    >>> from testing import biglist
+    >>> from testing import even
     >>>
-    >>> qs = QuotientSet(biglist[:10], lambda n: n % 2)
+    >>> qs = QuotientSet(range(10), even)
     >>> MultiDict(qs.quotientset())
-    {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}
+    {False: [1, 3, 5, 7, 9], True: [0, 2, 4, 6, 8]}
     """
 
     def __init__(inst, multidict):
@@ -227,14 +242,4 @@ def partition(seq, split):
         for separator in split[1:]:
             seq = seq.replace(separator, split[0])
         return seq.split(split[0])
-#endregion
-
-##region REGRESSION TESTS ##
-__test__ = {
-    'representative_class': """
->>> from testing import even
->>> QuotientSet([0, 1, 2, 3, 4], even).representative_class()
-(1, 0)
-                            """
-}
 #endregion

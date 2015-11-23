@@ -1,4 +1,5 @@
 ##region IMPORTS ##
+# imports aliased with "_" so they don't get tabcompleted
 from __future__ import (
     division         as _division,
     print_function   as _print_function,
@@ -35,18 +36,21 @@ def dim(seq):
     return dimension
 
 def hash_or_order(seq, keyfunc = ident):
-    result = {'ishashable':  True,
-              'isorderable': True}
+    result = {}
 
     try:
         dict(zip(map(keyfunc, seq), seq))
     except TypeError:
         result['ishashable'] = False
+    else:
+        result['ishashable'] = True
 
     try:
         seq.sort(key = keyfunc)
     except TypeError:
         result['isorderable'] = False
+    else:
+        result['isorderable'] = True
 
     return result
 #endregion
@@ -112,20 +116,27 @@ unorderable = [11, ['22'], 33]
 
 ##region REGRESSION TESTS ##
 __test__ = {
-    'hashable':   """
->>> if isPython2:
-...     hash_or_order(hashable) == {u'ishashable': True, u'isorderable': True}
-... else:
-...     hash_or_order(hashable) == {'ishashable': True, 'isorderable': False}
+    'hashable':    """
+>>> hash_or_order(hashable)['ishashable']
 True
-                  """,
+                   """,
 
-    'unhashable': """
->>> if isPython2:
-...     hash_or_order(unhashable) == {u'ishashable': False, u'isorderable': True}
-... else:
-...     hash_or_order(unhashable) == {'ishashable': False, 'isorderable': False}
+    'unhashable':  """
+>>> hash_or_order(unhashable)['ishashable']
+False
+                   """,
+
+    'orderable':   """
+>>> hash_or_order(orderable)['isorderable']
 True
-                  """
+                   """,
+
+    'unorderable': """
+>>> if isPython2:
+...     hash_or_order(unorderable)['isorderable']  == True
+... else:
+...     hash_or_order(unorderable)['isorderable']  == False
+True
+                   """
 }
 #endregion
