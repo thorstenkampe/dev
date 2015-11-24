@@ -27,14 +27,6 @@ class QuotientSet:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
-
-    What are the most common word lengths in word list of 310,000 words?
-    >>> from testing import bigstring
-    >>>
-    >>> qs = QuotientSet(bigstring.splitlines(), len)
-    >>> count = MultiDict(qs.quotientset()).count()
-    >>> GenericDict(count).sort(sortby = 'value')  # doctest: +ELLIPSIS
-    OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
     """
 
     def __init__(inst, seq, keyfunc = _ident):
@@ -77,14 +69,25 @@ class QuotientSet:
         return GenericDict(inst._qs).keys()
 
     def quotientset(inst):
+        """
+        What are the most common word lengths in word list of 310,000 words?
+        >>> from testing import bigstring
+        >>>
+        >>> qs = QuotientSet(bigstring.splitlines(), len)
+        >>> count = MultiDict(qs.quotientset()).count()
+        >>> GenericDict(count).sort(sortby = 'value')  # doctest: +ELLIPSIS
+        OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
+        """
         return inst._qs
 
     def representative_class(inst):
         """
-        >>> from testing import even
+        >>> from testing import smalltuple, even
         >>>
-        >>> QuotientSet(range(4), even).representative_class()
-        (1, 0)
+        >>> smalltuple
+        (11, 22, 33, 44)
+        >>> QuotientSet(smalltuple, even).representative_class()
+        (11, 22)
         """
         return list(zip(*inst.partition()))[0]
 #endregion
@@ -173,17 +176,13 @@ class GenericDict:
 
     def max(inst, key = 'key'):
         """
-        >>> from testing import smalldict, dictitem
+        >>> from testing import smalldict
         >>>
         >>> GenericDict(smalldict)
         {1: '11', 2: '22', 3: '44', 4: '33'}
         >>> GenericDict(smalldict).max()
         {4: '33'}
-        >>>
-        >>> GenericDict(dictitem)
-        [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
-        >>>
-        >>> GenericDict(dictitem).max(key = 'value')
+        >>> GenericDict(smalldict).max(key = 'value')
         '44'
         """
         return inst._extremum(max, key = key)
@@ -195,11 +194,12 @@ class GenericDict:
 ##region MULTIDICT ##
 class MultiDict:
     """a MultiDict is a GenericDict with keys with multiple values
-    >>> from testing import even
+    >>> from testing import smalltuple, even
     >>>
-    >>> qs = QuotientSet(range(10), even)
-    >>> MultiDict(qs.quotientset())
-    {False: [1, 3, 5, 7, 9], True: [0, 2, 4, 6, 8]}
+    >>> smalltuple
+    (11, 22, 33, 44)
+    >>> QuotientSet(smalltuple, even)
+    {False: [11, 33], True: [22, 44]}
     """
 
     def __init__(inst, multidict):
@@ -223,13 +223,17 @@ def partition(seq, split):
     """
     split sequence by length or string by separator
 
-    >>> list = ['a', 'b', 'c', 'd', 'e']
-    >>> partition(list, 2)
+    >>> from testing import smalllist, smallstring
+    >>>
+    >>> smalllist
+    ['a', 'b', 'c', 'd', 'e']
+    >>> partition(smalllist, 2)
     [['a', 'b'], ['c', 'd'], ['e']]
-    >>> partition(list, [1, 2])
+    >>> partition(smalllist, [1, 2])
     [['a'], ['b', 'c'], ['d', 'e']]
-    >>> string = 'The quick brown fox jumps over the lazy dog'
-    >>> partition(string, [' ', 'the', 'The'])
+    >>> smallstring
+    'The quick brown fox jumps over the lazy dog'
+    >>> partition(smallstring, [' ', 'the', 'The'])
     ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
     """
 
