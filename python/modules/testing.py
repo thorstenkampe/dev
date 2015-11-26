@@ -25,16 +25,6 @@ def odd(integer):
 #endregion
 
 ##region TESTING FUNCTIONS##
-def dim(seq):
-    dimension = []
-    while isinstance(seq, (list, tuple)):
-        dimension.append(len(seq))
-        try:
-            seq = seq[0]
-        except IndexError:
-            break
-    return dimension
-
 def _ishashable(seq, keyfunc = ident):
     try:
         dict(zip(map(keyfunc, seq), seq))
@@ -50,6 +40,16 @@ def _isorderable(seq, keyfunc = ident):
         return False
     else:
         return True
+#
+def dim(seq):
+    dimension = []
+    while isinstance(seq, (list, tuple)):
+        dimension.append(len(seq))
+        try:
+            seq = seq[0]
+        except IndexError:
+            break
+    return dimension
 
 def hash_or_order(seq, keyfunc = ident):
     return {'ishashable':  _ishashable(seq, keyfunc),
@@ -103,9 +103,7 @@ table       = [['a1', 'b1', 'c1', 'd1', 'e1'],
                ['a4', 'b4', 'c4', 'd4', 'e4']]
 
 dictitem    = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
-#endregion
-
-##region HASH AND SORT##
+#
 hashable    = [11, '22', 33]
 
 unhashable  = [11, [22], 33]
