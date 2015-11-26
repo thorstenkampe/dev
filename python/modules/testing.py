@@ -35,24 +35,25 @@ def dim(seq):
             break
     return dimension
 
-def hash_or_order(seq, keyfunc = ident):
-    result = {}
-
+def _ishashable(seq, keyfunc = ident):
     try:
         dict(zip(map(keyfunc, seq), seq))
     except TypeError:
-        result['ishashable'] = False
+        return False
     else:
-        result['ishashable'] = True
+        return True
 
+def _isorderable(seq, keyfunc = ident):
     try:
         seq.sort(key = keyfunc)
     except TypeError:
-        result['isorderable'] = False
+        return False
     else:
-        result['isorderable'] = True
+        return True
 
-    return result
+def hash_or_order(seq, keyfunc = ident):
+    return {'ishashable':  _ishashable(seq, keyfunc),
+            'isorderable': _isorderable(seq, keyfunc)}
 #endregion
 
 ##region UTILITIES##
@@ -117,25 +118,25 @@ unorderable = [11, ['22'], 33]
 ##region REGRESSION TESTS ##
 __test__ = {
     'hashable':    """
->>> hash_or_order(hashable)['ishashable']
+>>> _ishashable(hashable)
 True
                    """,
 
     'unhashable':  """
->>> hash_or_order(unhashable)['ishashable']
+>>> _ishashable(unhashable)
 False
                    """,
 
     'orderable':   """
->>> hash_or_order(orderable)['isorderable']
+>>> _isorderable(orderable)
 True
                    """,
 
     'unorderable': """
 >>> if isPython2:
-...     hash_or_order(unorderable)['isorderable']  == True
+...     _isorderable(unorderable) == True
 ... else:
-...     hash_or_order(unorderable)['isorderable']  == False
+...     _isorderable(unorderable) == False
 True
                    """
 }
