@@ -10,7 +10,7 @@ import itertools   as _itertools    ## QUOTIENTSET
 import operator    as _operator     ## QUOTIENTSET
 #endregion
 
-##region UTILITIES##
+##region UTILITIES ##
 def periodic(counter, counter_at_sop, sop, eop):
     """
     wrap counter in range(sop, eop + 1)
