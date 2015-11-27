@@ -112,30 +112,3 @@ orderable   = [[11], [22], [33]]
 
 unorderable = [11, ['22'], 33]
 #endregion
-
-##region REGRESSION TESTS ##
-__test__ = {
-    'hashable':    """
->>> _ishashable(hashable)
-True
-                   """,
-
-    'unhashable':  """
->>> _ishashable(unhashable)
-False
-                   """,
-
-    'orderable':   """
->>> _isorderable(orderable)
-True
-                   """,
-
-    'unorderable': """
->>> if isPython2:
-...     _isorderable(unorderable) == True
-... else:
-...     _isorderable(unorderable) == False
-True
-                   """
-}
-#endregion
