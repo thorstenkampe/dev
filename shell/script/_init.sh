@@ -176,14 +176,16 @@ OPTIND=1
 ## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
-    # error of the background job will not abort script
+    # error in background job will not abort script
     eval $@ &
     spin='-\|/'
 
     i=0
     while kill -0 $! 2> /dev/null
     do
-        printf "\r[${spin:$(((i += 1) % 4)):1}]"
+        # this is just so PyCharm's BashSupport doesn't get confused
+        j=$((i += 1))
+        printf "\r[${spin:$((j % 4)):1}]"
         sleep 0.1
     done
     printf "\n"
