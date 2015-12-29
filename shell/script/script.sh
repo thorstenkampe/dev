@@ -8,7 +8,9 @@ usage=                   # prints "Usage:\nSCRIPT USAGE"
 options_help=            # prints "Options:OPTIONS_HELP"
 
 script=$0
-source "$(dirname "$script")"/_init.sh
+PATH=$(dirname "$script"):$PATH
+
+source _init.sh
 
 while getopts dh option  # option string needs standard options `dh`
 do
