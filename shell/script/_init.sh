@@ -139,7 +139,7 @@ do
         log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
         log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
         # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-        log DEBUG "LANGUAGE=${LANGUAGE-""}, $(locale | grep LC_ALL), $(locale | grep LANG)"
+        log DEBUG "LANGUAGE=${LANGUAGE-""}, $(locale | grep LC_ALL), $(locale | grep LANG=)"
         # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
         log DEBUG "LC_NUMERIC: $(locale -k decimal_point)"
         log DEBUG Trace
