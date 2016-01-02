@@ -14,7 +14,7 @@ source _init.sh
 
 while getopts dh option  # option string needs standard options `dh`
 do
-    if [[ $option = "?" ]]
+    if [[ $option == "?" ]]
     then
         exit 1
     fi

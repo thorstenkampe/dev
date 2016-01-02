@@ -7,7 +7,7 @@ scriptname=$(basename $script)
 ## short instead of long options are used for OS X compatibility
 
 ## SHELL ##
-if [[ $OSTYPE = cygwin ]]  # `ps` is `procps` on Cygwin
+if [[ $OSTYPE == cygwin ]]  # `ps` is `procps` on Cygwin
 then
     shell=$(procps --pid $$ --format comm=)
 else
@@ -16,7 +16,7 @@ else
 fi
 
 ## SHELL OPTIONS ##
-if [[ $shell = bash ]]
+if [[ $shell == bash ]]
 then
     shopt -os errexit nounset pipefail  # stop when an error occurs
 else
@@ -32,12 +32,13 @@ export TEXTDOMAIN=$scriptname \
 if ! which gettext &> /dev/null
 then
     gettext() {
-        printf $@
+        # http://zshwiki.org/home/scripting/args
+        printf "$@"
     }
 fi
 
 ## LOGGING ##
-if [[ $shell = bash ]] && ((BASH_VERSINFO <= 3))
+if [[ $shell == bash ]] && ((BASH_VERSINFO <= 3))
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
@@ -75,7 +76,7 @@ script_version() {
 }
 
 shell_version() {
-    if [[ $shell = bash ]]
+    if [[ $shell == bash ]]
     then
         printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
     else
@@ -85,7 +86,7 @@ shell_version() {
 
 os_version() {
     # CYGWIN
-    if   [[ $OSTYPE = cygwin ]]
+    if   [[ $OSTYPE == cygwin ]]
     then
         osver=$(uname --kernel-release)
         printf "Cygwin ${osver%\(*}"
@@ -131,7 +132,7 @@ NR == 3 {print $3}  # print third field from third line' \
 while getopts :dh option
 do
     # DEBUG
-    if   [[ $option = d ]]
+    if   [[ $option == d ]]
     then
         verbosity=DEBUG
 
@@ -144,7 +145,7 @@ do
         log DEBUG "LC_NUMERIC: $(locale -k decimal_point)"
         log DEBUG Trace
 
-        if [[ $shell = bash ]]
+        if [[ $shell == bash ]]
         then
             PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
             shopt -os xtrace
@@ -154,7 +155,7 @@ do
         fi
 
     # HELP
-    elif [[ $option = h ]]
+    elif [[ $option == h ]]
     then
         gettext "\
 \`$scriptname\` $description
@@ -180,7 +181,7 @@ OPTIND=1
 # taken from http://stackoverflow.com/a/12498305
 spinner() {
     # error in background job will not abort script
-    eval $@ &
+    eval "$@" &
     spin='-\|/'
 
     i=0
@@ -200,7 +201,7 @@ cleanup() {
     return
 }
 
-if [[ $shell = bash ]]
+if [[ $shell == bash ]]
 then
     trap cleanup EXIT
 else
