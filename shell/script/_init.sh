@@ -33,7 +33,7 @@ if ! which gettext &> /dev/null
 then
     gettext() {
         # http://zshwiki.org/home/scripting/args
-        printf "$@"
+        printf "%s" "$@"
     }
 fi
 
@@ -42,7 +42,7 @@ if [[ $shell == bash ]] && ((BASH_VERSINFO <= 3))
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
-        printf "$1: $2\n" > /dev/stderr
+        printf "%s: %s\n" $1 $2 > /dev/stderr
     }
 else
     declare -A loglevel color
@@ -63,7 +63,7 @@ else
         if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
         then
             # `> /dev/stderr` is equivalent to `>&2`
-            printf "${color[$1]}$1:\e[m $2\n" > /dev/stderr
+            printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 > /dev/stderr
         fi
     }
 fi
@@ -72,15 +72,15 @@ fi
 # version is the Mercurial revision number
 script_version() {
     # offset is `11` and `7`, length from the right is `-2`
-    printf "${1:11:$((${#1} - 11 - 2))} (${2:7:$((${#2} - 7 - 2))})"
+    printf "%s (%s)" ${1:11:$((${#1} - 11 - 2))} ${2:7:$((${#2} - 7 - 2))}
 }
 
 shell_version() {
     if [[ $shell == bash ]]
     then
-        printf %s.%s.%s ${BASH_VERSINFO[@]:0:3}
+        printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3}
     else
-        printf $ZSH_VERSION
+        printf "%s" $ZSH_VERSION
     fi
 }
 
@@ -89,7 +89,7 @@ os_version() {
     if   [[ $OSTYPE == cygwin ]]
     then
         osver=$(uname --kernel-release)
-        printf "Cygwin ${osver%\(*}"
+        printf "Cygwin %s" ${osver%\(*}
 
     # OS X
     elif [[ $OSTYPE =~ ^darwin ]]
@@ -100,7 +100,7 @@ os_version() {
     # UBUNTU
     elif source /etc/lsb-release 2> /dev/null
     then
-        printf $DISTRIB_DESCRIPTION
+        printf "%s" $DISTRIB_DESCRIPTION
 
     # RHEL, XENSERVER
     elif awk '
@@ -121,7 +121,7 @@ NR == 3 {print $3}  # print third field from third line' \
 
     # OTHER LINUX DISTRIBUTION
     else
-        printf Unknown
+        printf "Unknown"
 
     fi
 }
@@ -189,7 +189,7 @@ spinner() {
     do
         # this is just so PyCharm's BashSupport doesn't get confused
         j=$((i += 1))
-        printf "\r[${spin:$((j % 4)):1}]"
+        printf "\r[%s]" ${spin:$((j % 4)):1}
         sleep 0.1
     done
     printf "\n"
