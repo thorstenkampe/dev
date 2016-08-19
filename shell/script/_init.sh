@@ -50,9 +50,9 @@ else
     # Modeled after Python modules `logging` and `colorlog`
     verbosity=WARNING  # default level
 
-# Assigning associative array elements via subscript is the only
-# syntax bash and zsh share
-# For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    # Assigning associative array elements via subscript is the only
+    # syntax bash and zsh share
+    # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     loglevel[CRITICAL]=10 ; color[CRITICAL]=$'\e[1;31m'  # brightred
     loglevel[ERROR]=20    ; color[ERROR]=$'\e[0;31m'     # red
     loglevel[WARNING]=30  ; color[WARNING]=$'\e[0;33m'   # yellow
