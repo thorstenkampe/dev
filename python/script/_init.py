@@ -102,20 +102,18 @@ def _traceit(frame, event, arg):
 
 # OS version
 if isWindows:
-    os_platform = 'Windows {release}'.format(
-                      release = platform.release())
+    os_platform = ['Windows', platform.release()]
 
 elif isLinux:
-    os_platform = '{distribution}'.format(
-                      distribution = ' '.join(platform.linux_distribution()[:2]))
+    os_platform = platform.linux_distribution()[:2]
 
 elif isCygwin:
-    os_platform = 'Cygwin {release}'.format(
-                      release = platform.release()[:5])
+    os_platform = ['Cygwin', platform.release()[:5]]
 
 elif isOSX:
-    os_platform = 'OSX {release}'.format(
-                      release = platform.mac_ver()[0])
+    os_platform = ['OSX', platform.mac_ver()[0]]
+
+os_platform = ' '.join(os_platform)
 
 # enable debugging for main script
 def setupdebugging(debug, script_version, script_date):
@@ -132,10 +130,8 @@ def setupdebugging(debug, script_version, script_date):
 
     logger.debug(version('_init.py', __version__, __date__))
 
-    logger.debug('Python {version} {arch} on {platform}'.format(
-        version  = platform.python_version(),
-        arch     = platform.architecture()[0],
-        platform = os_platform))
+    logger.debug(' '.join(['Python', platform.python_version(),
+                           platform.architecture()[0], 'on', os_platform]))
 #endregion
 
 ##region VERSION ##
