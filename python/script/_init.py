@@ -1,20 +1,26 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
-import sys, os                                     # VARIABLES
+import sys                                         # VARIABLES
 import signal                                      # CONSOLE
 import logging, colorama, colorlog                 # LOGGING
 import sys, os, traceback, colored_traceback       # TRACEBACK
-import os, gettext                                 # INTERNATIONALIZATION
+import gettext                                     # INTERNATIONALIZATION
 import sys, inspect, platform                      # DEBUGGING
 import time, progress.spinner, concurrent.futures  # SPINNER
+
+# VARIABLES, INTERNATIONALIZATION
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
 #endregion
 
 ##region VARIABLES ##
 __version__   = '$Revision$'
 __date__      = '$Date$'
 
-scriptpath    = os.path.dirname(sys.argv[0])
-scriptname    = os.path.basename(sys.argv[0])
+scriptpath    = pathlib.Path(sys.argv[0]).parent
+scriptname    = pathlib.Path(sys.argv[0]).name
 
 isPyinstaller = getattr(sys, 'frozen', None) == True
 isPy2exe      = getattr(sys, 'frozen', None) == 'console_exe'
@@ -86,8 +92,9 @@ if os.getenv('DEBUG') is not None:
 #endregion
 
 ##region INTERNATIONALIZATION ##
+# `str()` superfluous in Python3
 gettext.install(
-    scriptname, localedir = os.path.join(scriptpath, '_translations'))
+    scriptname, localedir = str(pathlib.Path(scriptpath, '_translations')))
 #endregion
 
 ##region DEBUGGING ##
