@@ -5,9 +5,6 @@ import sys
 sys.dont_write_bytecode = True
 import _init, docopt
 
-__version__  = '$Revision$'
-__date__     = '$Date$'
-
 description  = ''  # prints "`SCRIPT` DESCRIPTION"
 usage        = ''  # prints "Usage:\nSCRIPT [-d] USAGE"
 options_help = ''  # prints "Options:OPTIONS_HELP"
@@ -18,7 +15,7 @@ arguments = docopt.docopt(_(_init.help.format(
                                 options_help = options_help)))
 
 _init.setup_win_unicode_console()
-_init.setupdebugging(arguments['--debug'], __version__, __date__)
+_init.setupdebugging(arguments['--debug'])
 
 ##region MAIN CODE STARTS HERE ##
 def main():

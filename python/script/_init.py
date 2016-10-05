@@ -16,9 +16,6 @@ except ImportError:
 #endregion
 
 ##region VARIABLES ##
-__version__   = '$Revision$'
-__date__      = '$Date$'
-
 scriptpath    = pathlib.Path(sys.argv[0]).parent
 scriptname    = pathlib.Path(sys.argv[0]).name
 
@@ -41,8 +38,6 @@ Usage:
 Options:{{options_help}}
  -d, --debug     show debug messages
  -h, --help      show help
-
-THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 '''.format(script = scriptname)
 #endregion
 
@@ -123,7 +118,7 @@ elif isOSX:
 os_platform = ' '.join(os_platform)
 
 # enable debugging for main script
-def setupdebugging(debug, script_version, script_date):
+def setupdebugging(debug):
     if debug is True:
         logger.setLevel(logging.DEBUG)
         if isPyinstaller:
@@ -132,10 +127,6 @@ def setupdebugging(debug, script_version, script_date):
             colored_traceback.add_hook()
         else:
             sys.settrace(_traceit)
-
-    logger.debug(version(scriptname, script_version, script_date))
-
-    logger.debug(version('_init.py', __version__, __date__))
 
     logger.debug(' '.join(['Python', platform.python_version(),
                            platform.architecture()[0], 'on', os_platform]))

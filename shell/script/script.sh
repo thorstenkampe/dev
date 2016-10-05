@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-VERSION='$Revision$'
-DATE='$Date$'
-
 description=             # prints "`SCRIPT` DESCRIPTION"
 usage=                   # prints "Usage:\nSCRIPT USAGE"
 options_help=            # prints "Options:OPTIONS_HELP"

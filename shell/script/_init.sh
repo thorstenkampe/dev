@@ -136,8 +136,6 @@ do
     then
         verbosity=DEBUG
 
-        log DEBUG "$scriptname $(script_version $VERSION $DATE)"
-        log DEBUG "_init.sh $(script_version $_INIT_VERSION $_INIT_DATE)"
         log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
         # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
         log DEBUG "LANGUAGE=${LANGUAGE-""}, $(locale | grep LC_ALL), $(locale | grep LANG=)"
@@ -166,8 +164,6 @@ Usage:
 Options:$options_help
  -d   show debug messages
  -h   show help
-
-THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 "
         exit
 
@@ -187,9 +183,7 @@ spinner() {
     i=0
     while kill -0 $! 2> /dev/null
     do
-        # this is just so PyCharm's BashSupport doesn't get confused
-        j=$((i += 1))
-        printf "\r[%s]" ${spin:$((j % 4)):1}
+        printf "\r[%s]" ${spin:$(($((i += 1)) % 4)):1}
         sleep 0.1
     done
     printf "\n"
