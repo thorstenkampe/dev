@@ -5,9 +5,14 @@ from __future__ import (
     print_function   as _print_function,
     unicode_literals as _unicode_literals)
 
+import sys         as _sys          ## VARIABLES
 import collections as _collections  ## QUOTIENTSET
 import itertools   as _itertools    ## QUOTIENTSET
 import operator    as _operator     ## QUOTIENTSET
+#endregion
+
+##region VARIABLES ##
+isPython36 = _sys.version_info >= (3, 6)
 #endregion
 
 ##region UTILITIES ##
@@ -99,8 +104,11 @@ class GenericDict:
     are not hashable)
     >>> from testing import smalldict, dictitem
     >>>
-    >>> GenericDict(smalldict)
-    {1: '11', 2: '22', 3: '44', 4: '33'}
+    >>> if isPython36:
+    ...     dict(GenericDict(smalldict)) == {1: '11', 2: '22', 4: '33', 3: '44'}
+    ... else:
+    ...     dict(GenericDict(smalldict)) == {1: '11', 2: '22', 3: '44', 4: '33'}
+    True
     >>>
     >>> GenericDict(dictitem)
     [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
@@ -178,8 +186,11 @@ class GenericDict:
         """
         >>> from testing import smalldict
         >>>
-        >>> GenericDict(smalldict)
-        {1: '11', 2: '22', 3: '44', 4: '33'}
+        >>> if isPython36:
+        ...     smalldict == {1: '11', 2: '22', 4: '33', 3: '44'}
+        ... else:
+        ...     smalldict == {1: '11', 2: '22', 3: '44', 4: '33'}
+        True
         >>> GenericDict(smalldict).max()
         {4: '33'}
         >>> GenericDict(smalldict).max(key = 'value')
