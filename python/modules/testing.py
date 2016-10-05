@@ -111,4 +111,20 @@ unhashable  = [11, [22], 33]
 orderable   = [[11], [22], [33]]
 
 unorderable = [11, ['22'], 33]
+
+#
+print('Available for testing:')
+print('smallstring:', "'" + smallstring + "'")
+print('bigstring:  ', ' <word list of 310,000 words>')
+print('smalllist:  ', smalllist)
+print('biglist:    ', '[0, 1, ... , 98, 99]')
+print('smalltuple: ', smalltuple)
+print('bigtuple:   ', '(0, 1, ... , 98, 99)')
+print('smalldict:  ', smalldict)
+print('dictitem:   ', dictitem, end = '')
+print('''
+table:       [['a1', 'b1', 'c1', 'd1', 'e1'],
+              ['a2', 'b2', 'c2', 'd2', 'e2'],
+              ['a3', 'b3', 'c3', 'd3', 'e3'],
+              ['a4', 'b4', 'c4', 'd4', 'e4']]''')
 #endregion
