@@ -132,14 +132,6 @@ def setupdebugging(debug):
                            platform.architecture()[0], 'on', os_platform]))
 #endregion
 
-##region VERSION ##
-def version(file, revision, date):
-    return '{script} {version} ({date})'.format(
-               script  = file,
-               version = revision[11:-2],
-               date    = date[7:-2])
-#endregion
-
 ##region SPINNER ##
 def show_spinner(*args):
 

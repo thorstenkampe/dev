@@ -1,6 +1,3 @@
-_INIT_VERSION='$Revision$'
-_INIT_DATE='$Date$'
-
 IFS=  # disable word splitting
 scriptname=$(basename $script)
 
@@ -69,12 +66,6 @@ else
 fi
 
 ## VERSION ##
-# version is the Mercurial revision number
-script_version() {
-    # offset is `11` and `7`, length from the right is `-2`
-    printf "%s (%s)" ${1:11:$((${#1} - 11 - 2))} ${2:7:$((${#2} - 7 - 2))}
-}
-
 shell_version() {
     if [[ $shell == bash ]]
     then
