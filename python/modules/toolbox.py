@@ -195,14 +195,7 @@ class GenericDict:
 
 ##region MULTIDICT ##
 class MultiDict:
-    """a MultiDict is a GenericDict with keys with multiple values
-    >>> from testing import smalltuple, even
-    >>>
-    >>> smalltuple
-    (11, 22, 33, 44)
-    >>> QuotientSet(smalltuple, even)
-    {False: [11, 33], True: [22, 44]}
-    """
+    """a MultiDict is a GenericDict with multiple values"""
 
     def __init__(inst, multidict):
         inst._multi = multidict
@@ -213,7 +206,16 @@ class MultiDict:
 
     #
     def count(inst):
-        """returns the count of a multidict"""
+        """returns the count of a multidict
+        >>> from testing import smalltuple, even
+        >>> from pprint import pprint
+        >>>
+        >>> smalltuple
+        (11, 22, 33, 44)
+        >>> qs = QuotientSet(smalltuple, lambda x: 'even' if even(x) else 'odd')
+        >>> pprint(MultiDict(qs.quotientset()).count())
+        {'even': 2, 'odd': 2}
+        """
         if isinstance(inst._multi, dict):
             return {key: len(inst._multi[key]) for key in inst._multi}
         else:

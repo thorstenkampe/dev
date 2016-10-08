@@ -11,6 +11,7 @@ import random as _random  ## UTILITIES
 
 ##region VARIABLES ##
 isPython2 = _sys.version_info.major < 3
+isWindows = _sys.platform == 'win32'
 #endregion
 
 ##region SMALL FUNCTIONS ##
@@ -84,25 +85,28 @@ def randseq(start, end, count = None, repeat = False):
 #endregion
 
 ##region TEST TYPES##
-smalldict   = {1: '11', 2: '22', 4: '33', 3: '44'}
-
-bigfile     = 'F:/Program Files/tools/cain/Wordlists/Wordlist.txt'
+smallstring = 'The quick brown fox jumps over the lazy dog'
+bigfile1    = 'F:/cygwin/home/thorsten/python/modules/Wordlist.txt'
+bigfile2    = '/home/thorsten/python/modules/Wordlist.txt'
+if isWindows:
+    bigstring = open(bigfile1).read()
+else:
+    bigstring = open(bigfile2).read()
 
 smalllist   = ['a', 'b', 'c', 'd', 'e']
 biglist     = range(100)
 
-smallstring = 'The quick brown fox jumps over the lazy dog'
-bigstring   = open(bigfile).read()
-
 smalltuple  = (11, 22, 33, 44)
 bigtuple    = tuple(range(100))
+
+smalldict   = {1: '11', 2: '22', 4: '33', 3: '44'}
+dictitem    = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
 
 table       = [['a1', 'b1', 'c1', 'd1', 'e1'],
                ['a2', 'b2', 'c2', 'd2', 'e2'],
                ['a3', 'b3', 'c3', 'd3', 'e3'],
                ['a4', 'b4', 'c4', 'd4', 'e4']]
 
-dictitem    = [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
 #
 hashable    = [11, '22', 33]
 
@@ -111,20 +115,4 @@ unhashable  = [11, [22], 33]
 orderable   = [[11], [22], [33]]
 
 unorderable = [11, ['22'], 33]
-
-#
-print('Available for testing:')
-print('smallstring:', "'" + smallstring + "'")
-print('bigstring:  ', ' <word list of 310,000 words>')
-print('smalllist:  ', smalllist)
-print('biglist:    ', '[0, 1, ... , 98, 99]')
-print('smalltuple: ', smalltuple)
-print('bigtuple:   ', '(0, 1, ... , 98, 99)')
-print('smalldict:  ', smalldict)
-print('dictitem:   ', dictitem, end = '')
-print('''
-table:       [['a1', 'b1', 'c1', 'd1', 'e1'],
-              ['a2', 'b2', 'c2', 'd2', 'e2'],
-              ['a3', 'b3', 'c3', 'd3', 'e3'],
-              ['a4', 'b4', 'c4', 'd4', 'e4']]''')
 #endregion
