@@ -25,7 +25,7 @@ def odd(integer):
     return bool(integer % 2)
 #endregion
 
-##region TESTING FUNCTIONS##
+##region TESTING FUNCTIONS ##
 def _ishashable(seq, keyfunc = ident):
     try:
         dict(zip(map(keyfunc, seq), seq))
@@ -57,7 +57,7 @@ def hash_or_order(seq, keyfunc = ident):
             'isorderable': _isorderable(seq, keyfunc)}
 #endregion
 
-##region UTILITIES##
+##region UTILITIES ##
 def randseq(start, end, count = None, repeat = False):
     """
     >>> _random.seed(0)
@@ -84,7 +84,7 @@ def randseq(start, end, count = None, repeat = False):
         return [_random.choice(intlist) for counter in range(count)]
 #endregion
 
-##region TEST TYPES##
+##region TEST TYPES ##
 smallstring = 'The quick brown fox jumps over the lazy dog'
 bigfile1    = 'F:/cygwin/home/thorsten/python/modules/Wordlist.txt'
 bigfile2    = '/home/thorsten/python/modules/Wordlist.txt'
