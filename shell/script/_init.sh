@@ -3,8 +3,15 @@ scriptname=$(basename $script)
 
 ## short instead of long options are used for OS X compatibility
 
-## SHELL ##
-if [[ $OSTYPE == cygwin ]]  # `ps` is `procps` on Cygwin
+## VARIABLES ##
+isCygwin() { [[ $OSTYPE == cygwin ]]; }
+isLinux()  { [[ $OSTYPE == linux-gnu ]]; }
+isOSX()    { [[ $OSTYPE =~ ^darwin ]]; }
+isUbuntu() { [[ -e /etc/lsb-release ]]; }
+isRedHat() { [[ -e /etc/redhat-release ]]; }
+isSUSE()   { [[ -e /etc/SuSE-release ]]; }
+
+if isCygwin  # `ps` is `procps` on Cygwin
 then
     shell=$(procps --pid $$ --format comm=)
 else
@@ -12,8 +19,11 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
+isBash()  { [[ $shell == bash ]]; }
+isBash3() { isBash && ((BASH_VERSINFO <= 3)); }
+
 ## SHELL OPTIONS ##
-if [[ $shell == bash ]]
+if isBash
 then
     shopt -os errexit nounset pipefail  # stop when an error occurs
 else
@@ -35,7 +45,7 @@ then
 fi
 
 ## LOGGING ##
-if [[ $shell == bash ]] && ((BASH_VERSINFO <= 3))
+if isBash3
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
@@ -59,15 +69,21 @@ else
     log() {
         if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
         then
-            # `> /dev/stderr` is equivalent to `>&2`
-            printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 > /dev/stderr
+            # only output color if stderr is attached to tty
+            if [[ -t 2 ]]
+            then
+                # `> /dev/stderr` is equivalent to `>&2`
+                printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 > /dev/stderr
+            else
+                printf "%s: %s\n" $1 $2 > /dev/stderr
+            fi
         fi
     }
 fi
 
 ## VERSION ##
 shell_version() {
-    if [[ $shell == bash ]]
+    if isBash
     then
         printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3}
     else
@@ -76,44 +92,42 @@ shell_version() {
 }
 
 os_version() {
-    # CYGWIN
-    if   [[ $OSTYPE == cygwin ]]
+    if   isCygwin
     then
         osver=$(uname --kernel-release)
         printf "Cygwin %s" ${osver%\(*}
 
-    # OS X
-    elif [[ $OSTYPE =~ ^darwin ]]
+    elif isOSX
     then
         printf "OS X %s" \
         $(python -c 'import platform; print(platform.mac_ver()[0])')
 
-    # UBUNTU
-    elif source /etc/lsb-release 2> /dev/null
+    elif isUbuntu
     then
+        source /etc/lsb-release
         printf "%s" $DISTRIB_DESCRIPTION
 
     # RHEL, XENSERVER
-    elif awk '
+    elif isRedHat
+    then
+        awk '
 {NF--  # print file except last field
  print}' \
-             /etc/redhat-release 2> /dev/null
-    then
-        :
+            /etc/redhat-release
 
     # SLES
-    elif awk '
+    elif isSUSE
+    then
+        awk '
 NR == 1 {NF--       # print first line except last field
          printf "%s SP ", $0}
 NR == 3 {print $3}  # print third field from third line' \
-             /etc/SuSE-release   2> /dev/null
-    then
-        :
+            /etc/SuSE-release
 
     # OTHER LINUX DISTRIBUTION
-    else
-        printf "Unknown"
-
+    elif isLinux
+    then
+        printf "Linux"
     fi
 }
 
@@ -129,12 +143,14 @@ do
 
         log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
         # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-        log DEBUG "LANGUAGE=${LANGUAGE-""}, $(locale | grep LC_ALL), $(locale | grep LANG=)"
         # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-        log DEBUG "LC_NUMERIC: $(locale -k decimal_point)"
+        log DEBUG "LANGUAGE: ${LANGUAGE-}
+       LC_ALL: ${LC_ALL-}
+       LANG: ${LANG-}
+       decimal point: $(locale decimal_point)"
         log DEBUG Trace
 
-        if [[ $shell == bash ]]
+        if isBash
         then
             PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
             shopt -os xtrace
@@ -157,7 +173,6 @@ Options:$options_help
  -h   show help
 "
         exit
-
     fi
 done
 
@@ -186,7 +201,7 @@ cleanup() {
     return
 }
 
-if [[ $shell == bash ]]
+if isBash
 then
     trap cleanup EXIT
 else
