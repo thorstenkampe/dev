@@ -66,17 +66,20 @@ else
     loglevel[INFO]=40     ; color[INFO]=$'\e[0;32m'      # green
     loglevel[DEBUG]=50    ; color[DEBUG]=$'\e[0;37m'     # white
 
+    reset=$'\e[m'
+
     log() {
         if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
         then
             # only output color if stderr is attached to tty
             if [[ -t 2 ]]
             then
-                # `> /dev/stderr` is equivalent to `>&2`
-                printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 > /dev/stderr
+                logcolor=${color[$1]}
             else
-                printf "%s: %s\n" $1 $2 > /dev/stderr
+                logcolor=
             fi
+            # `> /dev/stderr` is equivalent to `>&2`
+            printf "%s%s:%s %s\n" "$logcolor" $1 $reset $2 > /dev/stderr
         fi
     }
 fi
