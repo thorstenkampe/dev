@@ -1,7 +1,9 @@
 IFS=  # disable word splitting
 scriptname=$(basename $script)
 
-## short instead of long options are used for OS X compatibility
+## - short instead of long options are used for OS X compatibility
+## - we don't use `> /dev/stderr` instead of `>&2` because of problems
+##   with the implementation on Cygwin
 
 ## VARIABLES ##
 isCygwin() { [[ $OSTYPE == cygwin ]]; }
@@ -49,7 +51,7 @@ if isBash3
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
-        printf "%s: %s\n" $1 $2 > /dev/stderr
+        printf "%s: %s\n" $1 $2 >&2
     }
 else
     declare -A loglevel color
@@ -74,12 +76,10 @@ else
             # only output color if stderr is attached to tty
             if [[ -t 2 ]]
             then
-                logcolor=${color[$1]}
+                printf "%s%s:%s %s\n" ${color[$1]} $1 $reset $2 >&2
             else
-                logcolor=
+                printf "%s: %s\n" $1 $2 >&2
             fi
-            # `> /dev/stderr` is equivalent to `>&2`
-            printf "%s%s:%s %s\n" "$logcolor" $1 $reset $2 > /dev/stderr
         fi
     }
 fi
@@ -155,7 +155,7 @@ do
 
         if isBash
         then
-            PS4='+$(basename $BASH_SOURCE)${FUNCNAME+:$FUNCNAME}[$LINENO]: '
+            PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
             shopt -os xtrace
         else
             PS4='+%1N[%I]: '
