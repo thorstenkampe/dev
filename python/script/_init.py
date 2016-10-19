@@ -28,17 +28,6 @@ isCygwin      = sys.platform == 'cygwin'
 isLinux       = sys.platform.startswith('linux')
 isOSX         = sys.platform == 'darwin'
 isWindows     = sys.platform == 'win32'
-
-help = '''
-`{script}` {{description}}
-
-Usage:
- {script} [-d] {{usage}}
-
-Options:{{options_help}}
- -d, --debug     show debug messages
- -h, --help      show help
-'''.format(script = scriptname)
 #endregion
 
 ##region CONSOLE ##

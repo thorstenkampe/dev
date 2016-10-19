@@ -1,18 +1,22 @@
 #! /usr/bin/env python
 
+"""
+`SCRIPT` DESCRIPTION
+
+Usage:
+ SCRIPT [-d]
+
+Options:
+ -d, --debug     show debug messages
+ -h, --help      show help
+"""
+
 from __future__ import division, print_function, unicode_literals
-import sys
+import sys, docopt
 sys.dont_write_bytecode = True
-import _init, docopt
+import _init
 
-description  = ''  # prints "`SCRIPT` DESCRIPTION"
-usage        = ''  # prints "Usage:\nSCRIPT [-d] USAGE"
-options_help = ''  # prints "Options:OPTIONS_HELP"
-
-arguments = docopt.docopt(_(_init.help.format(
-                                description  = description,
-                                usage        = usage,
-                                options_help = options_help)))
+arguments = docopt.docopt(_(__doc__))
 
 _init.setup_win_unicode_console()
 _init.setupdebugging(arguments['--debug'])

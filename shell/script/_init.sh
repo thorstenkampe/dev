@@ -59,8 +59,6 @@ else
     # Modeled after Python modules `logging` and `colorlog`
     verbosity=WARNING  # default level
 
-    # Assigning associative array elements via subscript is the only
-    # syntax bash and zsh share
     # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     loglevel[CRITICAL]=10 ; color[CRITICAL]=$'\e[1;31m'  # brightred
     loglevel[ERROR]=20    ; color[ERROR]=$'\e[0;31m'     # red
@@ -135,52 +133,32 @@ NR == 3 {print $3}  # print third field from third line' \
 }
 
 ## STANDARD OPTIONS ##
-# leading `:`: don't report unknown options (which we can't know in
-# advance here)
-while getopts :dh option
-do
-    # DEBUG
-    if   [[ $option == d ]]
-    then
-        verbosity=DEBUG
+debug() {
+    verbosity=DEBUG
 
-        log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-        # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-        # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-        log DEBUG "LANGUAGE: ${LANGUAGE-}
+    log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
+    # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+    # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+    log DEBUG "LANGUAGE: ${LANGUAGE-}
        LC_ALL: ${LC_ALL-}
        LANG: ${LANG-}
        decimal point: $(locale decimal_point)"
-        log DEBUG Trace
+    log DEBUG Trace
 
-        if isBash
-        then
-            PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-            shopt -os xtrace
-        else
-            PS4='+%1N[%I]: '
-            setopt xtrace
-        fi
-
-    # HELP
-    elif [[ $option == h ]]
+    if isBash
     then
-        gettext "\
-\`$scriptname\` $description
-
-Usage:
- $scriptname $usage
-
-Options:$options_help
- -d   show debug messages
- -h   show help
-"
-        exit
+        PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+        shopt -os xtrace
+    else
+        PS4='+%1N[%I]: '
+        setopt xtrace
     fi
-done
+}
 
-# reset `OPTIND` for the next round of parsing in main script
-OPTIND=1
+help() {
+    gettext $help
+    exit
+}
 
 ## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305

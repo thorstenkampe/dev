@@ -1,17 +1,27 @@
 #! /usr/bin/env bash
 
-description=             # prints "`SCRIPT` DESCRIPTION"
-usage=                   # prints "Usage:\nSCRIPT USAGE"
-options_help=            # prints "Options:OPTIONS_HELP"
+help='`SCRIPT` DESCRIPTION
+
+Usage:
+ SCRIPT USAGE
+
+Options:
+ -d   show debug messages
+ -h   show help
+'
 
 script=$0
-PATH=$(dirname "$script"):$PATH
+source $(dirname "$script")/_init.sh
 
-source _init.sh
-
-while getopts dh option  # option string needs standard options `dh`
+while getopts dh option
 do
-    if [[ $option == "?" ]]
+    if   [[ $option == d ]]
+    then
+        debug
+    elif [[ $option == h ]]
+    then
+         help
+    elif [[ $option == "?" ]]
     then
         exit 1
     fi
