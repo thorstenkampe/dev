@@ -11,17 +11,11 @@ Options:
 '
 
 script=$0
-source $(dirname "$script")/_init.sh
+source "$(dirname "$script")"/_init.sh
 
-while getopts dh option
+while getopts dh option  # option string needs standard options `dh`
 do
-    if   [[ $option == d ]]
-    then
-        debug
-    elif [[ $option == h ]]
-    then
-         help
-    elif [[ $option == "?" ]]
+    if [[ $option == "?" ]]
     then
         exit 1
     fi

@@ -1,5 +1,4 @@
 IFS=  # disable word splitting
-scriptname=$(basename $script)
 
 ## - short instead of long options are used for OS X compatibility
 ## - we don't use `> /dev/stderr` instead of `>&2` because of problems
@@ -35,7 +34,7 @@ fi
 
 ## INTERNATIONALIZATION ##
 # http://www.gnu.org/software/gettext/manual/gettext.html#sh
-export TEXTDOMAIN=$scriptname \
+export TEXTDOMAIN=$(basename $script) \
        TEXTDOMAINDIR=$(dirname $script)/_translations
 
 if ! which gettext &> /dev/null
@@ -133,32 +132,43 @@ NR == 3 {print $3}  # print third field from third line' \
 }
 
 ## STANDARD OPTIONS ##
-debug() {
-    verbosity=DEBUG
+# leading `:`: don't report unknown options (which we can't know in
+# advance here)
+while getopts :dh option
+do
+    # DEBUG
+    if   [[ $option == d ]]
+    then
+        verbosity=DEBUG
 
-    log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-    # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-    # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-    log DEBUG "LANGUAGE: ${LANGUAGE-}
+        log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
+        # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+        # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+        log DEBUG "LANGUAGE: ${LANGUAGE-}
        LC_ALL: ${LC_ALL-}
        LANG: ${LANG-}
        decimal point: $(locale decimal_point)"
-    log DEBUG Trace
+        log DEBUG Trace
 
-    if isBash
+        if isBash
+        then
+            PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+            shopt -os xtrace
+        else
+            PS4='+%1N[%I]: '
+            setopt xtrace
+        fi
+
+    # HELP
+    elif [[ $option == h ]]
     then
-        PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-        shopt -os xtrace
-    else
-        PS4='+%1N[%I]: '
-        setopt xtrace
+        gettext $help
+        exit
     fi
-}
+done
 
-help() {
-    gettext $help
-    exit
-}
+# reset `OPTIND` for the next round of parsing in main script
+OPTIND=1
 
 ## SPINNER ##
 # taken from http://stackoverflow.com/a/12498305
