@@ -1,18 +1,18 @@
-IFS=  # disable word splitting
-
 ## - short instead of long options are used for OS X compatibility
 ## - we don't use `> /dev/stderr` instead of `>&2` because of problems
 ##   with the implementation on Cygwin
 
 ## VARIABLES ##
-isCygwin() { [[ $OSTYPE == cygwin ]]; }
-isLinux()  { [[ $OSTYPE == linux-gnu ]]; }
-isOSX()    { [[ $OSTYPE =~ ^darwin ]]; }
-isUbuntu() { [[ -e /etc/lsb-release ]]; }
-isRedHat() { [[ -e /etc/redhat-release ]]; }
-isSUSE()   { [[ -e /etc/SuSE-release ]]; }
+IFS=  # disable word splitting
 
-if isCygwin  # `ps` is `procps` on Cygwin
+[[ $OSTYPE == cygwin ]]      && isCygwin=true || isCygwin=false
+[[ $OSTYPE == linux-gnu ]]   && isLinux=true  || isLinux=false
+[[ $OSTYPE =~ ^darwin ]]     && isOSX=true    || isOSX=false
+[[ -e /etc/lsb-release ]]    && isUbuntu=true || isUbuntu=false
+[[ -e /etc/redhat-release ]] && isRedHat=true || isRedHat=false
+[[ -e /etc/SuSE-release ]]   && isSUSE=true   || isSUSE=false
+
+if $isCygwin  # `ps` is `procps` on Cygwin
 then
     shell=$(procps --pid $$ --format comm=)
 else
@@ -20,17 +20,24 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-isBash()  { [[ $shell == bash ]]; }
-isBash3() { isBash && ((BASH_VERSINFO <= 3)); }
+[[ $shell == bash ]]              && isBash=true  || isBash=false
+$isBash && ((BASH_VERSINFO <= 3)) && isBash3=true || isBash3=false
+
+if [[ -o xtrace ]]
+then
+    if $isBash
+    then
+        PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+    else
+        PS4='+%1N[%I]: '
+    fi
+fi
 
 ## SHELL OPTIONS ##
-if isBash
-then
-    shopt -os errexit nounset pipefail  # stop when an error occurs
-else
-    emulate -R zsh                      # set all options to default
-    setopt errexit nounset pipefail     # stop when an error occurs
-fi
+# stop when an error occurs
+set -o errexit \
+    -o nounset \
+    -o pipefail
 
 ## INTERNATIONALIZATION ##
 # http://www.gnu.org/software/gettext/manual/gettext.html#sh
@@ -46,7 +53,7 @@ then
 fi
 
 ## LOGGING ##
-if isBash3
+if $isBash3
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
@@ -83,7 +90,7 @@ fi
 
 ## VERSION ##
 shell_version() {
-    if isBash
+    if $isBash
     then
         printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3}
     else
@@ -92,23 +99,23 @@ shell_version() {
 }
 
 os_version() {
-    if   isCygwin
+    if   $isCygwin
     then
         osver=$(uname --kernel-release)
         printf "Cygwin %s" ${osver%\(*}
 
-    elif isOSX
+    elif $isOSX
     then
         printf "OS X %s" \
         $(python -c 'import platform; print(platform.mac_ver()[0])')
 
-    elif isUbuntu
+    elif $isUbuntu
     then
         source /etc/lsb-release
         printf "%s" $DISTRIB_DESCRIPTION
 
     # RHEL, XENSERVER
-    elif isRedHat
+    elif $isRedHat
     then
         awk '
 {NF--  # print file except last field
@@ -116,7 +123,7 @@ os_version() {
             /etc/redhat-release
 
     # SLES
-    elif isSUSE
+    elif $isSUSE
     then
         awk '
 NR == 1 {NF--       # print first line except last field
@@ -125,7 +132,7 @@ NR == 3 {print $3}  # print third field from third line' \
             /etc/SuSE-release
 
     # OTHER LINUX DISTRIBUTION
-    elif isLinux
+    elif $isLinux
     then
         printf "Linux"
     fi
@@ -134,39 +141,14 @@ NR == 3 {print $3}  # print third field from third line' \
 ## STANDARD OPTIONS ##
 # leading `:`: don't report unknown options (which we can't know in
 # advance here)
-while getopts :dh option
+while getopts :h option
 do
-    # DEBUG
-    if   [[ $option == d ]]
-    then
-        verbosity=DEBUG
-
-        log DEBUG "$shell $(shell_version) on $(os_version) $(uname -m)"
-        # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-        # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-        log DEBUG "LANGUAGE: ${LANGUAGE-}
-       LC_ALL: ${LC_ALL-}
-       LANG: ${LANG-}
-       decimal point: $(locale decimal_point)"
-        log DEBUG Trace
-
-        if isBash
-        then
-            PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-            shopt -os xtrace
-        else
-            PS4='+%1N[%I]: '
-            setopt xtrace
-        fi
-
-    # HELP
-    elif [[ $option == h ]]
+    if [[ $option == h ]]
     then
         gettext $help
         exit
     fi
 done
-
 # reset `OPTIND` for the next round of parsing in main script
 OPTIND=1
 
@@ -192,10 +174,27 @@ cleanup() {
     return
 }
 
-if isBash
+if $isBash
 then
     trap cleanup EXIT
 else
     setopt trapsasync
     trap "cleanup; exit" EXIT INT HUP TERM
+fi
+
+## DEBUGGING ##
+if [[ -o xtrace ]]  # debugging with `[bash|zsh] -x`
+then
+    set +o xtrace   # don't debug my debug statements
+
+    verbosity=DEBUG
+    log DEBUG $(printf "%s %s on %s %s" \
+                       $shell $(shell_version) $(os_version) $(uname -m))
+
+    # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+    # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+    log DEBUG $(printf 'LANGUAGE: "%s", LC_ALL: "%s", LANG: "%s", decimal point: "%s"' \
+                       "${LANGUAGE-}" "${LC_ALL-}" "${LANG-}" "$(locale decimal_point)")
+
+    set -o xtrace
 fi
