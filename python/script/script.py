@@ -4,10 +4,9 @@
 `SCRIPT` DESCRIPTION
 
 Usage:
- SCRIPT [-d]
+ SCRIPT
 
 Options:
- -d, --debug     show debug messages
  -h, --help      show help
 """
 
@@ -19,7 +18,6 @@ import _init
 arguments = docopt.docopt(_(__doc__))
 
 _init.setup_win_unicode_console()
-_init.setupdebugging(arguments['--debug'])
 
 ##region MAIN CODE STARTS HERE ##
 def main():

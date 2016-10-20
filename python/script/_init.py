@@ -61,20 +61,6 @@ handler.setFormatter(colorlog.ColoredFormatter(
 logging.getLogger().addHandler(handler)
 #endregion
 
-##region TRACEBACK ##
-def _notraceback(type, value, trace_back):
-    logger.critical(
-        ''.join(traceback.format_exception_only(type, value)).rstrip())
-
-# During standard execution of script, we want no tracebacks for the
-# user, just an exception
-sys.excepthook = _notraceback
-
-if os.getenv('DEBUG') is not None:
-    # enable tracebacks for internal development
-    colored_traceback.add_hook()
-#endregion
-
 ##region INTERNATIONALIZATION ##
 # `str()` superfluous in Python3
 gettext.install(
@@ -82,15 +68,6 @@ gettext.install(
 #endregion
 
 ##region DEBUGGING ##
-def _traceit(frame, event, arg):
-    if (frame.f_globals['__name__'] == '__main__' and
-        event in ['call', 'line']):
-
-        logger.debug('+[{lineno}]: {code}'.format(
-            lineno = frame.f_lineno,
-            code   = inspect.getframeinfo(frame).code_context[0].rstrip()))
-    return _traceit
-
 # OS version
 if isWindows:
     os_platform = ['Windows', platform.release()]
@@ -106,19 +83,34 @@ elif isOSX:
 
 os_platform = ' '.join(os_platform)
 
-# enable debugging for main script
-def setupdebugging(debug):
-    if debug is True:
-        logger.setLevel(logging.DEBUG)
-        if isPyinstaller:
-            # under PyInstaller we have no trace with `_traceit`, so
-            # we want at least (colored) tracebacks
-            colored_traceback.add_hook()
-        else:
-            sys.settrace(_traceit)
+def _notraceback(type, value, trace_back):
+    logger.critical(
+        ''.join(traceback.format_exception_only(type, value)).rstrip())
 
-    logger.debug(' '.join(['Python', platform.python_version(),
-                           platform.architecture()[0], 'on', os_platform]))
+def _traceit(frame, event, arg):
+    if (frame.f_globals['__name__'] == '__main__' and
+        event in ['call', 'line']):
+
+        logger.debug('+[{lineno}]: {code}'.format(
+            lineno = frame.f_lineno,
+            code   = inspect.getframeinfo(frame).code_context[0].rstrip()))
+    return _traceit
+
+# During standard execution, we want no traceback, just the exception
+sys.excepthook = _notraceback
+
+# enable debugging for main script
+if os.getenv('PYTHONDEBUG') is not None:
+    logger.setLevel(logging.DEBUG)
+
+    # enable (colored) tracebacks
+    colored_traceback.add_hook()
+
+    if not isPyinstaller:
+        sys.settrace(_traceit)
+
+logger.debug(' '.join(['Python', platform.python_version(),
+                       platform.architecture()[0], 'on', os_platform]))
 #endregion
 
 ##region SPINNER ##
