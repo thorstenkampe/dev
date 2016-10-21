@@ -4,10 +4,10 @@
 `SCRIPT` DESCRIPTION
 
 Usage:
- SCRIPT
+ SCRIPT [options]
 
 Options:
- -h, --help      show help
+ -h, --help   show help
 """
 
 from __future__ import division, print_function, unicode_literals
