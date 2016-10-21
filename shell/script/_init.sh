@@ -23,14 +23,12 @@ fi
 [[ $shell == bash ]]              && isBash=true  || isBash=false
 $isBash && ((BASH_VERSINFO <= 3)) && isBash3=true || isBash3=false
 
-if [[ -o xtrace ]]
+if $isBash
 then
-    if $isBash
-    then
-        PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-    else
-        PS4='+%1N[%I]: '
-    fi
+    PS4='$(printf "+%s%s[%s]: " \
+           $(basename $BASH_SOURCE) "${FUNCNAME:+:$FUNCNAME}" $LINENO)'
+else
+    PS4='+%1N[%I]: '
 fi
 
 ## SHELL OPTIONS ##
@@ -189,12 +187,12 @@ then
 
     verbosity=DEBUG
     log DEBUG $(printf "%s %s on %s %s" \
-                       $shell $(shell_version) $(os_version) $(uname -m))
+                $shell $(shell_version) $(os_version) $(uname -m))
 
     # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     log DEBUG $(printf 'LANGUAGE: "%s", LC_ALL: "%s", LANG: "%s", decimal point: "%s"' \
-                       "${LANGUAGE-}" "${LC_ALL-}" "${LANG-}" "$(locale decimal_point)")
+                "${LANGUAGE-}" "${LC_ALL-}" "${LANG-}" $(locale decimal_point))
 
     set -o xtrace
 fi
