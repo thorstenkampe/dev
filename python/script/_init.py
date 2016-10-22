@@ -34,18 +34,16 @@ isWindows     = sys.platform == 'win32'
 # no traceback on Ctrl-C;
 # cleaning up on termination can be done with `atexit.register()`
 if isWindows:  # Windows has no `SIGHUP`
-    termsignals = signal.SIGINT, signal.SIGTERM
+    termsignals = (signal.SIGINT, signal.SIGTERM)
 else:
-    termsignals = signal.SIGINT, signal.SIGTERM, signal.SIGHUP
+    termsignals = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
 
 for termsignal in termsignals:
     signal.signal(termsignal, lambda *args: sys.exit())
 
-def setup_win_unicode_console():
-    # still issues on Cygwin with Python3
-    if isWindows and not isPy2exe:
-        import win_unicode_console
-        win_unicode_console.enable()
+if isWindows and not isPy2exe:
+    import win_unicode_console
+    win_unicode_console.enable()
 #endregion
 
 ##region LOGGING ##

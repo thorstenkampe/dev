@@ -17,8 +17,6 @@ import _init
 
 arguments = docopt.docopt(_(__doc__))
 
-_init.setup_win_unicode_console()
-
 ##region MAIN CODE STARTS HERE ##
 def main():
     pass
