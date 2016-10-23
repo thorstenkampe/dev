@@ -20,7 +20,6 @@ scriptpath    = pathlib.Path(sys.argv[0]).parent
 scriptname    = pathlib.Path(sys.argv[0]).name
 
 isPyinstaller = getattr(sys, 'frozen', None) == True
-isPy2exe      = getattr(sys, 'frozen', None) == 'console_exe'
 
 isPython2     = sys.version_info.major < 3
 
@@ -40,10 +39,6 @@ else:
 
 for termsignal in termsignals:
     signal.signal(termsignal, lambda *args: sys.exit())
-
-if isWindows and not isPy2exe:
-    import win_unicode_console
-    win_unicode_console.enable()
 #endregion
 
 ##region LOGGING ##
