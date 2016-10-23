@@ -2,11 +2,11 @@
 from __future__ import division, print_function, unicode_literals
 import sys                                         # VARIABLES
 import signal                                      # CONSOLE
-import logging, colorama, colorlog                 # LOGGING
-import sys, os, traceback, colored_traceback       # TRACEBACK
+import colorama, colorlog, logging                 # LOGGING
+import colored_traceback, os, sys, traceback       # TRACEBACK
 import gettext                                     # INTERNATIONALIZATION
-import sys, inspect, platform                      # DEBUGGING
-import time, progress.spinner, concurrent.futures  # SPINNER
+import inspect, platform, pprint, sys              # DEBUGGING
+import concurrent.futures, progress.spinner, time  # SPINNER
 
 # VARIABLES, INTERNATIONALIZATION
 try:
@@ -20,7 +20,6 @@ scriptpath    = pathlib.Path(sys.argv[0]).parent
 scriptname    = pathlib.Path(sys.argv[0]).name
 
 isPyinstaller = getattr(sys, 'frozen', None) == True
-
 isPython2     = sys.version_info.major < 3
 
 isCygwin      = sys.platform == 'cygwin'
@@ -102,8 +101,11 @@ if os.getenv('PYTHONDEBUG') is not None:
     if not isPyinstaller:
         sys.settrace(_traceit)
 
-logger.debug(' '.join(['Python', platform.python_version(),
-                       platform.architecture()[0], 'on', os_platform]))
+logger.debug('Python %s %s on %s', platform.python_version(),
+                platform.architecture()[0], os_platform)
+logger.debug({key: os.environ.get(key, '') for key in ('LANGUAGE',
+                                                       'LC_ALL',
+                                                       'LANG')})
 #endregion
 
 ##region SPINNER ##
