@@ -1,11 +1,11 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
 import sys                                         # VARIABLES
-import signal                                      # CONSOLE
+import signal, sys                                 # CONSOLE
 import colorama, colorlog, logging                 # LOGGING
-import colored_traceback, os, sys, traceback       # TRACEBACK
-import gettext                                     # INTERNATIONALIZATION
-import inspect, platform, pprint, sys              # DEBUGGING
+import gettext, locale                             # INTERNATIONALIZATION
+import colored_traceback, inspect, locale          # DEBUGGING
+import logging, os, platform, sys, traceback       # DEBUGGING
 import concurrent.futures, progress.spinner, time  # SPINNER
 
 # VARIABLES, INTERNATIONALIZATION
@@ -21,7 +21,6 @@ scriptname    = pathlib.Path(sys.argv[0]).name
 
 isPyinstaller = getattr(sys, 'frozen', None) == True
 isPython2     = sys.version_info.major < 3
-
 isCygwin      = sys.platform == 'cygwin'
 isLinux       = sys.platform.startswith('linux')
 isOSX         = sys.platform == 'darwin'
@@ -57,6 +56,9 @@ logging.getLogger().addHandler(handler)
 # `str()` superfluous in Python3
 gettext.install(
     scriptname, localedir = str(pathlib.Path(scriptpath, '_translations')))
+
+# make Python locale aware
+locale.setlocale(locale.LC_ALL, '')
 #endregion
 
 ##region DEBUGGING ##
@@ -98,14 +100,15 @@ if os.getenv('PYTHONDEBUG') is not None:
     # enable (colored) tracebacks
     colored_traceback.add_hook()
 
-    if not isPyinstaller:
+    if not (isPyinstaller and isLinux):
         sys.settrace(_traceit)
 
 logger.debug('Python %s %s on %s', platform.python_version(),
                 platform.architecture()[0], os_platform)
-logger.debug({key: os.environ.get(key, '') for key in ('LANGUAGE',
-                                                       'LC_ALL',
-                                                       'LANG')})
+locale_vars = {key: os.environ.get(key, '') for key in
+                   ('LANGUAGE', 'LC_ALL', 'LANG')}
+locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
+logger.debug(locale_vars)
 #endregion
 
 ##region SPINNER ##
