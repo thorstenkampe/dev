@@ -45,7 +45,6 @@ colorama.init()
 logger  = logging.getLogger()
 handler = logging.StreamHandler()
 
-# Python2 does not support `style = '{'` in `[Colored]Formatter`
 handler.setFormatter(colorlog.ColoredFormatter(
     '%(log_color)s%(levelname)s:%(reset)s %(message)s'))
 
