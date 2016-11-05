@@ -1,36 +1,27 @@
 ##region IMPORTS ##
 from __future__ import division, print_function, unicode_literals
-import sys                                         # VARIABLES
-import signal, sys                                 # CONSOLE
-import colorama, colorlog, logging                 # LOGGING
-import gettext, locale                             # INTERNATIONALIZATION
-import colored_traceback, inspect, locale          # DEBUGGING
-import logging, os, platform, sys, traceback       # DEBUGGING
-import concurrent.futures, progress.spinner, time  # SPINNER
-
-# VARIABLES, INTERNATIONALIZATION
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
+import sys                                                  # VARIABLES
+try: import pathlib
+except ImportError: import pathlib2 as pathlib
+import signal # sys                                         # CONSOLE
+from pycompat import python, system  # `pip install --editable git+git://github.com/alexandrevicenzi/pycompat.git#egg=pycompat`
+import colorama, colorlog, logging                          # LOGGING
+import gettext, locale # pathlib                            # INTERNATIONALIZATION
+import colored_traceback, inspect, os, platform, traceback  # DEBUGGING
+       # locale, logging, pycompat, sys
+import concurrent.futures, progress.spinner, time           # SPINNER
 #endregion
 
 ##region VARIABLES ##
 scriptpath    = pathlib.Path(sys.argv[0]).parent
 scriptname    = pathlib.Path(sys.argv[0]).name
-
 isPyinstaller = getattr(sys, 'frozen', None) == True
-isPython2     = sys.version_info.major < 3
-isCygwin      = sys.platform == 'cygwin'
-isLinux       = sys.platform.startswith('linux')
-isOSX         = sys.platform == 'darwin'
-isWindows     = sys.platform == 'win32'
 #endregion
 
 ##region CONSOLE ##
 # no traceback on Ctrl-C;
 # cleaning up on termination can be done with `atexit.register()`
-if isWindows:  # Windows has no `SIGHUP`
+if system.is_windows:  # Windows has no `SIGHUP`
     termsignals = (signal.SIGINT, signal.SIGTERM)
 else:
     termsignals = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
@@ -62,16 +53,16 @@ locale.setlocale(locale.LC_ALL, '')
 
 ##region DEBUGGING ##
 # OS version
-if isWindows:
+if system.is_windows:
     os_platform = ['Windows', platform.release()]
 
-elif isLinux:
+elif system.is_linux:
     os_platform = platform.linux_distribution()[:2]
 
-elif isCygwin:
+elif system.is_cygwin:
     os_platform = ['Cygwin', platform.release()[:5]]
 
-elif isOSX:
+elif system.is_mac_os:
     os_platform = ['OSX', platform.mac_ver()[0]]
 
 os_platform = ' '.join(os_platform)
@@ -99,7 +90,7 @@ if os.getenv('PYTHONDEBUG') is not None:
     # enable (colored) tracebacks
     colored_traceback.add_hook()
 
-    if not (isPyinstaller and isLinux):
+    if not (isPyinstaller and system.is_linux):
         sys.settrace(_traceit)
 
 logger.debug('Python %s %s on %s', platform.python_version(),
