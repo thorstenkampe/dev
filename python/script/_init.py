@@ -3,12 +3,12 @@ from __future__ import division, print_function, unicode_literals
 import sys                                                  # VARIABLES
 try: import pathlib
 except ImportError: import pathlib2 as pathlib
-import signal # sys                                         # CONSOLE
-from pycompat import python, system  # `pip install --editable git+git://github.com/alexandrevicenzi/pycompat.git#egg=pycompat`
+import signal # + sys                                       # CONSOLE
+from pycompat import python, system
 import colorama, colorlog, logging                          # LOGGING
-import gettext, locale # pathlib                            # INTERNATIONALIZATION
+import gettext, locale # + pathlib                          # INTERNATIONALIZATION
 import colored_traceback, inspect, os, platform, traceback  # DEBUGGING
-       # locale, logging, pycompat, sys
+       # + locale, logging, pycompat, sys
 import concurrent.futures, progress.spinner, time           # SPINNER
 #endregion
 
