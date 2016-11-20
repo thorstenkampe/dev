@@ -1,16 +1,45 @@
 ##region IMPORTS ##
-# imports aliased with "_" so they don't get tabcompleted
-from __future__ import (
-    division         as _division,
-    print_function   as _print_function,
-    unicode_literals as _unicode_literals)
+from __future__ import division, print_function, unicode_literals
 
-import collections as _collections  ## QUOTIENTSET
-import itertools   as _itertools    ## QUOTIENTSET
-import operator    as _operator     ## QUOTIENTSET
+import itertools              # UTILITIES
+try: import collections.abc as abc
+except ImportError: import collections as abc
+import itertools              # EQUIVALENCE
+import collections, operator  # GENERICDICT
+#endregion
+
+try:
+    unicode
+except NameError:
+    unicode = str
+
+##region SMALL FUNCTIONS ##
+def ident(x):
+    return x
+
+def even(integer):
+    return not(odd(integer))
+
+def odd(integer):
+    return bool(integer % 2)
 #endregion
 
 ##region UTILITIES ##
+def dim(seq):
+    dimension = []
+    while isinstance(seq, (list, tuple, abc.ValuesView)):
+        dimension.append(len(seq))
+        try:
+            seq = list(seq)[0]
+        except IndexError:  # sequence is empty
+            break
+    return dimension
+
+def flatten(seq):
+    for dimension in dim(seq)[1:]:
+        seq = itertools.chain.from_iterable(seq)
+    return list(seq)
+
 def periodic(counter, counter_at_sop, sop, eop):
     """
     wrap counter in range(sop, eop + 1)
