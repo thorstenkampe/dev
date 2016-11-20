@@ -209,11 +209,10 @@ class MultiDict:
         """returns the count of a multidict
         >>> from testing import smalltuple, even
         >>> from pprint import pprint
-        >>>
-        >>> smalltuple
-        (11, 22, 33, 44)
-        >>> qs = QuotientSet(smalltuple, lambda x: 'even' if even(x) else 'odd')
-        >>> pprint(MultiDict(qs.quotientset()).count())
+        >>> smalltuple = (11, 22, 33, 44)
+        >>> def evenodd(x): return 'even' if even(x) else 'odd'
+        >>> eq = Equivalence(smalltuple, evenodd)
+        >>> pprint(MultiDict(eq.quotientset()).count())
         {'even': 2, 'odd': 2}
         """
         if isinstance(inst._multi, dict):
