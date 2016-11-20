@@ -48,74 +48,88 @@ def periodic(counter, counter_at_sop, sop, eop):
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
 #endregion
 
-##region QUOTIENTSET ##
-def _ident(x):
-    return x
-
-class QuotientSet:
+##region EQUIVALENCE ##
+class Equivalence:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
     """
-
-    def __init__(inst, seq, keyfunc = _ident):
-        inst._seq      = seq
-        inst._canonmap = keyfunc
-        # we're dispatching on performance: hashable -> orderable, unorderable
-        # (dictionary.get -> itertools.groupby, list.index)
-        inst._qs = {}
+    def __init__(inst, seq, keyfunc = ident):
+        inst._seq       = seq
+        inst._invariant = keyfunc
+        # we're dispatching on performance:
+        # hashable -> orderable, unorderable (dictionary.get ->
+        # itertools.groupby, list.index)
+        inst._eq = {}
         try:
-            inst._qs = inst._qsinit()
+            inst._eq = inst._eqinit()
         except TypeError:
             try:
-                inst._qs = inst._qsorderable()
+                inst._eq = inst._eqorderable()
             except TypeError:
-                inst._qs = []
-                inst._qs = inst._qsinit()
+                inst._eq = []
+                inst._eq = inst._eqinit()
 
-    def _qsinit(inst):
-        qs = GenericDict(inst._qs)
+    def _eqinit(inst):
+        eq = GenericDict(inst._eq)
         for obj in inst._seq:
-            qs.setdefault(inst._canonmap(obj), []).append(obj)
-        return qs.items()
+            eq.setdefault(inst._invariant(obj), []).append(obj)
+        return eq.items()
 
-    def _qsorderable(inst):
-        qs = _itertools.groupby(sorted(inst._seq, key = inst._canonmap), inst._canonmap)
-        return [(proj_value, list(equiv_class)) for proj_value, equiv_class in qs]
+    def _eqorderable(inst):
+        sorted_ = sorted(inst._seq, key = inst._invariant)
+        eq      = itertools.groupby(sorted_, inst._invariant)
+        return [(invariant, list(equiv_class)) for invariant, equiv_class in eq]
 
     # determines output of `instance` and `print(instance)`
     def __repr__(inst):
-        return repr(inst._qs)
+        return repr(inst._eq)
 
     #
-    def equivalenceclass(inst, key):
-        return GenericDict(inst._qs)[key]
-
-    def partition(inst):
-        return GenericDict(inst._qs).values()
-
-    def canonical_class(inst):
-        return GenericDict(inst._qs).keys()
-
     def quotientset(inst):
         """
         What are the most common word lengths in word list of 310,000 words?
-        >>> from testing import bigstring
-        >>>
-        >>> qs = QuotientSet(bigstring.splitlines(), len)
-        >>> count = MultiDict(qs.quotientset()).count()
-        >>> GenericDict(count).sort(sortby = 'value')  # doctest: +ELLIPSIS
+        >>> eq = Equivalence(bigfile.read().splitlines(), len)  # doctest: +SKIP
+        >>> count = MultiDict(eq.quotientset()).count()         # doctest: +SKIP
+        >>> GenericDict(count).sort(sortby = 'value')           # doctest: +SKIP
         OrderedDict([... (8, 43555), (10, 46919), (9, 48228)])
+
+        >>> seq_func = (11, 22, 33, 44), even
+        >>> Equivalence(*seq_func).quotientset()
+        {False: [11, 33], True: [22, 44]}
         """
-        return inst._qs
+        return inst._eq
+
+    def partition(inst):
+        """
+        >>> seq_func = (11, 22, 33, 44), even
+        >>> list(Equivalence(*seq_func).partition())
+        [[11, 33], [22, 44]]
+        """
+        return GenericDict(inst._eq).values()
+
+    def equivalence_class(inst, key):
+        """
+        >>> seq_func = (11, 22, 33, 44), even
+        >>> Equivalence(*seq_func).equivalence_class(True)
+        [22, 44]
+        """
+        return GenericDict(inst._eq)[key]
+
+    def invariant_class(inst):
+        """
+        >>> seq_func = (11, 22, 33, 44), even
+        >>> list(Equivalence(*seq_func).invariant_class())
+        [False, True]
+        """
+        return GenericDict(inst._eq).keys()
 
     def representative_class(inst):
         """
-        >>> from testing import smalltuple, even
-        >>>
-        >>> smalltuple
-        (11, 22, 33, 44)
-        >>> QuotientSet(smalltuple, even).representative_class()
+        canonical representatives - first element of each equivalence
+        class
+        >>> seq_func = (11, 22, 33, 44), even
+        >>> Equivalence(*seq_func).representative_class()
         (11, 22)
         """
         return list(zip(*inst.partition()))[0]
