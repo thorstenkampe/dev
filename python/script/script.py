@@ -18,8 +18,5 @@ import _init
 arguments = docopt.docopt(_(__doc__))
 
 ##region MAIN CODE STARTS HERE ##
-def main():
-    pass
 
-main()
 #endregion
