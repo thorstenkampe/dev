@@ -140,14 +140,6 @@ class GenericDict:
     """
     a GenericDict is a dictionary or a list of tuples (when the keys
     are not hashable)
-    >>> from testing import smalldict, dictitem
-    >>> from pprint import pprint
-    >>>
-    >>> pprint(dict(GenericDict(smalldict)))
-    {1: '11', 2: '22', 3: '44', 4: '33'}
-    >>>
-    >>> GenericDict(dictitem)
-    [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
     """
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
@@ -234,7 +226,6 @@ class GenericDict:
 ##region MULTIDICT ##
 class MultiDict:
     """a MultiDict is a GenericDict with multiple values"""
-
     def __init__(inst, multidict):
         inst._multi = multidict
 
@@ -245,7 +236,6 @@ class MultiDict:
     #
     def count(inst):
         """returns the count of a multidict
-        >>> from testing import smalltuple, even
         >>> from pprint import pprint
         >>> smalltuple = (11, 22, 33, 44)
         >>> def evenodd(x): return 'even' if even(x) else 'odd'
@@ -264,20 +254,15 @@ def partition(seq, split):
     """
     split sequence by length or string by separator
 
-    >>> from testing import smalllist, smallstring
-    >>>
-    >>> smalllist
-    ['a', 'b', 'c', 'd', 'e']
+    >>> smalllist = ['a', 'b', 'c', 'd', 'e']
     >>> partition(smalllist, 2)
     [['a', 'b'], ['c', 'd'], ['e']]
     >>> partition(smalllist, [1, 2])
     [['a'], ['b', 'c'], ['d', 'e']]
-    >>> smallstring
-    'The quick brown fox jumps over the lazy dog'
+    >>> smallstring = 'The quick brown fox jumps over the lazy dog'
     >>> partition(smallstring, [' ', 'the', 'The'])
     ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
     """
-
     if isinstance(split, int):
         return partition(seq, [split] * (len(seq) // split))
 
@@ -292,8 +277,35 @@ def partition(seq, split):
 
         return part
 
-    elif isinstance(split[0], str):
+    elif isinstance(split[0], (str, unicode)):
         for separator in split[1:]:
             seq = seq.replace(separator, split[0])
         return seq.split(split[0])
+    else:
+        raise TypeError("Incorrect type for argument 'split' in partition(seq, split)")
+#endregion
+
+##region REGRESSION TESTS ##
+__test__ = {
+    'dim':         """
+>>> from testing import makedimlist
+>>> dim(makedimlist([2, 3, 4]))
+[2, 3, 4]
+                   """,
+
+    'flatten':     """
+>>> from testing import makedimlist
+>>> flatten(makedimlist([2, 3, 4]))  # doctest: +ELLIPSIS
+[0, 1, 2, 3, 4, 5, 6, 7, 8, ..., 16, 17, 18, 19, 20, 21, 22, 23]
+                   """,
+
+    'GenericDict': """
+>>> from pprint import pprint
+>>> from testing import smalldict, dictitem
+>>> pprint(dict(GenericDict(smalldict)))
+{1: '11', 2: '22', 3: '44', 4: '33'}
+>>> GenericDict(dictitem)
+[([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
+                   """
+}
 #endregion
