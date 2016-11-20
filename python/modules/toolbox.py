@@ -149,7 +149,6 @@ class GenericDict:
     >>> GenericDict(dictitem)
     [([1], '11'), ([2], '22'), ([4], '33'), ([3], '44')]
     """
-
     def __init__(inst, generic_dict):
         inst._generic = generic_dict
 
@@ -198,12 +197,12 @@ class GenericDict:
     # higher level methods
     def sort(inst, sortby = 'key'):
         """sort by key or value"""
+        key = operator.itemgetter(sortby == 'value')
         if isinstance(inst._generic, dict):
-            return _collections.OrderedDict(sorted(
-                inst._generic.items(), key = _operator.itemgetter(sortby == 'value')))
+            sorted_ = sorted(inst._generic.items(), key = key)
+            return collections.OrderedDict(sorted_)
         else:
-            return sorted(
-                inst._generic, key = _operator.itemgetter(sortby == 'value'))
+            return sorted(inst._generic, key = key)
 
     def _extremum(inst, min_or_max, key = 'key'):
         if isinstance(inst._generic, dict):
@@ -220,11 +219,7 @@ class GenericDict:
 
     def max(inst, key = 'key'):
         """
-        >>> from testing import smalldict
-        >>> from pprint import pprint
-        >>>
-        >>> pprint(smalldict)
-        {1: '11', 2: '22', 3: '44', 4: '33'}
+        >>> smalldict = {1: '11', 2: '22', 4: '33', 3: '44'}
         >>> GenericDict(smalldict).max()
         {4: '33'}
         >>> GenericDict(smalldict).max(key = 'value')
