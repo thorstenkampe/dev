@@ -33,8 +33,7 @@ fi
 
 ## SHELL OPTIONS ##
 # stop when an error occurs
-set -o errexit \
-    -o nounset \
+set -o nounset \
     -o pipefail
 
 ## INTERNATIONALIZATION ##
@@ -167,24 +166,26 @@ spinner() {
 }
 
 ## TRAPS ##
-# create your own cleanup function in the main script
-cleanup() {
-    return
+# - create your own handler in the main script
+# - bash and zsh run traps when child process exits (option `trapsasync`
+#   in zsh)
+
+# will also run on error (except with zsh on Linux)
+exit_handler() {
+    :
 }
 
-if $isBash
-then
-    trap cleanup EXIT
-else
-    setopt trapsasync
-    trap "cleanup; exit" EXIT INT HUP TERM
-fi
+error_handler() {
+    error_code=$?
+    exit $error_code
+}
+
+trap exit_handler EXIT
+trap error_handler ERR INT HUP QUIT TERM
 
 ## DEBUGGING ##
-if [[ -o xtrace ]]  # debugging with `[bash|zsh] -x`
+if [[ -n ${DEBUG-} ]]
 then
-    set +o xtrace   # don't debug my debug statements
-
     verbosity=DEBUG
     log DEBUG $(printf "%s %s on %s %s" \
                 $shell $(shell_version) $(os_version) $(uname -m))
