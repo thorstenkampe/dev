@@ -5,14 +5,15 @@
 ## VARIABLES ##
 IFS=  # disable word splitting
 
-[[ $OSTYPE == cygwin ]]      && isCygwin=true || isCygwin=false
-[[ $OSTYPE == linux-gnu ]]   && isLinux=true  || isLinux=false
-[[ $OSTYPE =~ ^darwin ]]     && isOSX=true    || isOSX=false
-[[ -e /etc/lsb-release ]]    && isUbuntu=true || isUbuntu=false
-[[ -e /etc/redhat-release ]] && isRedHat=true || isRedHat=false
-[[ -e /etc/SuSE-release ]]   && isSUSE=true   || isSUSE=false
+# functions mostly used for debugging shouldn't run on normal execution
+isCygwin() { [[ $OSTYPE == cygwin ]]; }
+isLinux()  { [[ $OSTYPE == linux-gnu ]]; }
+isOSX()    { [[ $OSTYPE =~ ^darwin ]]; }
+isUbuntu() { [[ -e /etc/lsb-release ]]; }
+isRedHat() { [[ -e /etc/redhat-release ]]; }
+isSUSE()   { [[ -e /etc/SuSE-release ]]; }
 
-if $isCygwin  # `ps` is `procps` on Cygwin
+if isCygwin  # `ps` is `procps` on Cygwin
 then
     shell=$(procps --pid $$ --format comm=)
 else
@@ -20,10 +21,10 @@ else
     shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-[[ $shell == bash ]]              && isBash=true  || isBash=false
-$isBash && ((BASH_VERSINFO <= 3)) && isBash3=true || isBash3=false
+isBash()  { [[ $shell == bash ]]; }
+isBash3() { isBash && ((BASH_VERSINFO <= 3)); }
 
-if $isBash
+if isBash
 then
     PS4='$(printf "+%s%s[%s]: " \
            $(basename $BASH_SOURCE) "${FUNCNAME:+:$FUNCNAME}" $LINENO)'
@@ -50,7 +51,7 @@ then
 fi
 
 ## LOGGING ##
-if $isBash3
+if isBash3
 then
     # No associative arrays in Bash 3, so only rudimentary logging
     log() {
@@ -87,7 +88,7 @@ fi
 
 ## VERSION ##
 shell_version() {
-    if $isBash
+    if isBash
     then
         printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3}
     else
@@ -96,23 +97,23 @@ shell_version() {
 }
 
 os_version() {
-    if   $isCygwin
+    if   isCygwin
     then
         osver=$(uname --kernel-release)
         printf "Cygwin %s" ${osver%\(*}
 
-    elif $isOSX
+    elif isOSX
     then
         printf "OS X %s" \
         $(python -c 'import platform; print(platform.mac_ver()[0])')
 
-    elif $isUbuntu
+    elif isUbuntu
     then
         source /etc/lsb-release
         printf "%s" $DISTRIB_DESCRIPTION
 
     # RHEL, XENSERVER
-    elif $isRedHat
+    elif isRedHat
     then
         awk '
 {NF--  # print file except last field
@@ -120,7 +121,7 @@ os_version() {
             /etc/redhat-release
 
     # SLES
-    elif $isSUSE
+    elif isSUSE
     then
         awk '
 NR == 1 {NF--       # print first line except last field
@@ -129,7 +130,7 @@ NR == 3 {print $3}  # print third field from third line' \
             /etc/SuSE-release
 
     # OTHER LINUX DISTRIBUTION
-    elif $isLinux
+    elif isLinux
     then
         printf "Linux"
     fi
