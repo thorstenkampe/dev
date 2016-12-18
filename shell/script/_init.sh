@@ -22,7 +22,6 @@ else
 fi
 
 isBash()  { [[ $shell == bash ]]; }
-isBash3() { isBash && ((BASH_VERSINFO <= 3)); }
 
 if isBash
 then
@@ -51,40 +50,32 @@ then
 fi
 
 ## LOGGING ##
-if isBash3
-then
-    # No associative arrays in Bash 3, so only rudimentary logging
-    log() {
-        printf "%s: %s\n" $1 $2 >&2
-    }
-else
-    declare -A loglevel color
+declare -A loglevel color
 
-    # Modeled after Python modules `logging` and `colorlog`
-    verbosity=WARNING  # default level
+# Modeled after Python modules `logging` and `colorlog`
+verbosity=WARNING  # default level
 
-    # For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    loglevel[CRITICAL]=10 ; color[CRITICAL]=$'\e[1;31m'  # brightred
-    loglevel[ERROR]=20    ; color[ERROR]=$'\e[0;31m'     # red
-    loglevel[WARNING]=30  ; color[WARNING]=$'\e[0;33m'   # yellow
-    loglevel[INFO]=40     ; color[INFO]=$'\e[0;32m'      # green
-    loglevel[DEBUG]=50    ; color[DEBUG]=$'\e[0;37m'     # white
+# For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+loglevel[CRITICAL]=10 ; color[CRITICAL]=$'\e[1;31m'  # brightred
+loglevel[ERROR]=20    ; color[ERROR]=$'\e[0;31m'     # red
+loglevel[WARNING]=30  ; color[WARNING]=$'\e[0;33m'   # yellow
+loglevel[INFO]=40     ; color[INFO]=$'\e[0;32m'      # green
+loglevel[DEBUG]=50    ; color[DEBUG]=$'\e[0;37m'     # white
 
-    reset=$'\e[m'
+reset=$'\e[m'
 
-    log() {
-        if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
+log() {
+    if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
+    then
+        # only output color if stderr is attached to tty
+        if [[ -t 2 ]]
         then
-            # only output color if stderr is attached to tty
-            if [[ -t 2 ]]
-            then
-                printf "%s%s:%s %s\n" ${color[$1]} $1 $reset $2 >&2
-            else
-                printf "%s: %s\n" $1 $2 >&2
-            fi
+            printf "%s%s:%s %s\n" ${color[$1]} $1 $reset $2 >&2
+        else
+            printf "%s: %s\n" $1 $2 >&2
         fi
-    }
-fi
+    fi
+}
 
 ## VERSION ##
 shell_version() {
