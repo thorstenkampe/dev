@@ -10,7 +10,6 @@ then
 fi
 
 shell=$(ps -p $$ -o comm=)
-
 IFS=  # disable word splitting
 
 set -o nounset \
