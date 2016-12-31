@@ -2,33 +2,17 @@
 ## - we don't use `> /dev/stderr` instead of `>&2` because of problems
 ##   with the implementation on Cygwin
 
-## VARIABLES ##
+## INITIALIZATION ##
+if [[ $OSTYPE == cygwin ]]
+then
+    # `ps` is `procps` on Cygwin
+    ps() { procps "$@"; }
+fi
+
+shell=$(ps -p $$ -o comm=)
+
 IFS=  # disable word splitting
 
-# functions mostly used for debugging shouldn't run on normal execution
-isCygwin() { [[ $OSTYPE == cygwin ]]; }
-
-if isCygwin  # `ps` is `procps` on Cygwin
-then
-    shell=$(procps --pid $$ --format comm=)
-else
-    # `ps` shows full path on macOS
-    shell=$(basename $(ps -p $$ -o comm=))
-fi
-
-isBash() { [[ $shell == bash ]]; }
-isBash3() { isBash && ((BASH_VERSINFO <= 3)); }
-
-if isBash
-then
-    PS4='$(printf "+%s%s[%s]: " \
-           $(basename $BASH_SOURCE) "${FUNCNAME:+:$FUNCNAME}" $LINENO)'
-else
-    PS4='+%1N[%I]: '
-fi
-
-## SHELL OPTIONS ##
-# stop when an error occurs
 set -o nounset \
     -o pipefail
 
@@ -39,19 +23,15 @@ export TEXTDOMAIN=$(basename $script) \
 
 if ! which gettext &> /dev/null
 then
-    gettext() {
-        # http://zshwiki.org/home/scripting/args
-        printf "%s" "$@"
-    }
+    # http://zshwiki.org/home/scripting/args
+    gettext() { printf "%s" "$@"; }
 fi
 
 ## LOGGING ##
-if isBash3
+if [[ $shell == bash ]] && ((BASH_VERSINFO <= 3))
 then
     # No associative arrays in Bash 3, so only rudimentary logging
-    log() {
-        printf "%s: %s\n" $1 $2 >&2
-    }
+    log() { printf "%s: %s\n" $1 $2 >&2; }
 else
     declare -A loglevel color
 
@@ -81,16 +61,6 @@ else
     }
 fi
 
-## VERSION ##
-shell_version() {
-    if isBash
-    then
-        printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3}
-    else
-        printf "%s" $ZSH_VERSION
-    fi
-}
-
 ## STANDARD OPTIONS ##
 # leading `:`: don't report unknown options (which we can't know in
 # advance here)
@@ -105,31 +75,13 @@ done
 # reset `OPTIND` for the next round of parsing in main script
 OPTIND=1
 
-## SPINNER ##
-# taken from http://stackoverflow.com/a/12498305
-spinner() {
-    # error in background job will not abort script
-    eval "$@" &
-    spin='-\|/'
-
-    i=0
-    while kill -0 $! 2> /dev/null
-    do
-        printf "\r[%s]" ${spin:$(($((i += 1)) % 4)):1}
-        sleep 0.1
-    done
-    printf "\n"
-}
-
 ## TRAPS ##
 # - create your own handler in the main script
 # - bash and zsh run traps when child process exits (option `trapsasync`
 #   in zsh)
 
 # will also run on error (except with zsh on Linux)
-exit_handler() {
-    :
-}
+exit_handler() { :; }
 
 error_handler() {
     error_code=$?
@@ -142,8 +94,18 @@ trap error_handler ERR INT HUP QUIT TERM
 ## DEBUGGING ##
 if [[ -n ${DEBUG-} ]]
 then
+    if [[ $shell == bash ]]
+    then
+        PS4='$(printf "+%s%s[%s]: " \
+            $(basename $BASH_SOURCE) "${FUNCNAME:+:$FUNCNAME}" $LINENO)'
+        shell_version=$(printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3})
+    else
+        PS4='+%1N[%I]: '
+        shell_version=$ZSH_VERSION
+    fi
+
     verbosity=DEBUG
-    log DEBUG $(printf "%s %s" $shell $(shell_version))
+    log DEBUG $(printf "%s %s" $shell $shell_version)
 
     # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
