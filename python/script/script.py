@@ -10,7 +10,6 @@ Options:
  -h, --help   show help
 """
 
-from __future__ import division, print_function, unicode_literals
 import sys, docopt
 sys.dont_write_bytecode = True
 import _init

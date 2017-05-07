@@ -1,8 +1,5 @@
 ##region IMPORTS ##
-from __future__ import division, print_function, unicode_literals
-import sys                                          # VARIABLES
-try: import pathlib
-except ImportError: import pathlib2 as pathlib
+import sys, pathlib                                 # VARIABLES
 import signal; from pycompat import system # + sys  # CONSOLE
 import colorama, colorlog, logging                  # LOGGING
 import gettext, locale # + pathlib                  # INTERNATIONALIZATION
@@ -42,7 +39,6 @@ logging.getLogger().addHandler(handler)
 #endregion
 
 ##region INTERNATIONALIZATION ##
-# `str()` superfluous in Python3
 gettext.install(
     scriptname, localedir = str(pathlib.Path(scriptparent, '_translations')))
 
