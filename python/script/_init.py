@@ -1,16 +1,8 @@
 ##region IMPORTS ##
-import sys, pathlib                                 # VARIABLES
-import signal; from pycompat import system # + sys  # CONSOLE
-import colorama, colorlog, logging                  # LOGGING
-import gettext, locale # + pathlib                  # INTERNATIONALIZATION
-import inspect, os, platform, traceback             # DEBUGGING
-       # + locale, logging, pycompat, sys
-#endregion
-
-##region VARIABLES ##
-scriptparent  = pathlib.Path(sys.argv[0]).parent
-scriptname    = pathlib.Path(sys.argv[0]).name
-isPyinstaller = getattr(sys, 'frozen', None) == True
+import signal, sys; from pycompat import system                   # CONSOLE
+import colorama, colorlog, logging                                # LOGGING
+import gettext, locale, pathlib # + sys                           # INTERNATIONALIZATION
+import inspect, os, platform, traceback # + locale, logging, sys  # DEBUGGING
 #endregion
 
 ##region CONSOLE ##
@@ -39,8 +31,10 @@ logging.getLogger().addHandler(handler)
 #endregion
 
 ##region INTERNATIONALIZATION ##
+script = pathlib.Path(sys.argv[0])
+
 gettext.install(
-    scriptname, localedir = str(pathlib.Path(scriptparent, '_translations')))
+    script.name, localedir = str(pathlib.Path(script.parent, '_translations')))
 
 # make Python locale aware
 locale.setlocale(locale.LC_ALL, '')
@@ -65,9 +59,7 @@ sys.excepthook = _notraceback
 # enable debugging for main script
 if os.getenv('PYTHONDEBUG') is not None:
     logger.setLevel(logging.DEBUG)
-
-    if not (isPyinstaller and system.is_linux):
-        sys.settrace(_traceit)
+    sys.settrace(_traceit)
 
 logger.debug('Python %s %s', platform.python_version(), platform.architecture()[0])
 locale_vars = {key: os.environ.get(key, '') for key in
