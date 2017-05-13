@@ -91,25 +91,23 @@ trap exit_handler EXIT
 trap error_handler ERR INT HUP QUIT TERM
 
 ## DEBUGGING ##
+if [[ $shell == bash ]]
+then
+    PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+    shell_version=$(printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3})
+else
+    PS4='+%1N[%I]: '
+    shell_version=$ZSH_VERSION
+fi
+
 if [[ -n ${DEBUG-} ]]
 then
-    if [[ $shell == bash ]]
-    then
-        PS4='$(printf "+%s%s[%s]: " \
-            $(basename $BASH_SOURCE) "${FUNCNAME:+:$FUNCNAME}" $LINENO)'
-        shell_version=$(printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3})
-    else
-        PS4='+%1N[%I]: '
-        shell_version=$ZSH_VERSION
-    fi
-
     verbosity=DEBUG
-    log DEBUG $(printf "%s %s" $shell $shell_version)
+    log DEBUG "$shell $shell_version"
 
     # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-    log DEBUG $(printf 'LANGUAGE: "%s", LC_ALL: "%s", LANG: "%s", decimal point: "%s"' \
-                "${LANGUAGE-}" "${LC_ALL-}" "${LANG-}" $(locale decimal_point))
+    log DEBUG "LANGUAGE: \"${LANGUAGE-}\", LC_ALL: \"${LC_ALL-}\", LANG: \"${LANG-}\", decimal point: \"$(locale decimal_point)\""
 
     set -o xtrace
 fi
