@@ -9,7 +9,8 @@ then
     ps() { procps "$@"; }
 fi
 
-shell=$(ps -p $$ -o comm=)
+# `ps` shows full path on macOS
+shell=$(basename $(ps -p $$ -o comm=))
 IFS=  # disable word splitting
 
 set -o nounset \
