@@ -1,11 +1,11 @@
 ## - short instead of long options are used for macOS compatibility
 ## - we don't use `> /dev/stderr` instead of `>&2` because of problems
 ##   with the implementation on Cygwin
+## - http://zshwiki.org/home/scripting/args
 
 ## INITIALIZATION ##
 if [[ $OSTYPE == cygwin ]]
 then
-    # `ps` is `procps` on Cygwin
     ps() { procps "$@"; }
 fi
 
@@ -17,30 +17,27 @@ set -o nounset \
     -o pipefail
 
 ## INTERNATIONALIZATION ##
-# http://www.gnu.org/software/gettext/manual/gettext.html#sh
+# http://www.gnu.org/software/gettext/manual/gettext.html#Preparing-Shell-Scripts
 export TEXTDOMAIN=$(basename $script) \
        TEXTDOMAINDIR=$(dirname $script)/_translations
 
 if ! which gettext &> /dev/null
 then
-    # http://zshwiki.org/home/scripting/args
     gettext() { printf "%s" "$@"; }
 fi
 
 ## LOGGING ##
 declare -A loglevel color
 
-# Modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
 
-# For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+# - Modeled after Python modules `logging` and `colorlog`
+# - For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 loglevel[CRITICAL]=10  color[CRITICAL]=$'\e[1;31m'  # brightred
 loglevel[ERROR]=20     color[ERROR]=$'\e[0;31m'     # red
 loglevel[WARNING]=30   color[WARNING]=$'\e[0;33m'   # yellow
 loglevel[INFO]=40      color[INFO]=$'\e[0;32m'      # green
 loglevel[DEBUG]=50     color[DEBUG]=$'\e[0;37m'     # white
-
-reset=$'\e[m'
 
 log() {
     if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
@@ -48,7 +45,7 @@ log() {
         # only output color if stderr is attached to tty
         if [[ -t 2 ]]
         then
-            printf "%s%s:%s %s\n" ${color[$1]} $1 $reset $2 >&2
+            printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 >&2
         else
             printf "%s: %s\n" $1 $2 >&2
         fi
