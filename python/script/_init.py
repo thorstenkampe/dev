@@ -1,11 +1,6 @@
-##region IMPORTS ##
-import signal, sys; from pycompat import system                   # CONSOLE
-import colorama, colorlog, logging                                # LOGGING
-import gettext, locale, pathlib # + sys                           # INTERNATIONALIZATION
-import inspect, os, platform, traceback # + locale, logging, sys  # DEBUGGING
-#endregion
-
 ##region CONSOLE ##
+import signal, sys; from pycompat import system
+
 # no traceback on Ctrl-C;
 # cleaning up on termination can be done with `atexit.register()`
 if system.is_windows:  # Windows has no `SIGHUP` and `SIGQUIT`
@@ -19,6 +14,8 @@ for termsignal in termsignals:
 #endregion
 
 ##region LOGGING ##
+import colorama, colorlog, logging                             
+
 colorama.init()
 
 logger  = logging.getLogger()
@@ -31,6 +28,8 @@ logging.getLogger().addHandler(handler)
 #endregion
 
 ##region INTERNATIONALIZATION ##
+import gettext, locale, pathlib, sys                           
+
 script = pathlib.Path(sys.argv[0])
 
 gettext.install(
@@ -41,6 +40,8 @@ locale.setlocale(locale.LC_ALL, '')
 #endregion
 
 ##region DEBUGGING ##
+import inspect, locale, logging, os, platform, sys, traceback  
+
 def _notraceback(type, value, trace_back):
     logger.critical(
         ''.join(traceback.format_exception_only(type, value)).rstrip())

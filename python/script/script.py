@@ -10,9 +10,8 @@ Options:
  -h, --help   show help
 """
 
-import sys, docopt
-sys.dont_write_bytecode = True
-import _init
+import sys; sys.dont_write_bytecode = True
+import docopt, _init
 
 arguments = docopt.docopt(_(__doc__))
 
