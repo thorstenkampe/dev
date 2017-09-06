@@ -133,8 +133,8 @@ import collections
 
 class GenericDict:
     """
-    a GenericDict is a dictionary or a list of tuples (when the keys
-    are not hashable)
+    a GenericDict is a dictionary or a list of tuples ("dictitem") when the
+    keys are not hashable
     """
     def __init__(inst, generic_dict):
         inst._gd = generic_dict
