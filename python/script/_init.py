@@ -14,9 +14,7 @@ for termsignal in termsignals:
 #endregion
 
 ##region LOGGING ##
-import colorama, colorlog, logging                             
-
-colorama.init()
+import colorlog, logging
 
 logger  = logging.getLogger()
 handler = logging.StreamHandler()
@@ -28,7 +26,7 @@ logging.getLogger().addHandler(handler)
 #endregion
 
 ##region INTERNATIONALIZATION ##
-import gettext, locale, pathlib, sys                           
+import gettext, locale, pathlib, sys
 
 script = pathlib.Path(sys.argv[0])
 
@@ -40,7 +38,7 @@ locale.setlocale(locale.LC_ALL, '')
 #endregion
 
 ##region DEBUGGING ##
-import inspect, locale, logging, os, platform, sys, traceback  
+import inspect, locale, logging, os, platform, sys, traceback
 
 def _notraceback(type, value, trace_back):
     logger.critical(
@@ -58,7 +56,7 @@ def _traceit(frame, event, arg):
 sys.excepthook = _notraceback
 
 # enable debugging for main script
-if os.getenv('PYTHONDEBUG') is not None:
+if os.environ.get('PYTHONDEBUG') is not None:
     logger.setLevel(logging.DEBUG)
     sys.settrace(_traceit)
 
