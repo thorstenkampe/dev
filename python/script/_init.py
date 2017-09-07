@@ -14,15 +14,15 @@ for termsignal in termsignals:
 #endregion
 
 ##region LOGGING ##
-import colorlog, logging
+import colorlog
 
-logger  = logging.getLogger()
-handler = logging.StreamHandler()
+logger  = colorlog.getLogger()
+handler = colorlog.StreamHandler()
 
 handler.setFormatter(colorlog.ColoredFormatter(
     '%(log_color)s%(levelname)s:%(reset)s %(message)s'))
 
-logging.getLogger().addHandler(handler)
+logger.addHandler(handler)
 #endregion
 
 ##region INTERNATIONALIZATION ##
