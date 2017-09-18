@@ -38,7 +38,7 @@ locale.setlocale(locale.LC_ALL, '')
 #endregion
 
 ##region DEBUGGING ##
-import inspect, locale, logging, os, platform, sys, traceback
+import inspect, locale, os, platform, sys, traceback
 
 def _notraceback(type, value, trace_back):
     logger.critical(
@@ -57,7 +57,7 @@ sys.excepthook = _notraceback
 
 # enable debugging for main script
 if os.environ.get('PYTHONDEBUG') is not None:
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel('DEBUG')
     sys.settrace(_traceit)
 
 logger.debug('Python %s %s', platform.python_version(), platform.architecture()[0])
