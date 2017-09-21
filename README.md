@@ -1,29 +1,45 @@
-# README #
+# Readme #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## Introduction ##
+Quick introduction to the project. Explain what it is, the functionality, and common usage.
 
-### What is this repository for? ###
+## Status ##
+Current status of project. Optionally include link to changelog.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## License ##
+Copy/license information
 
-### How do I get set up? ###
+## Requirements ##
+Required items for the project (building, running, etc)
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Installation ##
+Procedure to install project
 
-### Contribution guidelines ###
+## Usage ##
+Quick explanation of project usage, examples if library and quick tips if application
 
-* Writing tests
-* Code review
-* Other guidelines
+## Documentation ##
+Additional project documentation
 
-### Who do I talk to? ###
+## Standards ##
+List any standards (naming, versioning, etc) used by the project.
 
-* Repo owner or admin
-* Other community or team contact
+## Issues ##
+List of known issues/bugs
+
+## Roadmap ##
+Plan of upcoming changes/features
+
+## Contacts ##
+Information for contacting project maintainers
+
+## Contributing ##
+Information for contributing to the project
+
+## Similar ##
+Reference information about similar projects
+
+## FAQ ##
+Answers to questions not covered in other sections
+
+[Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
