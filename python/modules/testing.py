@@ -124,6 +124,12 @@ dimlist     = [(['01', '02', '03', '04'],
                 ['17', '18', '19', '20'],
                 ['21', '22', '23', '24'])]
 
+hashable    = [11, '22', 33]
+unhashable  = [11, [22], 33]
+
+orderable   = [[11], [22], [33]]
+unorderable = [11, ['22'], 33]
+
 _testtypes = f"""\
 smallstring: '{smallstring}'
 
@@ -148,14 +154,13 @@ dimlist:     [(['01', '02', '03', '04'],
                ['17', '18', '19', '20'],
                ['21', '22', '23', '24'])]
 
+hashable:    {hashable}
+unhashable:  {unhashable}
+                                 
+orderable:   {orderable}
+unorderable: {unorderable}
 """
 
 def testtypes():
     print(_testtypes)
-
-#
-hashable    = [11, '22', 33]
-unhashable  = [11, [22], 33]
-orderable   = [[11], [22], [33]]
-unorderable = [11, ['22'], 33]
 #endregion
