@@ -124,17 +124,17 @@ dimlist     = [(['01', '02', '03', '04'],
                 ['17', '18', '19', '20'],
                 ['21', '22', '23', '24'])]
 
-_testtypes = '''\
-smallstring: 'The quick brown fox jumps over the lazy dog'
+_testtypes = f"""\
+smallstring: '{smallstring}'
 
-smalllist:   ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
+smalllist:   {smalllist}
 biglist:     [0, 1, ... , 98, 99]
 
-smalltuple:  (11, 22, 33, 44)
+smalltuple:  {smalltuple}
 bigtuple:    (0, 1, ... , 98, 99)
 
-smalldict:   {1: '1111', 2: '222', 4: '33', 3: '4'}
-dictitem:    [([1], '1111'), ([2], '222'), ([4], '33'), ([3], '4')]
+smalldict:   {smalldict}
+dictitem:    {dictitem}
 
 table:       [('a1', 'b1', 'c1', 'd1', 'e1'),
               ('a2', 'b2', 'c2', 'd2', 'e2'),
@@ -146,7 +146,9 @@ dimlist:     [(['01', '02', '03', '04'],
                ['09', '10', '11', '12']),
               (['13', '14', '15', '16'],
                ['17', '18', '19', '20'],
-               ['21', '22', '23', '24'])]'''
+               ['21', '22', '23', '24'])]
+
+"""
 
 def testtypes():
     print(_testtypes)
