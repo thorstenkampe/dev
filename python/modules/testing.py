@@ -28,7 +28,7 @@ def _isorderable(seq, keyfunc = toolbox.ident):
         return False
     else:
         return True
-#
+
 def hash_or_order(seq, keyfunc = toolbox.ident):
     return {'ishashable':  _ishashable(seq, keyfunc),
             'isorderable': _isorderable(seq, keyfunc)}
@@ -102,16 +102,6 @@ def timer(iteration, *func_and_args):
 
 ##region TEST TYPES ##
 smallstring = 'The quick brown fox jumps over the lazy dog'
-_bigfile1   = 'F:/cygwin/home/thorsten/python/modules/Wordlist.txt'
-_bigfile2   = '/home/thorsten/python/modules/Wordlist.txt'
-_bigfile3   = '/Users/thorsten/python/modules/Wordlist.txt'
-try:
-    bigfile = open(_bigfile1)
-except FileNotFoundError:
-    try:
-        bigfile = open(_bigfile2)
-    except FileNotFoundError:
-        bigfile = open(_bigfile3)
 
 smalllist   = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
 biglist     = range(100)
@@ -136,7 +126,6 @@ dimlist     = [(['01', '02', '03', '04'],
 
 _testtypes = '''\
 smallstring: 'The quick brown fox jumps over the lazy dog'
-bigfile:      <word list of 300,000 words> (use `bigfile.read()` to read)
 
 smalllist:   ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
 biglist:     [0, 1, ... , 98, 99]
