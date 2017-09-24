@@ -130,7 +130,8 @@ unhashable  = [11, [22], 33]
 orderable   = [[11], [22], [33]]
 unorderable = [11, ['22'], 33]
 
-_testtypes = f"""\
+def testtypes():
+    print(f"""\
 smallstring: '{smallstring}'
 
 smalllist:   {smalllist}
@@ -159,8 +160,5 @@ unhashable:  {unhashable}
                                  
 orderable:   {orderable}
 unorderable: {unorderable}
-"""
-
-def testtypes():
-    print(_testtypes)
+""")
 #endregion
