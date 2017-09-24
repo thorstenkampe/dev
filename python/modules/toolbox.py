@@ -233,13 +233,13 @@ class GenericDict:
 def partition(seq, split):
     """
     split sequence by length or string by separator
-    >>> list_ = ['a', 'b', 'c', 'd', 'e']
-    >>> partition(list_, 2)
+    >>> list = ['a', 'b', 'c', 'd', 'e']
+    >>> partition(list, 2)
     [['a', 'b'], ['c', 'd'], ['e']]
-    >>> partition(list_, [1, 2])
+    >>> partition(list, [1, 2])
     [['a'], ['b', 'c'], ['d', 'e']]
-    >>> string_ = 'The quick brown fox jumps over the lazy dog'
-    >>> partition(string_, [' ', 'the', 'The'])
+    >>> string = 'The quick brown fox jumps over the lazy dog'
+    >>> partition(string, [' ', 'the', 'The'])
     ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
     """
     if isinstance(split, int):
