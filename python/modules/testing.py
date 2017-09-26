@@ -47,6 +47,8 @@ def explore(obj):
                 variables[attribute] = vars(obj)[attribute]
             except KeyError:
                 methods.append(attribute)
+            except TypeError:
+                pass
     return {'VARS': variables, 'METHODS': methods}
 
 def makedimlist(seq):
@@ -157,7 +159,7 @@ dimlist:     [(['01', '02', '03', '04'],
 
 hashable:    {hashable}
 unhashable:  {unhashable}
-                                 
+
 orderable:   {orderable}
 unorderable: {unorderable}
 """)
