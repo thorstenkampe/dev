@@ -56,12 +56,12 @@ def _traceit(frame, event, arg):
 sys.excepthook = _notraceback
 
 # enable debugging for main script
-if os.environ.get('PYTHONDEBUG') is not None:
+if os.getenv('PYTHONDEBUG') is not None:
     logger.setLevel('DEBUG')
     sys.settrace(_traceit)
 
 logger.debug('Python %s %s', platform.python_version(), platform.architecture()[0])
-locale_vars = {key: os.environ.get(key, '') for key in
+locale_vars = {key: os.getenv(key, '') for key in
                    ('LANGUAGE', 'LC_ALL', 'LANG')}
 locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
 logger.debug(locale_vars)
