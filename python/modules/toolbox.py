@@ -14,8 +14,8 @@ import itertools, collections.abc
 
 def dim(seq):
     """
-    >>> from testing import makedimlist
-    >>> dim(makedimlist([2, 3, 4]))
+    >>> from testing import dimlist
+    >>> dim(dimlist)
     [2, 3, 4]
     """
     dimension = []
@@ -29,9 +29,9 @@ def dim(seq):
 
 def flatten(seq):
     """
-    >>> from testing import makedimlist
-    >>> flatten(makedimlist([2, 3, 4]))  # doctest: +ELLIPSIS
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, ..., 16, 17, 18, 19, 20, 21, 22, 23]
+    >>> from testing import dimlist
+    >>> flatten(dimlist)  # doctest: +ELLIPSIS
+    ['01', '02', '03', '04', '05', '06', ..., '19', '20', '21', '22', '23', '24']
     """
     for dimension in dim(seq)[1:]:
         seq = itertools.chain.from_iterable(seq)
@@ -178,8 +178,8 @@ class GenericDict:
     # higher level methods
     def min_key(inst, keyfunc = ident):
         """
-        >>> from testing import smalldict, dictitem
-        >>> GenericDict(smalldict).min_key()
+        >>> from testing import dict_, dictitem
+        >>> GenericDict(dict_).min_key()
         1
         >>> GenericDict(dictitem).min_key()
         [1]
@@ -188,8 +188,8 @@ class GenericDict:
 
     def min_value(inst, keyfunc = ident):
         """
-        >>> from testing import smalldict, dictitem
-        >>> GenericDict(smalldict).min_value(len)
+        >>> from testing import dict_, dictitem
+        >>> GenericDict(dict_).min_value(len)
         '4'
         >>> GenericDict(dictitem).min_value(len)
         '4'
@@ -205,12 +205,12 @@ class GenericDict:
     def sort(inst, sortby, keyfunc = ident):
         """
         sort by key or value
-        >>> from testing import smalldict, dictitem
-        >>> GenericDict(smalldict).sort(sortby = 'key')
+        >>> from testing import dict_, dictitem
+        >>> GenericDict(dict_).sort(sortby = 'key')
         OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
         >>> GenericDict(dictitem).sort(sortby = 'key')
         [([1], '1111'), ([2], '222'), ([3], '4'), ([4], '33')]
-        >>> GenericDict(smalldict).sort(sortby = 'value', keyfunc = len)
+        >>> GenericDict(dict_).sort(sortby = 'value', keyfunc = len)
         OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
         >>> GenericDict(dictitem).sort(sortby = 'value', keyfunc = len)
         [([3], '4'), ([4], '33'), ([2], '222'), ([1], '1111')]

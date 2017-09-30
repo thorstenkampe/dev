@@ -3,9 +3,9 @@ import toolbox
 
 def ishashable(seq, keyfunc = toolbox.ident):
     """
-    >>> _ishashable(hashable)
+    >>> ishashable(hashable)
     True
-    >>> _ishashable(unhashable)
+    >>> ishashable(unhashable)
     False
     """
     try:
@@ -17,9 +17,9 @@ def ishashable(seq, keyfunc = toolbox.ident):
 
 def isorderable(seq, keyfunc = toolbox.ident):
     """
-    >>> _isorderable(orderable)
+    >>> isorderable(orderable)
     True
-    >>> _isorderable(unorderable)
+    >>> isorderable(unorderable)
     False
     """
     try:
