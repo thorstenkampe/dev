@@ -1,7 +1,7 @@
 ##region TESTING FUNCTIONS ##
 import toolbox
 
-def _ishashable(seq, keyfunc = toolbox.ident):
+def ishashable(seq, keyfunc = toolbox.ident):
     """
     >>> _ishashable(hashable)
     True
@@ -15,7 +15,7 @@ def _ishashable(seq, keyfunc = toolbox.ident):
     else:
         return True
 
-def _isorderable(seq, keyfunc = toolbox.ident):
+def isorderable(seq, keyfunc = toolbox.ident):
     """
     >>> _isorderable(orderable)
     True
@@ -28,10 +28,6 @@ def _isorderable(seq, keyfunc = toolbox.ident):
         return False
     else:
         return True
-
-def hash_or_order(seq, keyfunc = toolbox.ident):
-    return {'ishashable':  _ishashable(seq, keyfunc),
-            'isorderable': _isorderable(seq, keyfunc)}
 #endregion
 
 ##region UTILITIES ##
