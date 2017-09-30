@@ -51,35 +51,6 @@ def explore(obj):
                 pass
     return {'VARS': variables, 'METHODS': methods}
 
-def makedimlist(seq):
-    """
-    >>> makedimlist([2, 3, 4])  # doctest: +ELLIPSIS
-    [[[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]], [[..., [20, 21, 22, 23]]]
-    """
-    dimlist = list(range(functools.reduce(operator.mul, seq)))
-    for dim in reversed(seq[1:]):
-        dimlist = toolbox.partition(dimlist, dim)
-    return dimlist
-
-def randseq(start, end, count = None, repeat = False):
-    """
-    >>> random.seed(0)
-    >>> randseq(1, 10, repeat = False)
-    [7, 10, 1, 3, 5, 4, 6, 2, 9, 8]
-    >>> randseq(1, 10, repeat = True)
-    [10, 4, 9, 3, 5, 3, 2, 10, 5, 9]
-    """
-    intlist = range(start, end + 1)
-
-    if count is None:
-        count = end - start + 1
-
-    if repeat is False:
-        return random.sample(intlist, count)
-
-    elif repeat is True:
-        return [random.choice(intlist) for counter in range(count)]
-
 def timer(iteration, *func_and_args):
     """
     print the time elapsed (in seconds) evaluating function iteration
