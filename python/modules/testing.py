@@ -103,15 +103,13 @@ def timer(iteration, *func_and_args):
 #endregion
 
 ##region TEST TYPES ##
-smallstring = 'The quick brown fox jumps over the lazy dog'
+string_     = 'The quick brown fox jumps over the lazy dog'
 
-smalllist   = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
-biglist     = range(100)
+list_       = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
 
-smalltuple  = (11, 22, 33, 44)
-bigtuple    = tuple(range(100))
+tuple_      = (11, 22, 33, 44, 55, 66, 77, 88, 99)
 
-smalldict   = {1: '1111', 2: '222', 4: '33', 3: '4'}
+dict_       = {1: '1111', 2: '222', 4: '33', 3: '4'}
 dictitem    = [([1], '1111'), ([2], '222'), ([4], '33'), ([3], '4')]
 
 table       = [('a1', 'b1', 'c1', 'd1', 'e1'),
@@ -134,15 +132,13 @@ unorderable = [11, ['22'], 33]
 
 def testtypes():
     print(f"""\
-smallstring: '{smallstring}'
+string_:     '{string_}'
 
-smalllist:   {smalllist}
-biglist:     [0, 1, ... , 98, 99]
+list_:       {list_}
 
-smalltuple:  {smalltuple}
-bigtuple:    (0, 1, ... , 98, 99)
+tuple_:      {tuple_}
 
-smalldict:   {smalldict}
+dict_:       {dict_}
 dictitem:    {dictitem}
 
 table:       [('a1', 'b1', 'c1', 'd1', 'e1'),
