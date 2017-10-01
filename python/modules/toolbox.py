@@ -31,7 +31,7 @@ def flatten(seq):
     """
     >>> from testing import dimlist
     >>> flatten(dimlist)  # doctest: +ELLIPSIS
-    ['01', '02', '03', '04', '05', '06', ..., '19', '20', '21', '22', '23', '24']
+    ['01', '02', '03', '04', '05', '06', ..., '20', '21', '22', '23', '24']
     """
     for dimension in dim(seq)[1:]:
         seq = itertools.chain.from_iterable(seq)
