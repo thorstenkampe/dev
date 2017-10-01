@@ -96,34 +96,4 @@ unhashable  = [11, [22], 33]
 
 orderable   = [[11], [22], [33]]
 unorderable = [11, ['22'], 33]
-
-def testtypes():
-    print(f"""\
-string_:     '{string_}'
-
-list_:       {list_}
-
-tuple_:      {tuple_}
-
-dict_:       {dict_}
-dictitem:    {dictitem}
-
-table:       [('a1', 'b1', 'c1', 'd1', 'e1'),
-              ('a2', 'b2', 'c2', 'd2', 'e2'),
-              ('a3', 'b3', 'c3', 'd3', 'e3'),
-              ('a4', 'b4', 'c4', 'd4', 'e4')]
-
-dimlist:     [(['01', '02', '03', '04'],
-               ['05', '06', '07', '08'],
-               ['09', '10', '11', '12']),
-              (['13', '14', '15', '16'],
-               ['17', '18', '19', '20'],
-               ['21', '22', '23', '24'])]
-
-hashable:    {hashable}
-unhashable:  {unhashable}
-
-orderable:   {orderable}
-unorderable: {unorderable}
-""")
 #endregion
