@@ -14,9 +14,9 @@ import itertools, collections.abc
 
 def dim(seq):
     """
-    >>> from testing import dimlist
-    >>> dim(dimlist)
-    [2, 3, 4]
+    >>> from testing import table
+    >>> dim(table)
+    [4, 5]
     """
     dimension = []
     while isinstance(seq, (list, tuple, collections.abc.ValuesView)):
@@ -29,9 +29,9 @@ def dim(seq):
 
 def flatten(seq):
     """
-    >>> from testing import dimlist
-    >>> flatten(dimlist)  # doctest: +ELLIPSIS
-    ['01', '02', '03', '04', '05', '06', ..., '20', '21', '22', '23', '24']
+    >>> from testing import table
+    >>> flatten(table)  # doctest: +ELLIPSIS
+    ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
     """
     for dimension in dim(seq)[1:]:
         seq = itertools.chain.from_iterable(seq)
