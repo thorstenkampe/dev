@@ -52,7 +52,7 @@ def _traceit(frame, event, arg):
             inspect.getframeinfo(frame).code_context[0].rstrip())
     return _traceit
 
-# During standard execution, we want no traceback, just the exception
+# during standard execution, we want no traceback, just the exception
 sys.excepthook = _notraceback
 
 # enable debugging for main script

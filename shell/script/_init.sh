@@ -1,6 +1,6 @@
 ## - short instead of long options are used for macOS compatibility
-## - we don't use `> /dev/stderr` instead of `>&2` because of problems
-##   with the implementation on Cygwin
+## - we don't use `> /dev/stderr` instead of `>&2` because of problems with the
+##   implementation on Cygwin
 ## - http://zshwiki.org/home/scripting/args
 
 ## INITIALIZATION ##
@@ -53,8 +53,8 @@ log() {
 }
 
 ## STANDARD OPTIONS ##
-# leading `:`: don't report unknown options (which we can't know in
-# advance here)
+# leading `:`: don't report unknown options (which we can't know in advance
+# here)
 while getopts :h option
 do
     if [[ $option == h ]]
@@ -68,8 +68,8 @@ OPTIND=1
 
 ## TRAPS ##
 # - create your own handler in the main script
-# - bash and zsh run traps when child process exits (option `trapsasync`
-#   in zsh)
+# - bash and zsh run traps when child process exits (option `trapsasync` in
+#   zsh)
 
 # will also run on error (except with zsh on Linux)
 exit_handler() { :; }
