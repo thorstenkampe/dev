@@ -11,9 +11,13 @@ Options:
 """
 
 import sys; sys.dont_write_bytecode = True
-import docopt, _init
+import docpie, _init
 
-arguments = docopt.docopt(_(__doc__))
+class MyPie(docpie.Docpie):
+    usage_name  = _('Usage:')
+    option_name = _('Options:')
+
+arguments = MyPie(_(__doc__)).docpie()
 
 ##region MAIN CODE STARTS HERE ##
 
