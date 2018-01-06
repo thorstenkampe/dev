@@ -1,16 +1,22 @@
 ##region CONSOLE ##
 import signal, sys; from pycompat import system
 
-# no traceback on Ctrl-C;
 # cleaning up on termination can be done with `atexit.register()`
-if system.is_windows:  # Windows has no `SIGHUP` and `SIGQUIT`
-    termsignals = (signal.SIGINT, signal.SIGTERM)
+def error_handler(signum, frame):
+    termsignal = signal.Signals(signum).name
+    logger.error(f'received {termsignal} signal, exiting...')
+    sys.exit(1)
+
+# Windows has no `SIGHUP` and `SIGQUIT` and `SIGTERM` is a NOOP
+# (https://bugs.python.org/issue26350)
+if system.is_windows:
+    termsignals = (signal.SIGINT, signal.SIGBREAK)
 else:
     termsignals = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP,
                    signal.SIGQUIT)
 
 for termsignal in termsignals:
-    signal.signal(termsignal, lambda *args: sys.exit())
+    signal.signal(termsignal, error_handler)
 #endregion
 
 ##region LOGGING ##

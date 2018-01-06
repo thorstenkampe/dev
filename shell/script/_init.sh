@@ -1,5 +1,5 @@
 ## - short instead of long options are used for macOS compatibility
-## - we don't use `> /dev/stderr` instead of `>&2` because of problems with the
+## - we use `>&2` instead of `> /dev/stderr` because of problems with the
 ##   implementation on Cygwin
 ## - http://zshwiki.org/home/scripting/args
 
@@ -71,18 +71,25 @@ OPTIND=1
 # - bash and zsh run traps when child process exits (option `trapsasync` in
 #   zsh)
 
-# will also run on error (except with zsh on Linux)
+# this will run first (when program exits abnormally)
+error_handler() {
+    error_code=$?
+    log ERROR "received $1 signal, exiting..."
+    exit $error_code
+}
+
+# This will always run (after the error handler). In Zsh on Linux it will not
+# run when program exits abnormally.
 exit_handler() {
     :
 }
 
-error_handler() {
-    error_code=$?
-    exit $error_code
-}
+for signal in ERR INT HUP QUIT TERM
+do
+    trap "error_handler $signal" $signal
+done
 
 trap exit_handler EXIT
-trap error_handler ERR INT HUP QUIT TERM
 
 ## DEBUGGING ##
 if [[ $shell == bash ]]
