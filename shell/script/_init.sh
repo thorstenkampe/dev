@@ -72,7 +72,9 @@ OPTIND=1
 #   zsh)
 
 # will also run on error (except with zsh on Linux)
-exit_handler() { :; }
+exit_handler() {
+    :
+}
 
 error_handler() {
     error_code=$?
