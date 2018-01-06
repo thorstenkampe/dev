@@ -6,11 +6,12 @@
 ## INITIALIZATION ##
 if [[ $OSTYPE == cygwin ]]
 then
-    ps() { procps "$@"; }
+    shell=$(procps -p $$ -o comm=)
+else
+    # `ps` shows full path on macOS
+    shell=$(basename $(ps -p $$ -o comm=))
 fi
 
-# `ps` shows full path on macOS
-shell=$(basename $(ps -p $$ -o comm=))
 IFS=  # disable word splitting
 
 set -o nounset \
