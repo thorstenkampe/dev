@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 `SCRIPT` DESCRIPTION
@@ -20,5 +20,4 @@ class MyPie(docpie.Docpie):
 arguments = MyPie(_(__doc__)).docpie()
 
 ##region MAIN CODE STARTS HERE ##
-
 #endregion

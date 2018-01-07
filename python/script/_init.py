@@ -1,13 +1,13 @@
-##region CONSOLE ##
+##region TRAPS ##
 import signal, sys; from pycompat import system
 
-# cleaning up on termination can be done with `atexit.register()`
+# exit handler can be done with `atexit.register()`
 def error_handler(signum, frame):
     termsignal = signal.Signals(signum).name
     logger.error(f'received {termsignal} signal, exiting...')
     sys.exit(1)
 
-# Windows has no `SIGHUP` and `SIGQUIT` and `SIGTERM` is a NOOP
+# Windows has no `SIGHUP` and `SIGQUIT`, `SIGTERM` is a NOOP
 # (https://bugs.python.org/issue26350)
 if system.is_windows:
     termsignals = (signal.SIGINT, signal.SIGBREAK)

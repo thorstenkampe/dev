@@ -75,6 +75,7 @@ OPTIND=1
 # this will run first (when program exits abnormally)
 error_handler() {
     error_code=$?
+    printf "\n"
     log ERROR "received $1 signal, exiting..."
     exit $error_code
 }
