@@ -1,4 +1,4 @@
-#! /usr/bin/env pwsh
+﻿#! /usr/bin/env pwsh
 
 <#
 .SYNOPSIS
@@ -13,17 +13,17 @@ param(
 )
 
 ## INITIALIZATION ##
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
 ## DEBUGGING ##
 # script is run with `-debug`
-if ($DebugPreference -eq "Inquire") {
-    $DebugPreference = "Continue"
+if ($DebugPreference -eq 'Inquire') {
+    $DebugPreference = 'Continue'
 }
 
 Write-Debug -Message "PowerShell $($PSVersionTable.PSVersion.ToString())"
-if ($DebugPreference -eq "Continue") {
+if ($DebugPreference -eq 'Continue') {
     Set-PSDebug -Trace 1
 }
 
