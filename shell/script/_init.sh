@@ -24,7 +24,9 @@ export TEXTDOMAIN=$(basename $script) \
 
 if ! which gettext &> /dev/null
 then
-    gettext() { printf "%s" "$@"; }
+    gettext() {
+        printf "%s" "$@"
+    }
 fi
 
 ## LOGGING ##
