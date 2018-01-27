@@ -119,8 +119,7 @@ class Equivalence:
 
     def representative_class(inst):
         """
-        canonical representatives - first element of each equivalence
-        class
+        canonical representatives - first element of each equivalence class
         >>> seq_func = (1, 2, 3, 4), even
         >>> Equivalence(*seq_func).representative_class()
         [1, 2]
@@ -221,7 +220,7 @@ class GenericDict:
         [([3], '4'), ([4], '33'), ([2], '222'), ([1], '1111')]
         """
         if sortby not in ['key', 'value']:
-            raise ValueError("'{}' not in ['key', 'value']".format(sortby))
+            raise ValueError(f"'{sortby}' not in ['key', 'value']")
 
         def keyfunc_(key_value):
             return keyfunc(key_value[sortby == 'value'])
