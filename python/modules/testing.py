@@ -49,14 +49,14 @@ def explore(obj):
 
 def timer(iteration, *func_and_args):
     """
-    print the time elapsed (in seconds) evaluating function iteration
-    times (default is '1')
+    print the time elapsed (in seconds) evaluating function iteration times
+    (default is '1')
     """
     if isinstance(iteration, int):
         function, args = func_and_args[0], func_and_args[1:]
     else:
-        # if first argument is not a number, set function to iteration
-        # and iteration to '1'
+        # if first argument is not a number, set function to iteration and 
+        # iteration to '1'
         iteration, function, args = 1, iteration, func_and_args
 
     iteration = range(iteration)
