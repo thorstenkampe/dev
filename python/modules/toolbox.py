@@ -71,12 +71,12 @@ class Equivalence:
         # we're dispatching on performance...
         try:                   # hashable: dict.get
             inst._eq = eq_init(dict)
-        except TypeError:
-            try:               # orderable: itertools.groupby
+        except TypeError:      # `keyfunc(obj)` is not hashable
+            try:
                 sorted_  = sorted(seq, key = keyfunc)
             except TypeError:  # unorderable: list.index
                 inst._eq = eq_init(list)
-            else:
+            else:              # orderable: itertools.groupby
                 eq       = itertools.groupby(sorted_, keyfunc)
                 inst._eq = [(invariant, list(equiv_class)) for invariant, equiv_class in eq]
 
@@ -133,12 +133,13 @@ import collections
 
 class GenericDict:
     """
-    a GenericDict is a dictionary or a list of tuples ("dictitem") when the
-    keys are not hashable
+    a GenericDict is a dictionary or a list of tuples ("dictitem") if the keys
+    are not hashable
     """
     def __init__(inst, generic_dict):
         inst._gd = generic_dict
 
+    # determines `inst[key]`
     def __getitem__(inst, key):
         if isinstance(inst._gd, dict):
             return inst._gd[key]
@@ -148,6 +149,10 @@ class GenericDict:
     # determines output of `instance` and `print(instance)`
     def __repr__(inst):
         return repr(inst._gd)
+
+    # make GenericDict iterable
+    def __iter__(inst):
+        return iter(inst._gd)
 
     # simple methods
     def items(inst):
@@ -227,6 +232,31 @@ class GenericDict:
             return sorted(inst._gd, key = keyfunc_)
         else:
             return collections.OrderedDict(sorted_)
+#endregion
+
+##region MULTIDICT ##
+class MultiDict:
+    """a MultiDict is a GenericDict with multiple values"""
+    def __init__(inst, multidict):
+        inst._multi = multidict
+
+    # determines output of `instance` and `print(instance)`
+    def __repr__(inst):
+        return repr(inst._multi)
+
+    #
+    def count(inst):
+        """returns the count of a multidict
+        >>> tuple = (11, 22, 33, 44)
+        >>> def evenodd(x): return 'even' if even(x) else 'odd'
+        >>> eq = Equivalence(tuple, evenodd)
+        >>> MultiDict(eq.quotientset()).count()
+        {'odd': 2, 'even': 2}
+        """
+        try:
+            return {key: len(inst._multi[key]) for key in inst._multi}
+        except ValueError:
+            return [(key, len(values)) for key, values in inst._multi]
 #endregion
 
 ##region PARTITION ##
