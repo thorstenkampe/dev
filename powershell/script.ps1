@@ -8,7 +8,7 @@ DESCRIPTION
 `SCRIPT` DESCRIPTION
 #>
 
-[CmdletBinding(PositionalBinding = $false)]
+[CmdletBinding(SupportsShouldProcess)]
 param(
 )
 
