@@ -30,6 +30,7 @@ if ($DebugPreference -eq 'Continue') {
 try {
 ## MAIN CODE STARTS HERE ##
 
+## MAIN CODE ENDS HERE ##
 }
 finally {
     Set-PSDebug -Trace 0
