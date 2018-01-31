@@ -22,7 +22,8 @@ if ($DebugPreference -eq 'Inquire') {
     $DebugPreference = 'Continue'
 }
 
-Write-Debug -Message ('PowerShell {0}' -f $PSVersionTable.PSVersion)
+Write-Debug -Message ('PowerShell {0} {1}' -f $PSEdition,
+                                              $PSVersionTable.PSVersion)
 if ($DebugPreference -eq 'Continue') {
     Set-PSDebug -Trace 1
 }
