@@ -8,13 +8,22 @@ DESCRIPTION
 `SCRIPT` DESCRIPTION
 #>
 
+# - https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_cmdletbindingattribute
+# - https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters
 [CmdletBinding(SupportsShouldProcess)]
 param(
+    [Switch]${Help}
 )
 
 ## INITIALIZATION ##
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
+
+## HELP ##
+if ($Help) {
+    Get-Help -Name $MyInvocation.InvocationName -Full
+    exit 1
+}
 
 ## DEBUGGING ##
 # script is run with `-Debug`
