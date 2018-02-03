@@ -22,7 +22,7 @@ for termsignal in termsignals:
 ##region LOGGING ##
 import colorlog
 
-logger  = colorlog.getLogger()
+logger  = colorlog.getLogger(name = '__main__')
 handler = colorlog.StreamHandler()
 
 handler.setFormatter(colorlog.ColoredFormatter(
