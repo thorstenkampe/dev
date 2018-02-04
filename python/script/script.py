@@ -19,5 +19,5 @@ class MyPie(docpie.Docpie):
 
 arguments = MyPie(_(__doc__)).docpie()
 
-##region MAIN CODE STARTS HERE ##
+#region MAIN CODE STARTS HERE #
 #endregion

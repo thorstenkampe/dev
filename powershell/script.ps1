@@ -15,17 +15,19 @@ param(
     [Switch]$Help
 )
 
-## INITIALIZATION ##
+#region INITIALIZATION #
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
+#endregion
 
-## HELP ##
+#region HELP #
 if ($Help) {
     Get-Help -Name $MyInvocation.InvocationName -Full
     exit 1
 }
+#endregion
 
-## DEBUGGING ##
+#region DEBUGGING #
 # script is run with `-Debug`
 if ($DebugPreference -eq 'Inquire') {
     $DebugPreference = 'Continue'
@@ -36,11 +38,12 @@ Write-Debug -Message ('PowerShell {0} {1}' -f $PSEdition,
 if ($DebugPreference -eq 'Continue') {
     Set-PSDebug -Trace 1
 }
+#endregion
 
 try {
-## MAIN CODE STARTS HERE ##
+#region MAIN CODE STARTS HERE
 
-## MAIN CODE ENDS HERE ##
+#endregion
 }
 finally {
     Set-PSDebug -Trace 0

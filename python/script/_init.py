@@ -1,4 +1,4 @@
-##region TRAPS ##
+#region TRAPS #
 import signal, sys; from pycompat import system
 
 # exit handler can be done with `atexit.register()`
@@ -19,7 +19,7 @@ for termsignal in termsignals:
     signal.signal(termsignal, error_handler)
 #endregion
 
-##region LOGGING ##
+#region LOGGING #
 import colorlog
 
 logger  = colorlog.getLogger(name = '__main__')
@@ -31,7 +31,7 @@ handler.setFormatter(colorlog.ColoredFormatter(
 logger.addHandler(handler)
 #endregion
 
-##region INTERNATIONALIZATION ##
+#region INTERNATIONALIZATION #
 import gettext, locale, pathlib, sys
 
 script = pathlib.Path(sys.argv[0])
@@ -43,7 +43,7 @@ gettext.install(
 locale.setlocale(locale.LC_ALL, '')
 #endregion
 
-##region DEBUGGING ##
+#region DEBUGGING #
 import inspect, locale, os, platform, sys, traceback
 
 def _notraceback(type, value, trace_back):
