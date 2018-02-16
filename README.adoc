@@ -1,6 +1,11 @@
 = README
+:toc:                left
+:toc-title:          Table of Contents
+:toclevels:          2
 :numbered:
-:toc: left
+:icons:              font
+:listing-caption:
+:source-highlighter: highlightjs
 
 == Introduction
 Quick introduction to the project. Explain what it is, the functionality, and common usage.
