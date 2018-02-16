@@ -14,7 +14,7 @@ Quick introduction to the project. Explain what it is, the functionality, and co
 Current status of project. Optionally include link to changelog
 
 == License
-Copy/license information
+THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 
 == Requirements
 Required items for the project (building, running, etc)
