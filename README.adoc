@@ -1,4 +1,4 @@
-= README
+= README =
 :toc:                left
 :toc-title:          Table of Contents
 :toclevels:          2
@@ -7,44 +7,44 @@
 :listing-caption:
 :source-highlighter: highlightjs
 
-== Introduction
+== Introduction ==
 Quick introduction to the project. Explain what it is, the functionality, and common usage.
 
-== Status
+== Status ==
 Current status of project. Optionally include link to changelog
 
-== License
+== License ==
 THIS SOFTWARE COMES WITHOUT WARRANTY, LIABILITY, OR SUPPORT!
 
-== Requirements
+== Requirements ==
 Required items for the project (building, running, etc)
 
-== Installation
+== Installation ==
 Procedure to install project
 
-== Usage
+== Usage ==
 Quick explanation of project usage, examples if library and quick tips if application
 
-== Documentation
+== Documentation ==
 Additional project documentation
 
-== Standards
+== Standards ==
 List any standards (naming, versioning, etc) used by the project.
 
-== Issues
+== Issues ==
 List of known issues/bugs
 
-== Roadmap
+== Roadmap ==
 Plan of upcoming changes/features
 
-== Contacts
+== Contacts ==
 Information for contacting project maintainers
 
-== Contributing
+== Contributing ==
 Information for contributing to the project
 
-== Similar
+== Similar ==
 Reference information about similar projects
 
-== FAQ
+== FAQ ==
 Answers to questions not covered in other sections
