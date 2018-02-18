@@ -1,5 +1,5 @@
 = README =
-:toc:       
+:toc:
 :toc-title: Table of Contents
 :sectnums:
 :experimental:
