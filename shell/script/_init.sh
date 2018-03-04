@@ -25,7 +25,7 @@ export TEXTDOMAIN=$(basename $script) \
 if ! which gettext &> /dev/null
 then
     gettext() {
-        printf "%s" "$@"
+        printf '%s' "$@"
     }
 fi
 
@@ -48,9 +48,9 @@ log() {
         # only output color if stderr is attached to tty
         if [[ -t 2 ]]
         then
-            printf "%s%s:\e[m %s\n" ${color[$1]} $1 $2 >&2
+            printf '%s%s:\e[m %s\n' ${color[$1]} $1 $2 >&2
         else
-            printf "%s: %s\n" $1 $2 >&2
+            printf '%s: %s\n' $1 $2 >&2
         fi
     fi
 }
@@ -77,7 +77,7 @@ OPTIND=1
 # this will run first (when program exits abnormally)
 error_handler() {
     error_code=$?
-    printf "\n"
+    printf '\n'
     log ERROR "received $1 signal, exiting..."
     exit $error_code
 }
@@ -99,7 +99,7 @@ trap exit_handler EXIT
 if [[ $shell == bash ]]
 then
     PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-    shell_version=$(printf "%s.%s.%s" ${BASH_VERSINFO[@]:0:3})
+    shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
 else
     PS4='+%1N[%I]: '
     shell_version=$ZSH_VERSION
