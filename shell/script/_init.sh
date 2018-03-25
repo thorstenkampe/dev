@@ -24,7 +24,7 @@ export TEXTDOMAIN=$(basename $script) \
 
 if ! which gettext &> /dev/null
 then
-    gettext() {
+    function gettext {
         printf '%s' "$@"
     }
 fi
@@ -42,7 +42,7 @@ loglevel[WARNING]=30   color[WARNING]=$'\e[0;33m'   # yellow
 loglevel[INFO]=40      color[INFO]=$'\e[0;32m'      # green
 loglevel[DEBUG]=50     color[DEBUG]=$'\e[0;37m'     # white
 
-log() {
+function log {
     if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
     then
         # only output color if stderr is attached to tty
@@ -75,7 +75,7 @@ OPTIND=1
 #   zsh)
 
 # this will run first (when program exits abnormally)
-error_handler() {
+function error_handler {
     error_code=$?
     printf '\n'
     log ERROR "received $1 signal, exiting..."
@@ -84,7 +84,7 @@ error_handler() {
 
 # This will always run (after the error handler). In Zsh on Linux it will not
 # run when program exits abnormally.
-exit_handler() {
+function exit_handler {
     :
 }
 
