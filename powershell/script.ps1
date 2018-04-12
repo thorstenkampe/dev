@@ -39,7 +39,7 @@ if ($DebugPreference -eq 'Continue') {
 #endregion
 
 try {
-#region MAIN CODE STARTS HERE
+#region MAIN CODE STARTS HERE #
 
 #endregion
 }
