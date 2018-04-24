@@ -14,7 +14,7 @@ source "$(dirname "$script")"/_init.sh
 
 while getopts h option  # option string needs standard options
 do
-    if [[ $option == "?" ]]
+    if [[ $option == '?' ]]
     then
         exit 1
     fi
