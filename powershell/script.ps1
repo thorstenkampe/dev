@@ -8,8 +8,8 @@ DESCRIPTION
 `SCRIPT` DESCRIPTION
 #>
 
-# - https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_cmdletbindingattribute
-# - https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters
+# * https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_cmdletbindingattribute
+# * https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters
 [CmdletBinding(SupportsShouldProcess)]
 Param([Switch] $Help)
 
