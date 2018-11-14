@@ -1,21 +1,11 @@
 ## - short instead of long options are used for macOS compatibility
 ## - we use `>&2` instead of `> /dev/stderr` because of problems with the
 ##   implementation on Cygwin
-## - http://zshwiki.org/home/scripting/args
 
 ## INITIALIZATION ##
-if [[ $OSTYPE == cygwin ]]
-then
-    shell=$(procps -p $$ -o comm=)
-else
-    # `ps` shows full path on macOS
-    shell=$(basename $(ps -p $$ -o comm=))
-fi
-
 IFS=  # disable word splitting
 
-set -o nounset \
-    -o pipefail
+shopt -os nounset pipefail
 
 ## INTERNATIONALIZATION ##
 # http://www.gnu.org/software/gettext/manual/gettext.html#Preparing-Shell-Scripts
@@ -71,8 +61,7 @@ OPTIND=1
 
 ## TRAPS ##
 # - create your own handler in the main script
-# - bash and zsh run traps when child process exits (option `trapsasync` in
-#   zsh)
+# - bash runs traps when child process exits
 
 # this will run first (when program exits abnormally)
 function error_handler {
@@ -82,8 +71,7 @@ function error_handler {
     exit $error_code
 }
 
-# This will always run (after the error handler). In Zsh on Linux it will not
-# run when program exits abnormally.
+# This will always run (after the error handler)
 function exit_handler {
     :
 }
@@ -96,19 +84,13 @@ done
 trap exit_handler EXIT
 
 ## DEBUGGING ##
-if [[ $shell == bash ]]
-then
-    PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-    shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
-else
-    PS4='+%1N[%I]: '
-    shell_version=$ZSH_VERSION
-fi
+PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
 
 if [[ -n ${DEBUG-} ]]
 then
     verbosity=DEBUG
-    log DEBUG "$shell $shell_version"
+    log DEBUG "bash $shell_version"
     # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     log DEBUG "LANGUAGE: ${LANGUAGE-}"
