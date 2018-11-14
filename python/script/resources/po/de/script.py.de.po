@@ -15,6 +15,7 @@ msgid  "\n"
        "\n"
        "Options:\n"
        " -h, --help   show help\n"
+
 msgstr "\n"
        "`SCRIPT` BESCHREIBUNG\n"
        "\n"
