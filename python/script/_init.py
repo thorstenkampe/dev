@@ -10,10 +10,9 @@ def error_handler(signum, frame):
 # Windows has no `SIGHUP` and `SIGQUIT`, `SIGTERM` is a NOOP
 # (https://bugs.python.org/issue26350)
 if system.is_windows:
-    termsignals = (signal.SIGINT, signal.SIGBREAK)
+    termsignals = signal.SIGINT, signal.SIGBREAK
 else:
-    termsignals = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP,
-                   signal.SIGQUIT)
+    termsignals = signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT
 
 for termsignal in termsignals:
     signal.signal(termsignal, error_handler)
@@ -51,8 +50,7 @@ def _notraceback(type, value, trace_back):
         ''.join(traceback.format_exception_only(type, value)).rstrip())
 
 def _traceit(frame, event, arg):
-    if (frame.f_globals['__name__'] == '__main__' and
-        event in ['call', 'line']):
+    if frame.f_globals['__name__'] == '__main__' and event in ['call', 'line']:
 
         logger.debug('+[%s]: %s', frame.f_lineno,
             inspect.getframeinfo(frame).code_context[0].rstrip())
@@ -66,7 +64,8 @@ if os.getenv('PYTHONDEBUG') is not None:
     logger.setLevel('DEBUG')
     sys.settrace(_traceit)
 
-logger.debug('Python %s %s', platform.python_version(), platform.architecture()[0])
+logger.debug(
+    'Python %s %s', platform.python_version(), platform.architecture()[0])
 locale_vars = {key: os.getenv(key, '') for key in
                    ('LANGUAGE', 'LC_ALL', 'LANG')}
 locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
