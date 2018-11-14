@@ -3,7 +3,7 @@
 help='`SCRIPT` DESCRIPTION
 
 Usage:
- SCRIPT USAGE
+ SCRIPT [options]
 
 Options:
  -h   show help
