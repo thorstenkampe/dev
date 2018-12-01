@@ -14,8 +14,11 @@ DESCRIPTION
 Param([Switch] $Help)
 
 #region INITIALIZATION #
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference         = 'Stop'
+$PSModuleAutoloadingPreference = 'None'
 Set-StrictMode -Version latest
+
+Import-Module -Name Microsoft.PowerShell.Utility
 #endregion
 
 #region HELP #
