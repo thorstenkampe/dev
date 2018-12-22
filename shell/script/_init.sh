@@ -38,7 +38,7 @@ function log {
         # only output color if stderr is attached to tty
         if [[ -t 2 ]]
         then
-            printf '%s%s:\e[m %s\n' ${color[$1]} $1 $2 >&2
+            printf '%s%s\e[m: %s\n' ${color[$1]} $1 $2 >&2
         else
             printf '%s: %s\n' $1 $2 >&2
         fi
