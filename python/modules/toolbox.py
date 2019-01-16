@@ -63,21 +63,21 @@ class Equivalence:
     def __init__(inst, seq, keyfunc = ident):
 
         def eq_init(type_):
-            eq = GenericDict(type_())
+            eq = GenericDict(type_)
             for obj in seq:
                 eq.setdefault(keyfunc(obj), []).append(obj)
             return eq.items()
 
         # we're dispatching on performance...
         try:                   # hashable: dict.get
-            inst._eq = eq_init(dict)
+            inst._eq = eq_init({})
         except TypeError:      # `keyfunc(obj)` is not hashable
             try:
-                sorted_  = sorted(seq, key = keyfunc)
+                sorted_ = sorted(seq, key = keyfunc)
             except TypeError:  # unorderable: list.index
-                inst._eq = eq_init(list)
+                inst._eq = eq_init([])
             else:              # orderable: itertools.groupby
-                eq       = itertools.groupby(sorted_, keyfunc)
+                eq = itertools.groupby(sorted_, keyfunc)
                 inst._eq = [(invariant, list(equiv_class)) for invariant, equiv_class in eq]
 
     # determines output of `instance` and `print(instance)`
