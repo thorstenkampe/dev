@@ -52,33 +52,16 @@ class Equivalence:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
-    >>> from testing import unhashable, orderable, unorderable
-    >>> Equivalence(unhashable)
-    [(11, [11]), ([22], [[22]]), (33, [33])]
-    >>> Equivalence(orderable)
-    [([11], [[11]]), ([22], [[22]]), ([33], [[33]])]
-    >>> Equivalence(unorderable)
-    [(11, [11]), (['22'], [['22']]), (33, [33])]
+    >>> from testing import hashable
+    >>> Equivalence(hashable)
+    {11: [11], '22': ['22'], 33: [33]}
     """
     def __init__(inst, seq, keyfunc = ident):
 
-        def eq_init(type_):
-            eq = GenericDict(type_)
-            for obj in seq:
-                eq.setdefault(keyfunc(obj), []).append(obj)
-            return eq.items()
-
-        # we're dispatching on performance...
-        try:                   # hashable: dict.get
-            inst._eq = eq_init({})
-        except TypeError:      # `keyfunc(obj)` is not hashable
-            try:
-                sorted_ = sorted(seq, key = keyfunc)
-            except TypeError:  # unorderable: list.index
-                inst._eq = eq_init([])
-            else:              # orderable: itertools.groupby
-                eq = itertools.groupby(sorted_, keyfunc)
-                inst._eq = [(invariant, list(equiv_class)) for invariant, equiv_class in eq]
+        eq = {}
+        for obj in seq:
+            eq.setdefault(keyfunc(obj), []).append(obj)
+        inst._eq = eq
 
     # determines output of `instance` and `print(instance)`
     def __repr__(inst):
@@ -87,175 +70,104 @@ class Equivalence:
     #
     def quotientset(inst):
         """
-        >>> seq_func = (1, 2, 3, 4), even
-        >>> Equivalence(*seq_func).quotientset()
+        >>> eq = Equivalence([1, 2, 3, 4], even)
+        >>> eq.quotientset()
         {False: [1, 3], True: [2, 4]}
         """
-        return GenericDict(inst._eq)
+        return inst._eq
 
     def partition(inst):
         """
-        >>> seq_func = (1, 2, 3, 4), even
-        >>> Equivalence(*seq_func).partition()
+        >>> eq = Equivalence([1, 2, 3, 4], even)
+        >>> eq.partition()
         [[1, 3], [2, 4]]
         """
-        return list(GenericDict(inst._eq).values())
+        return list(inst._eq.values())
 
     def equivalence_class(inst, key):
         """
-        >>> seq_func = (1, 2, 3, 4), even
-        >>> Equivalence(*seq_func).equivalence_class(True)
+        >>> eq = Equivalence([1, 2, 3, 4], even)
+        >>> eq.equivalence_class(True)
         [2, 4]
         """
-        return GenericDict(inst._eq)[key]
+        return inst._eq[key]
 
     def invariant_class(inst):
         """
-        >>> seq_func = (1, 2, 3, 4), even
-        >>> Equivalence(*seq_func).invariant_class()
+        >>> eq = Equivalence([1, 2, 3, 4], even)
+        >>> eq.invariant_class()
         [False, True]
         """
-        return list(GenericDict(inst._eq).keys())
+        return list(inst._eq.keys())
 
     def representative_class(inst):
         """
         canonical representatives - first element of each equivalence class
-        >>> seq_func = (1, 2, 3, 4), even
-        >>> Equivalence(*seq_func).representative_class()
+        >>> eq = Equivalence([1, 2, 3, 4], even)
+        >>> eq.representative_class()
         [1, 2]
         """
         return [subset[0] for subset in inst.partition()]
 #endregion
 
-##region GENERICDICT ##
+##region DICTIONARY ##
 import collections
 
-class GenericDict:
+def min_key(dict_, keyfunc = ident):
     """
-    a GenericDict is a dictionary or a list of tuples ("dictitem") if the keys
-    are not hashable
+    >>> from testing import dict_
+    >>> min_key(dict_)
+    1
     """
-    def __init__(inst, generic_dict):
-        inst._gd = generic_dict
+    return min(dict_.keys(), key = keyfunc)
 
-    # determines `inst[key]`
-    def __getitem__(inst, key):
-        if isinstance(inst._gd, dict):
-            return inst._gd[key]
-        else:
-            return inst.values()[inst.keys().index(key)]
+def min_value(dict_, keyfunc = ident):
+    """
+    >>> from testing import dict_
+    >>> min_value(dict_, len)
+    '4'
+    """
+    return min(dict_.values(), key = keyfunc)
 
-    # determines output of `instance` and `print(instance)`
-    def __repr__(inst):
-        return repr(inst._gd)
+def max_key(dict_, keyfunc = ident):
+    """
+    >>> from testing import dict_
+    >>> max_key(dict_)
+    4
+    """
+    return max(dict_.keys(), key = keyfunc)
 
-    # make GenericDict iterable
-    def __iter__(inst):
-        return iter(inst._gd)
+def max_value(dict_, keyfunc = ident):
+    """
+    >>> from testing import dict_
+    >>> max_value(dict_, len)
+    '1111'
+    """
+    return max(dict_.values(), key = keyfunc)
 
-    # simple methods
-    def items(inst):
-            return inst._gd
+def dictsort(dict_, sortby, keyfunc = ident):
+    """
+    sort by key or value
+    >>> from testing import dict_
+    >>> dictsort(dict_, sortby = 'key')
+    OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
+    >>> dictsort(dict_, sortby = 'value', keyfunc = len)
+    OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
+    """
+    if sortby not in ['key', 'value']:
+        raise ValueError(f"'{sortby}' not in ['key', 'value']")
 
-    def setdefault(inst, key, default = None):
-        try:
-            return inst._gd.setdefault(key, default)
-        except AttributeError:
-            try:
-                return inst[key]
-            except ValueError:
-                inst._gd.append((key, default))
-                return default
+    def keyfunc_(key_value):
+        return keyfunc(key_value[sortby == 'value'])
 
-    def keys(inst):
-        try:
-            return inst._gd.keys()
-        except AttributeError:
-            return [key for key, value in inst._gd]
+    return collections.OrderedDict(sorted(dict_.items(), key = keyfunc_))
 
-    def values(inst):
-        try:
-            return inst._gd.values()
-        except AttributeError:
-            return [value for key, value in inst._gd]
-
-    # higher level methods
-    def min_key(inst, keyfunc = ident):
-        """
-        >>> from testing import dict_, dictitem
-        >>> GenericDict(dict_).min_key()
-        1
-        >>> GenericDict(dictitem).min_key()
-        [1]
-        """
-        return min(inst.keys(), key = keyfunc)
-
-    def min_value(inst, keyfunc = ident):
-        """
-        >>> from testing import dict_, dictitem
-        >>> GenericDict(dict_).min_value(len)
-        '4'
-        >>> GenericDict(dictitem).min_value(len)
-        '4'
-        """
-        return min(inst.values(), key = keyfunc)
-
-    def max_key(inst, keyfunc = ident):
-        return max(inst.keys(), key = keyfunc)
-
-    def max_value(inst, keyfunc = ident):
-        return max(inst.values(), key = keyfunc)
-
-    def sort(inst, sortby, keyfunc = ident):
-        """
-        sort by key or value
-        >>> from testing import dict_, dictitem
-        >>> GenericDict(dict_).sort(sortby = 'key')
-        OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
-        >>> GenericDict(dictitem).sort(sortby = 'key')
-        [([1], '1111'), ([2], '222'), ([3], '4'), ([4], '33')]
-        >>> GenericDict(dict_).sort(sortby = 'value', keyfunc = len)
-        OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
-        >>> GenericDict(dictitem).sort(sortby = 'value', keyfunc = len)
-        [([3], '4'), ([4], '33'), ([2], '222'), ([1], '1111')]
-        """
-        if sortby not in ['key', 'value']:
-            raise ValueError(f"'{sortby}' not in ['key', 'value']")
-
-        def keyfunc_(key_value):
-            return keyfunc(key_value[sortby == 'value'])
-
-        try:
-            sorted_ = sorted(inst._gd.items(), key = keyfunc_)
-        except AttributeError:
-            return sorted(inst._gd, key = keyfunc_)
-        else:
-            return collections.OrderedDict(sorted_)
-#endregion
-
-##region MULTIDICT ##
-class MultiDict:
-    """a MultiDict is a GenericDict with multiple values"""
-    def __init__(inst, multidict):
-        inst._multi = multidict
-
-    # determines output of `instance` and `print(instance)`
-    def __repr__(inst):
-        return repr(inst._multi)
-
-    #
-    def count(inst):
-        """returns the count of a multidict
-        >>> tuple = (11, 22, 33, 44)
-        >>> def evenodd(x): return 'even' if even(x) else 'odd'
-        >>> eq = Equivalence(tuple, evenodd)
-        >>> MultiDict(eq.quotientset()).count()
-        {'odd': 2, 'even': 2}
-        """
-        try:
-            return {key: len(inst._multi[key]) for key in inst._multi}
-        except ValueError:
-            return [(key, len(values)) for key, values in inst._multi]
+def count(dict_):
+    """returns the count of a dictionary with multiple values
+    >>> count({'odd': [11, 33], 'even': [22, 44]})
+    {'odd': 2, 'even': 2}
+    """
+    return {key: len(dict_[key]) for key in dict_}
 #endregion
 
 ##region PARTITION ##
