@@ -14,7 +14,6 @@ import itertools, collections.abc
 
 def dim(seq):
     """
-    >>> from testing import table
     >>> dim(table)
     [4, 5]
     """
@@ -29,7 +28,6 @@ def dim(seq):
 
 def flatten(seq):
     """
-    >>> from testing import table
     >>> flatten(table)  # doctest: +ELLIPSIS
     ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
     """
@@ -50,7 +48,6 @@ class Equivalence:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
-    >>> from testing import hashable
     >>> Equivalence(hashable)
     {11: [11], '22': ['22'], 33: [33]}
     """
@@ -113,7 +110,6 @@ import collections
 
 def min_key(dict_, keyfunc = ident):
     """
-    >>> from testing import dict_
     >>> min_key(dict_)
     1
     """
@@ -121,7 +117,6 @@ def min_key(dict_, keyfunc = ident):
 
 def min_value(dict_, keyfunc = ident):
     """
-    >>> from testing import dict_
     >>> min_value(dict_, len)
     '4'
     """
@@ -129,7 +124,6 @@ def min_value(dict_, keyfunc = ident):
 
 def max_key(dict_, keyfunc = ident):
     """
-    >>> from testing import dict_
     >>> max_key(dict_)
     4
     """
@@ -137,7 +131,6 @@ def max_key(dict_, keyfunc = ident):
 
 def max_value(dict_, keyfunc = ident):
     """
-    >>> from testing import dict_
     >>> max_value(dict_, len)
     '1111'
     """
@@ -146,7 +139,6 @@ def max_value(dict_, keyfunc = ident):
 def dictsort(dict_, sortby, keyfunc = ident):
     """
     sort by key or value
-    >>> from testing import dict_
     >>> dictsort(dict_, sortby = 'key')
     OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
     >>> dictsort(dict_, sortby = 'value', keyfunc = len)
