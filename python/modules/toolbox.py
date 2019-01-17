@@ -46,8 +46,6 @@ def periodic(counter, counter_at_sop, sop, eop):
 #endregion
 
 ##region EQUIVALENCE ##
-import itertools
-
 class Equivalence:
     """
     partition seq into equivalence classes

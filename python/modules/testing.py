@@ -31,7 +31,7 @@ def isorderable(seq, keyfunc = toolbox.ident):
 #endregion
 
 ##region UTILITIES ##
-import gc, time, toolbox
+import gc, time
 
 def explore(obj):
     methods   = []
