@@ -1,5 +1,5 @@
-##region TESTING FUNCTIONS ##
-import toolbox
+##region TEST FUNCTIONS ##
+import gc, time, toolbox
 
 def ishashable(seq, keyfunc = toolbox.ident):
     """
@@ -28,11 +28,8 @@ def isorderable(seq, keyfunc = toolbox.ident):
         return False
     else:
         return True
-#endregion
 
-##region UTILITIES ##
-import gc, time
-
+#
 def explore(obj):
     methods   = []
     variables = {}
