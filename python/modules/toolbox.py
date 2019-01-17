@@ -1,4 +1,6 @@
-##region SMALL FUNCTIONS ##
+##region FUNCTIONS ##
+import itertools, collections.abc
+
 def ident(x):
     return x
 
@@ -7,11 +9,8 @@ def even(integer):
 
 def odd(integer):
     return bool(integer % 2)
-#endregion
 
-##region UTILITIES ##
-import itertools, collections.abc
-
+#
 def dim(seq):
     """
     >>> dim(table)
