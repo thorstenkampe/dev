@@ -47,28 +47,19 @@ class Equivalence:
     """
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
-    >>> Equivalence(hashable)
-    {11: [11], '22': ['22'], 33: [33]}
     """
     def __init__(inst, seq, keyfunc = ident):
-
-        eq = {}
+        """
+        >>> Equivalence([1, 2, 3, 4], even)
+        {False: [1, 3], True: [2, 4]}
+        """
+        inst.eq = {}
         for obj in seq:
-            eq.setdefault(keyfunc(obj), []).append(obj)
-        inst._eq = eq
+            inst.eq.setdefault(keyfunc(obj), []).append(obj)
 
     # determines output of `instance` and `print(instance)`
     def __repr__(inst):
-        return repr(inst._eq)
-
-    #
-    def quotientset(inst):
-        """
-        >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.quotientset()
-        {False: [1, 3], True: [2, 4]}
-        """
-        return inst._eq
+        return repr(inst.eq)
 
     def partition(inst):
         """
@@ -76,29 +67,29 @@ class Equivalence:
         >>> eq.partition()
         [[1, 3], [2, 4]]
         """
-        return list(inst._eq.values())
+        return list(inst.eq.values())
 
-    def equivalence_class(inst, key):
+    def equivalence(inst, key):
         """
         >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.equivalence_class(True)
+        >>> eq.equivalence(True)
         [2, 4]
         """
-        return inst._eq[key]
+        return inst.eq[key]
 
-    def invariant_class(inst):
+    def invariant(inst):
         """
         >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.invariant_class()
+        >>> eq.invariant()
         [False, True]
         """
-        return list(inst._eq.keys())
+        return list(inst.eq.keys())
 
-    def representative_class(inst):
+    def representative(inst):
         """
         canonical representatives - first element of each equivalence class
         >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.representative_class()
+        >>> eq.representative()
         [1, 2]
         """
         return [subset[0] for subset in inst.partition()]
