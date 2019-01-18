@@ -25,6 +25,18 @@ def dim(seq):
             break
     return dimension
 
+def equivalence(seq, keyfunc = ident):
+    """
+    partition seq into equivalence classes
+    see http://en.wikipedia.org/wiki/Equivalence_relation
+    >>> equivalence([1, 2, 3, 4], even)
+    {False: [1, 3], True: [2, 4]}
+    """
+    eq = {}
+    for obj in seq:
+        eq.setdefault(keyfunc(obj), []).append(obj)
+    return eq
+
 def flatten(seq):
     """
     >>> flatten(table)  # doctest: +ELLIPSIS
@@ -40,59 +52,6 @@ def periodic(counter, counter_at_sop, sop, eop):
     sop = start of period; eop = end of period
     """
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
-#endregion
-
-##region EQUIVALENCE ##
-class Equivalence:
-    """
-    partition seq into equivalence classes
-    see http://en.wikipedia.org/wiki/Equivalence_relation
-    """
-    def __init__(inst, seq, keyfunc = ident):
-        """
-        >>> Equivalence([1, 2, 3, 4], even)
-        {False: [1, 3], True: [2, 4]}
-        """
-        inst.eq = {}
-        for obj in seq:
-            inst.eq.setdefault(keyfunc(obj), []).append(obj)
-
-    # determines output of `instance` and `print(instance)`
-    def __repr__(inst):
-        return repr(inst.eq)
-
-    def partition(inst):
-        """
-        >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.partition()
-        [[1, 3], [2, 4]]
-        """
-        return list(inst.eq.values())
-
-    def equivalence(inst, key):
-        """
-        >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.equivalence(True)
-        [2, 4]
-        """
-        return inst.eq[key]
-
-    def invariant(inst):
-        """
-        >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.invariant()
-        [False, True]
-        """
-        return list(inst.eq.keys())
-
-    def representative(inst):
-        """
-        canonical representatives - first element of each equivalence class
-        >>> eq = Equivalence([1, 2, 3, 4], even)
-        >>> eq.representative()
-        [1, 2]
-        """
-        return [subset[0] for subset in inst.partition()]
 #endregion
 
 ##region DICTIONARY ##
