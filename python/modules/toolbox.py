@@ -1,5 +1,5 @@
 ##region FUNCTIONS ##
-import itertools, collections.abc
+import collections, itertools
 
 def ident(x):
     return x
@@ -52,38 +52,6 @@ def periodic(counter, counter_at_sop, sop, eop):
     sop = start of period; eop = end of period
     """
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
-#endregion
-
-##region DICTIONARY ##
-import collections
-
-def min_key(dict_, keyfunc = ident):
-    """
-    >>> min_key(dict_)
-    1
-    """
-    return min(dict_.keys(), key = keyfunc)
-
-def min_value(dict_, keyfunc = ident):
-    """
-    >>> min_value(dict_, len)
-    '4'
-    """
-    return min(dict_.values(), key = keyfunc)
-
-def max_key(dict_, keyfunc = ident):
-    """
-    >>> max_key(dict_)
-    4
-    """
-    return max(dict_.keys(), key = keyfunc)
-
-def max_value(dict_, keyfunc = ident):
-    """
-    >>> max_value(dict_, len)
-    '1111'
-    """
-    return max(dict_.values(), key = keyfunc)
 
 def dictsort(dict_, sortby, keyfunc = ident):
     """
@@ -107,6 +75,16 @@ def count(dict_):
     {'odd': 2, 'even': 2}
     """
     return {key: len(dict_[key]) for key in dict_}
+
+def port_reachable(host, port):
+    with socket.socket() as sock:
+        sock.settimeout(0.002)
+        try:
+            sock.connect((host, port))
+        except socket.timeout:
+            return False
+        else:
+            return True
 #endregion
 
 ##region PARTITION ##
