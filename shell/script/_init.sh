@@ -48,14 +48,12 @@ function log {
 ## STANDARD OPTIONS ##
 # leading `:`: don't report unknown options (which we can't know in advance
 # here)
-while getopts :h option
-do
-    if [[ $option == h ]]
-    then
-        gettext $help
-        exit
-    fi
-done
+getopts :h option
+if [[ $option == h ]]
+then
+    gettext $help
+    exit
+fi
 # reset `OPTIND` for the next round of parsing in main script
 OPTIND=1
 
@@ -63,7 +61,7 @@ OPTIND=1
 # - create your own handler in the main script
 # - bash runs traps when child process exits
 
-# this will run first (when program exits abnormally)
+# this will run when program exits abnormally
 function error_handler {
     error_code=$?
     printf '\n'
