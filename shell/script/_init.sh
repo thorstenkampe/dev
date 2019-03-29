@@ -87,7 +87,7 @@ trap exit_handler EXIT
 PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
 
-if [[ -n ${DEBUG-} ]]
+if [[ -v DEBUG ]]
 then
     verbosity=DEBUG
     log DEBUG "bash $shell_version"
