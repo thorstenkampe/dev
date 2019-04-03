@@ -1,5 +1,5 @@
-## - short instead of long options are used for macOS compatibility
-## - we use `>&2` instead of `> /dev/stderr` because of problems with the
+## * short instead of long options are used for macOS compatibility
+## * we use `>&2` instead of `> /dev/stderr` because of problems with the
 ##   implementation on Cygwin
 
 ## INITIALIZATION ##
@@ -24,8 +24,8 @@ declare -A loglevel color
 
 verbosity=WARNING  # default level
 
-# - Modeled after Python modules `logging` and `colorlog`
-# - For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+# * Modeled after Python modules `logging` and `colorlog`
+# * For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 loglevel[CRITICAL]=10  color[CRITICAL]=$'\e[1;31m'  # brightred
 loglevel[ERROR]=20     color[ERROR]=$'\e[0;31m'     # red
 loglevel[WARNING]=30   color[WARNING]=$'\e[0;33m'   # yellow
@@ -35,8 +35,7 @@ loglevel[DEBUG]=50     color[DEBUG]=$'\e[0;37m'     # white
 function log {
     if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
     then
-        # only output color if stderr is attached to tty
-        if [[ -t 2 ]]
+        if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
             printf '%s%s\e[m: %s\n' ${color[$1]} $1 $2 >&2
         else
@@ -46,20 +45,17 @@ function log {
 }
 
 ## STANDARD OPTIONS ##
-# leading `:`: don't report unknown options (which we can't know in advance
-# here)
+# leading `:`: don't report unknown options (which we can't know in advance here)
 getopts :h option
 if [[ $option == h ]]
 then
     gettext $help
     exit
 fi
-# reset `OPTIND` for the next round of parsing in main script
-OPTIND=1
+OPTIND=1  # reset `OPTIND` for the next round of parsing in main script
 
 ## TRAPS ##
-# - create your own handler in the main script
-# - bash runs traps when child process exits
+# create your own handler in the main script
 
 # this will run when program exits abnormally
 function error_handler {
