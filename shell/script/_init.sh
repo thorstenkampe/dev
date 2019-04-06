@@ -44,7 +44,7 @@ function log {
     fi
 }
 
-## STANDARD OPTIONS ##
+## HELP ##
 # leading `:`: don't report unknown options (which we can't know in advance here)
 if getopts :h option
 then
