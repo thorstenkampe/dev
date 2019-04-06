@@ -46,13 +46,15 @@ function log {
 
 ## STANDARD OPTIONS ##
 # leading `:`: don't report unknown options (which we can't know in advance here)
-getopts :h option
-if [[ $option == h ]]
+if getopts :h option
 then
-    gettext $help
-    exit
+    if [[ $option == h ]]
+    then
+        gettext $help
+        exit
+    fi
 fi
-OPTIND=1  # reset `OPTIND` for the next round of parsing in main script
+OPTIND=1  # reset `OPTIND` for the next round of parsing 
 
 ## TRAPS ##
 # create your own handler in the main script
@@ -81,16 +83,21 @@ trap exit_handler EXIT
 PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
 
-if [[ -v DEBUG ]]
+# leading `:`: don't report unknown options (which we can't know in advance here)
+if getopts :d option
 then
-    verbosity=DEBUG
-    log DEBUG "bash $shell_version"
-    # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-    # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-    log DEBUG "LANGUAGE: ${LANGUAGE-}"
-    log DEBUG "LC_ALL: ${LC_ALL-}"
-    log DEBUG "LANG: ${LANG-}"
-    log DEBUG "decimal point: $(locale decimal_point)"
+    if [[ $option == d ]]
+    then
+        verbosity=DEBUG
+        log DEBUG "bash $shell_version"
+        # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+        # http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+        log DEBUG "LANGUAGE: ${LANGUAGE-}"
+        log DEBUG "LC_ALL: ${LC_ALL-}"
+        log DEBUG "LANG: ${LANG-}"
+        log DEBUG "decimal point: $(locale decimal_point)"
 
-    set -o xtrace
+        set -o xtrace
+    fi
 fi
+OPTIND=1  # reset `OPTIND` for the next round of parsing in main script

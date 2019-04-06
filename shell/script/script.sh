@@ -7,12 +7,13 @@ Usage:
 
 Options:
  -h   show help
+ -d   show debug messages
 '
 
 script=$0
 source "$(dirname "$script")"/_init.sh
 
-while getopts h option  # option string needs standard options
+while getopts hd option  # option string needs standard options
 do
     if [[ $option == '?' ]]
     then

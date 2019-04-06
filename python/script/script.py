@@ -1,13 +1,14 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 
 """
 `SCRIPT` DESCRIPTION
 
 Usage:
- SCRIPT [options]
+ SCRIPT [-h|-d]
 
 Options:
- -h, --help   show help
+ -h, --help    show help
+ -d, --debug   show debug messages
 """
 
 import sys; sys.dont_write_bytecode = True
@@ -18,7 +19,9 @@ class MyPie(docpie.Docpie):
     option_name = _('Options:')
 
 arguments = MyPie(_(__doc__)).docpie()
+_init.setdebug(arguments['--debug'])
 
 #region MAIN CODE STARTS HERE #
+# needs `def main()` for debugging
 
 #endregion

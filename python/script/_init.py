@@ -36,7 +36,7 @@ import gettext, locale, pathlib, sys
 script = pathlib.Path(sys.argv[0])
 
 gettext.install(
-    script.name, localedir = str(pathlib.Path(script.parent, '_translations')))
+    script.name, localedir = pathlib.Path(script.parent, '_translations'))
 
 # make Python locale aware
 locale.setlocale(locale.LC_ALL, '')
@@ -56,18 +56,18 @@ def _traceit(frame, event, arg):
             inspect.getframeinfo(frame).code_context[0].rstrip())
     return _traceit
 
+# enable debugging for main script
+def setdebug(debug):
+    if debug is True:
+        logger.setLevel('DEBUG')
+        sys.settrace(_traceit)
+
+    logger.debug(
+        'Python %s %s', platform.python_version(), platform.architecture()[0])
+    locale_vars = {key: os.getenv(key, '') for key in ('LANGUAGE', 'LC_ALL', 'LANG')}
+    locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
+    logger.debug(locale_vars)
+
 # during standard execution, we want no traceback, just the exception
 sys.excepthook = _notraceback
-
-# enable debugging for main script
-if os.getenv('PYTHONDEBUG') is not None:
-    logger.setLevel('DEBUG')
-    sys.settrace(_traceit)
-
-logger.debug(
-    'Python %s %s', platform.python_version(), platform.architecture()[0])
-locale_vars = {key: os.getenv(key, '') for key in
-                   ('LANGUAGE', 'LC_ALL', 'LANG')}
-locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
-logger.debug(locale_vars)
 #endregion
