@@ -42,12 +42,18 @@ gettext.install(
 locale.setlocale(locale.LC_ALL, '')
 #endregion
 
-#region DEBUGGING #
-import inspect, locale, os, platform, sys, traceback
+#region TRACEBACK #
+import sys, traceback
 
 def _notraceback(type, value, trace_back):
     logger.critical(
         ''.join(traceback.format_exception_only(type, value)).rstrip())
+
+sys.excepthook = _notraceback  # we want no traceback, just the exception
+#endregion
+
+#region DEBUGGING #
+import inspect, locale, os, platform, sys
 
 def _traceit(frame, event, arg):
     if frame.f_globals['__name__'] == '__main__' and event in ['call', 'line']:
@@ -67,7 +73,4 @@ def setdebug(debug):
     locale_vars = {key: os.getenv(key, '') for key in ('LANGUAGE', 'LC_ALL', 'LANG')}
     locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
     logger.debug(locale_vars)
-
-# during standard execution, we want no traceback, just the exception
-sys.excepthook = _notraceback
 #endregion
