@@ -81,7 +81,6 @@ trap exit_handler EXIT
 
 ## DEBUGGING ##
 PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-shell_version=$(printf '%s.%s.%s' ${BASH_VERSINFO[@]:0:3})
 
 # leading `:`: don't report unknown options (which we can't know in advance here)
 if getopts :d option
@@ -89,7 +88,7 @@ then
     if [[ $option == d ]]
     then
         verbosity=DEBUG
-        log DEBUG "bash $shell_version"
+        log DEBUG "bash $BASH_VERSION"
         # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
         # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
         log DEBUG "LANGUAGE: ${LANGUAGE-} LC_ALL: ${LC_ALL-} LANG: ${LANG-} decimal point: $(locale decimal_point)"
