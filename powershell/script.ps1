@@ -14,11 +14,8 @@ DESCRIPTION
 Param([Switch] $Help)  # make help available the standard way (without `Get-Help`)
 
 #region INITIALIZATION #
-$ErrorActionPreference         = 'Stop'
-$PSModuleAutoloadingPreference = 'None'
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
-
-Import-Module -Name Microsoft.PowerShell.Utility
 #endregion
 
 #region HELP #
