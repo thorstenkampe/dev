@@ -29,12 +29,8 @@ if ($Help) {
 #endregion
 
 #region DEBUGGING #
-# script is run with `-Debug`
-if ($DebugPreference -eq 'Inquire') {
-    $DebugPreference = 'Continue'
-}
-
 Write-Debug -Message ('PowerShell {0} {1}' -f $PSEdition, $PSVersionTable.PSVersion)
+# script is run with `-Debug`
 if ($DebugPreference -eq 'Continue') {
     Set-PSDebug -Trace 1
 }
