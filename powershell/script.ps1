@@ -31,11 +31,7 @@ if ($DebugPreference -eq 'Continue') {
 }
 #endregion
 
-try {
 #region MAIN CODE STARTS HERE #
 
 #endregion
-}
-finally {
-    Set-PSDebug -Trace 0
-}
+Set-PSDebug -Trace 0
