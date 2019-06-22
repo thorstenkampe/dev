@@ -1,3 +1,8 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2086  # `IFS=` disables word splitting
+# shellcheck disable=SC2154  # `nounset` emits error at runtime
+# shellcheck disable=SC2230  # using `which` is fine
+
 ## * short instead of long options are used for macOS compatibility
 ## * we use `>&2` instead of `> /dev/stderr` because of problems with the
 ##   implementation on Cygwin
@@ -5,12 +10,13 @@
 ## INITIALIZATION ##
 IFS=  # disable word splitting
 
-shopt -os nounset pipefail
+shopt -os nounset pipefail errexit
 
 ## INTERNATIONALIZATION ##
 # http://www.gnu.org/software/gettext/manual/gettext.html#Preparing-Shell-Scripts
-export TEXTDOMAIN=$(basename $script) \
-       TEXTDOMAINDIR=$(dirname $script)/_translations
+TEXTDOMAIN=$(basename $script)
+TEXTDOMAINDIR=$(dirname $script)/_translations
+export TEXTDOMAIN TEXTDOMAINDIR
 
 if ! which gettext &> /dev/null
 then
@@ -74,6 +80,7 @@ function exit_handler {
 
 for signal in ERR INT HUP QUIT TERM
 do
+    # shellcheck disable=SC2064
     trap "error_handler $signal" $signal
 done
 

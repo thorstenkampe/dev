@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-help='`SCRIPT` DESCRIPTION
+help='SCRIPT DESCRIPTION
 
 Usage:
  SCRIPT [options]
@@ -11,6 +11,7 @@ Options:
 '
 
 script=$0
+# shellcheck source=_init.sh
 source "$(dirname "$script")"/_init.sh
 
 while getopts hd option  # option string needs standard options
