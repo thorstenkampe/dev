@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 """
-`SCRIPT` DESCRIPTION
+SCRIPT DESCRIPTION
 
 Usage:
  SCRIPT [-h|-d]
