@@ -11,7 +11,8 @@ Options:
  -d, --debug   show debug messages
 """
 
-import sys; sys.dont_write_bytecode = True
+import sys
+sys.dont_write_bytecode = True
 import docpie, _init
 
 class MyPie(docpie.Docpie):

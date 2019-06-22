@@ -1,10 +1,11 @@
 #region TRAPS #
-import signal, sys; from pycompat import system
+import signal, sys
+from pycompat import system
 
 # exit handler can be done with `atexit.register()`
 def error_handler(signum, frame):
     termsignal = signal.Signals(signum).name
-    logger.error(f'received {termsignal} signal, exiting...')
+    logger.error('received %s signal, exiting...', termsignal)
     sys.exit(1)
 
 # Windows has no `SIGHUP` and `SIGQUIT`, `SIGTERM` is a NOOP
@@ -45,21 +46,21 @@ locale.setlocale(locale.LC_ALL, '')
 #region TRACEBACK #
 import sys, traceback
 
-def _notraceback(type, value, trace_back):
+def _notraceback(type_, value, trace_back):
     logger.critical(
-        ''.join(traceback.format_exception_only(type, value)).rstrip())
+        ''.join(traceback.format_exception_only(type_, value)).rstrip())
 
 sys.excepthook = _notraceback  # we want no traceback, just the exception
 #endregion
 
 #region DEBUGGING #
-import inspect, locale, os, platform, sys
+import inspect, locale, os, platform, sys  # pylint: disable = syntax-error
 
 def _traceit(frame, event, arg):
     if frame.f_globals['__name__'] == '__main__' and event in ['call', 'line']:
 
         logger.debug('+[%s]: %s', frame.f_lineno,
-            inspect.getframeinfo(frame).code_context[0].rstrip())
+                     inspect.getframeinfo(frame).code_context[0].rstrip())
     return _traceit
 
 # enable debugging for main script
