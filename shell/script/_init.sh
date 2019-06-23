@@ -3,10 +3,6 @@
 # shellcheck disable=SC2154  # `nounset` emits error at runtime
 # shellcheck disable=SC2230  # using `which` is fine
 
-## * short instead of long options are used for macOS compatibility
-## * we use `>&2` instead of `> /dev/stderr` because of problems with the
-##   implementation on Cygwin
-
 ## INITIALIZATION ##
 IFS=  # disable word splitting
 
@@ -43,10 +39,10 @@ function log {
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
-            printf '%s%s\e[m: %s\n' ${color[$1]} $1 $2 >&2
+            printf '%s%s\e[m: %s\n' ${color[$1]} $1 $2
         else
-            printf '%s: %s\n' $1 $2 >&2
-        fi
+            printf '%s: %s\n' $1 $2
+        fi > /dev/stderr
     fi
 }
 
