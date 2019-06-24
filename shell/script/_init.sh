@@ -1,25 +1,10 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2086  # `IFS=` disables word splitting
-# shellcheck disable=SC2154  # `nounset` emits error at runtime
-# shellcheck disable=SC2230  # using `which` is fine
 
 ## INITIALIZATION ##
 IFS=  # disable word splitting
 
 shopt -os nounset pipefail errexit
-
-## INTERNATIONALIZATION ##
-# http://www.gnu.org/software/gettext/manual/gettext.html#Preparing-Shell-Scripts
-TEXTDOMAIN=$(basename $script)
-TEXTDOMAINDIR=$(dirname $script)/_translations
-export TEXTDOMAIN TEXTDOMAINDIR
-
-if ! which gettext &> /dev/null
-then
-    function gettext {
-        printf '%s' "$@"
-    }
-fi
 
 ## LOGGING ##
 declare -A loglevel color
@@ -52,7 +37,8 @@ if getopts :h option
 then
     if [[ $option == h ]]
     then
-        gettext $help
+        # shellcheck disable=SC2154
+        printf '%s' $help
         exit
     fi
 fi
