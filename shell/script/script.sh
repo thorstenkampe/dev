@@ -21,6 +21,6 @@ do
         exit 1
     fi
 done
-shift $((OPTIND - 1))   # remove options from command line
+shift $((OPTIND - 1))    # remove options from command line
 
 ## MAIN CODE STARTS HERE ##
