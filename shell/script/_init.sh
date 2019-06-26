@@ -1,5 +1,4 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2086  # `IFS=` disables word splitting
 
 ## INITIALIZATION ##
 IFS=  # disable word splitting
@@ -24,9 +23,9 @@ function log {
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
-            printf '%s%s\e[m: %s\n' ${color[$1]} $1 $2
+            printf '%s%s\e[m: %s\n' ${color[$1]} "$1" "$2"
         else
-            printf '%s: %s\n' $1 $2
+            printf '%s: %s\n' "$1" "$2"
         fi > /dev/stderr
     fi
 }
@@ -38,7 +37,7 @@ then
     if [[ $option == h ]]
     then
         # shellcheck disable=SC2154
-        printf '%s' $help
+        printf '%s' "$help"
         exit
     fi
 fi
