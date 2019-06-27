@@ -3,7 +3,7 @@
 ## INITIALIZATION ##
 IFS=  # disable word splitting
 
-shopt -os nounset pipefail errexit
+set -o nounset pipefail errexit
 
 ## LOGGING ##
 declare -A loglevel color
