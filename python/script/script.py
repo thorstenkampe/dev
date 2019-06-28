@@ -12,7 +12,7 @@ Options:
 """
 
 #region IMPORTS #
-import gettext, inspect, locale, os, pathlib, platform, signal, sys, traceback  # pylint: disable = syntax-error
+import gettext, inspect, locale, os, pathlib, platform, signal, sys, traceback
 import colorlog, docpie
 from pycompat import system
 #endregion
