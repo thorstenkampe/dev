@@ -71,8 +71,7 @@ def _traceit(frame, event, arg):
                      inspect.getframeinfo(frame).code_context[0].rstrip())
     return _traceit
 
-# enable debugging for main script
-def debug():
+def _debug():
     logger.setLevel('DEBUG')
 
     logger.debug(
@@ -91,7 +90,7 @@ class MyPie(docpie.Docpie):
 
 arguments = MyPie(_(__doc__)).docpie()
 if arguments['--debug']:
-    debug()
+    _debug()
 #endregion
 
 #region MAIN CODE STARTS HERE #
