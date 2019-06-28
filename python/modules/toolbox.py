@@ -1,11 +1,11 @@
 ##region FUNCTIONS ##
-import collections, itertools
+import collections, itertools, socket, urllib
 
 def ident(x):
     return x
 
 def even(integer):
-    return not(odd(integer))
+    return not odd(integer)
 
 def odd(integer):
     return bool(integer % 2)
@@ -42,7 +42,7 @@ def flatten(seq):
     >>> flatten(table)  # doctest: +ELLIPSIS
     ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
     """
-    for dimension in dim(seq)[1:]:
+    for dimension in dim(seq)[1:]:  # pylint: disable = unused-variable
         seq = itertools.chain.from_iterable(seq)
     return list(seq)
 
@@ -76,12 +76,18 @@ def count(dict_):
     """
     return {key: len(dict_[key]) for key in dict_}
 
-def port_reachable(host, port):
+# doesn't work through SSH tunnel
+def port_reachable(host, port = None):
+    if not port:
+        url_components = urllib.parse.urlparse(host)
+        host = url_components.hostname
+        port = url_components.port
+
     with socket.socket() as sock:
-        sock.settimeout(0.002)
+        sock.settimeout(0.048)
         try:
             sock.connect((host, port))
-        except socket.timeout:
+        except (socket.timeout, socket.gaierror):
             return False
         else:
             return True
@@ -105,9 +111,9 @@ def partition(seq, split):
 
     elif isinstance(split[0], int):
         part = []
-        for slice in split:
-            part.append(seq[:slice])
-            seq = seq[slice:]
+        for slice_ in split:
+            part.append(seq[:slice_])
+            seq = seq[slice_:]
 
         if seq:
             part += [seq]
@@ -184,7 +190,7 @@ def timer(iteration, *func_and_args):
     gc.collect()  # force garbage collection
     start_time_total = time.time()
 
-    for index in iteration:
+    for index in iteration:  # pylint: disable = unused-variable
         function(*args)
 
     print('total: %.3f' % (time.time() - start_time_total))
