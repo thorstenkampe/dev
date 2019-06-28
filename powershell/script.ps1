@@ -5,7 +5,7 @@
 DESCRIPTION
 
 .DESCRIPTION
-`SCRIPT` DESCRIPTION
+SCRIPT DESCRIPTION
 #>
 
 [CmdletBinding(SupportsShouldProcess)]
@@ -21,7 +21,7 @@ if ($Help) {
 }
 
 # `-Debug`
-Write-Debug -Message ('PowerShell {0} {1}' -f $PSEdition, $PSVersionTable.PSVersion)
+Write-Debug -Message ("PowerShell $PSEdition {0}" -f $PSVersionTable.PSVersion)
 if ($DebugPreference -eq 'Continue') {
     Set-PSDebug -Trace 1
 }
