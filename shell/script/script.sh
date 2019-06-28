@@ -7,8 +7,7 @@ Usage:
 
 Options:
  -h   show help
- -d   show debug messages
-'
+ -d   show debug messages'
 
 ## INITIALIZATION ##
 IFS=  # disable word splitting
@@ -43,7 +42,6 @@ function log {
 # * trap EXIT signal for exit handler; the exit handler will always run (after
 #   the error handler)
 
-# this will run when program exits abnormally
 function error_handler {
     error_code=$?
     printf '\n'
@@ -59,13 +57,12 @@ done
 
 ## DEFAULT OPTIONS ##
 function default_options {
-    if [[ $option == h ]]
+    if   [[ $option == h ]]
     then
-        printf '%s' "$help"
+        printf '%s\n' "$help"
         exit
-    fi
 
-    if [[ $option == d ]]
+    elif [[ $option == d ]]
     then
         PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
         verbosity=DEBUG
@@ -76,9 +73,8 @@ function default_options {
         log DEBUG "LANGUAGE: ${LANGUAGE-} LC_ALL: ${LC_ALL-} LANG: ${LANG-} decimal point: $(locale decimal_point)"
 
         shopt -os xtrace
-    fi
 
-    if [[ $option == '?' ]]
+    elif [[ $option == '?' ]]
     then
         exit 1
     fi
