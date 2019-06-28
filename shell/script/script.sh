@@ -39,7 +39,9 @@ function log {
 }
 
 ## TRAPS ##
-# create your own handler in the main section
+# * create your own handler in the main section
+# * trap EXIT signal for exit handler; the exit handler will always run (after
+#   the error handler)
 
 # this will run when program exits abnormally
 function error_handler {
@@ -49,18 +51,11 @@ function error_handler {
     exit $error_code
 }
 
-# This will always run (after the error handler)
-function exit_handler {
-    :
-}
-
 for signal in ERR INT HUP QUIT TERM
 do
     # shellcheck disable=SC2064
     trap "error_handler $signal" $signal
 done
-
-trap exit_handler EXIT
 
 ## DEFAULT OPTIONS ##
 function default_options {
