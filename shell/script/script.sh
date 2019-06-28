@@ -14,25 +14,25 @@ IFS=  # disable word splitting
 shopt -os nounset pipefail errexit
 
 ## LOGGING ##
+# modeled after Python modules `logging` and `colorlog`
 declare -A loglevel color
 verbosity=WARNING  # default level
 
-# * Modeled after Python modules `logging` and `colorlog`
-# * For color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-loglevel[CRITICAL]=10  color[CRITICAL]=$'\e[1;31m'  # brightred
-loglevel[ERROR]=20     color[ERROR]=$'\e[0;31m'     # red
-loglevel[WARNING]=30   color[WARNING]=$'\e[0;33m'   # yellow
-loglevel[INFO]=40      color[INFO]=$'\e[0;32m'      # green
-loglevel[DEBUG]=50     color[DEBUG]=$'\e[0;37m'     # white
+# for color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+loglevel[CRITICAL]=10  color[CRITICAL]='1;31'  # brightred
+loglevel[ERROR]=20     color[ERROR]='0;31'     # red
+loglevel[WARNING]=30   color[WARNING]='0;33'   # yellow
+loglevel[INFO]=40      color[INFO]='0;32'      # green
+loglevel[DEBUG]=50     color[DEBUG]='0;37'     # white
 
 function log {
     if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
-            printf '%s%s\e[m: %s\n' ${color[$1]} "$1" "$2"
+            echo -e "\e[${color[$1]}m$1\e[m: $2"
         else
-            printf '%s: %s\n' "$1" "$2"
+            echo -e "$1: $2"
         fi > /dev/stderr
     fi
 }
@@ -44,7 +44,7 @@ function log {
 
 function error_handler {
     error_code=$?
-    printf '\n'
+    echo
     log ERROR "received $1 signal, exiting..."
     exit $error_code
 }
@@ -59,7 +59,7 @@ done
 function default_options {
     if   [[ $option == h ]]
     then
-        printf '%s\n' "$help"
+        echo "$help"
         exit
 
     elif [[ $option == d ]]
