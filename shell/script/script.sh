@@ -26,7 +26,7 @@ loglevel[INFO]=40      color[INFO]='0;32'      # green
 loglevel[DEBUG]=50     color[DEBUG]='0;37'     # white
 
 function log {
-    if ((${loglevel[$1]} <= ${loglevel[$verbosity]}))
+    if ((loglevel[$1] <= loglevel[$verbosity]))
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
