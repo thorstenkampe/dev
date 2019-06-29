@@ -15,15 +15,12 @@ shopt -os nounset pipefail errexit
 
 ## LOGGING ##
 # modeled after Python modules `logging` and `colorlog`
-declare -A loglevel color
 verbosity=WARNING  # default level
-
+declare -A loglevel color
+loglevel=([CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50)
 # for color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-loglevel[CRITICAL]=10  color[CRITICAL]='1;31'  # brightred
-loglevel[ERROR]=20     color[ERROR]='0;31'     # red
-loglevel[WARNING]=30   color[WARNING]='0;33'   # yellow
-loglevel[INFO]=40      color[INFO]='0;32'      # green
-loglevel[DEBUG]=50     color[DEBUG]='0;37'     # white
+#       brightred         red            yellow           green         white
+color=([CRITICAL]='1;31' [ERROR]='0;31' [WARNING]='0;33' [INFO]='0;32' [DEBUG]='0;37')
 
 function log {
     if ((loglevel[$1] <= loglevel[$verbosity]))
