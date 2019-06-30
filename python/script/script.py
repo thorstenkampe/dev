@@ -43,7 +43,7 @@ script = pathlib.Path(sys.argv[0])
 gettext.install(
     script.name, localedir = pathlib.Path(script.parent, '_translations'))
 
-# make Python locale aware
+# make Python locale aware - `locale.localeconv()` too see values
 locale.setlocale(locale.LC_ALL, '')
 #endregion
 
@@ -68,9 +68,8 @@ def _debug():
 
     logger.debug(
         'Python %s %s', platform.python_version(), platform.architecture()[0])
-    locale_vars = {key: os.getenv(key, '') for key in ('LANGUAGE', 'LC_ALL', 'LANG')}
-    locale_vars['decimal_point'] = locale.localeconv()['decimal_point']
-    logger.debug(locale_vars)
+    logger.debug(
+        {key: os.getenv(key, '') for key in ('LANGUAGE', 'LC_ALL', 'LANG')})
 
     sys.settrace(_traceit)
 #endregion
