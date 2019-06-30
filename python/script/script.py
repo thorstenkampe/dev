@@ -20,8 +20,7 @@ from pycompat import system
 #region TRAPS #
 # exit handler can be done with `atexit.register()`
 def error_handler(signum, frame):
-    termsignal = signal.Signals(signum).name
-    logger.error('received %s signal, exiting...', termsignal)
+    logger.error('received %s signal, exiting...', signal.Signals(signum).name)
     sys.exit(1)
 
 # Windows has no `SIGHUP` and `SIGQUIT`, `SIGTERM` is a NOOP
@@ -40,7 +39,7 @@ logger  = colorlog.getLogger(name = '__main__')
 handler = colorlog.StreamHandler()
 
 handler.setFormatter(colorlog.ColoredFormatter(
-    '%(log_color)s%(levelname)s:%(reset)s %(message)s'))
+    '%(log_color)s%(levelname)s%(reset)s: %(message)s'))
 
 logger.addHandler(handler)
 #endregion
