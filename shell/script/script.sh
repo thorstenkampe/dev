@@ -46,7 +46,7 @@ function error_handler {
     exit $error_code
 }
 
-for signal in ERR INT HUP QUIT TERM
+for signal in ERR INT TERM
 do
     # shellcheck disable=SC2064
     trap "error_handler $signal" $signal

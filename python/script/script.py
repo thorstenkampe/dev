@@ -14,7 +14,6 @@ Options:
 #region IMPORTS #
 import gettext, inspect, locale, os, pathlib, platform, signal, sys, traceback
 import colorlog, docpie
-from pycompat import system
 #endregion
 
 #region TRAPS #
@@ -23,14 +22,8 @@ def error_handler(signum, frame):
     logger.error('received %s signal, exiting...', signal.Signals(signum).name)
     sys.exit(1)
 
-# Windows has no `SIGHUP` and `SIGQUIT`, `SIGTERM` is a NOOP
-# (https://bugs.python.org/issue26350)
-if system.is_windows:
-    termsignals = signal.SIGINT, signal.SIGBREAK
-else:
-    termsignals = signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT
-
-for termsignal in termsignals:
+# `SIGTERM` is a NOOP on Windows (https://bugs.python.org/issue26350)
+for termsignal in signal.SIGINT, signal.SIGTERM:
     signal.signal(termsignal, error_handler)
 #endregion
 
