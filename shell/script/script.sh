@@ -11,6 +11,8 @@ Options:
 
 # INITIALIZATION #
 IFS=  # disable word splitting
+# https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+export LANG=en_US.UTF-8  # "neutral" environment
 shopt -os nounset pipefail errexit
 
 # LOGGING #
@@ -65,10 +67,6 @@ function default_options {
         verbosity=DEBUG
 
         log DEBUG "bash $BASH_VERSION"
-        # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-        # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-        log DEBUG "LANGUAGE: ${LANGUAGE-} LC_ALL: ${LC_ALL-} LANG: ${LANG-}"
-
         shopt -os xtrace
 
     elif [[ $option == '?' ]]

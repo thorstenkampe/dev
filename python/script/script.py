@@ -12,7 +12,7 @@ Options:
 """
 
 # IMPORTS #
-import gettext, inspect, locale, os, pathlib, platform, signal, sys, traceback
+import inspect, os, platform, signal, sys, traceback
 import colorlog, docpie
 
 # TRAPS #
@@ -34,15 +34,6 @@ handler.setFormatter(colorlog.ColoredFormatter(
 
 logger.addHandler(handler)
 
-# INTERNATIONALIZATION #
-script = pathlib.Path(sys.argv[0])
-
-gettext.install(
-    script.name, localedir = pathlib.Path(script.parent, '_translations'))
-
-# make Python locale aware - `locale.localeconv()` too see values
-locale.setlocale(locale.LC_ALL, '')
-
 # TRACEBACK #
 def _notraceback(type_, value, trace_back):
     logger.critical(
@@ -63,17 +54,11 @@ def _debug():
 
     logger.debug(
         'Python %s %s', platform.python_version(), platform.architecture()[0])
-    logger.debug(
-        {key: os.getenv(key, '') for key in ('LANGUAGE', 'LC_ALL', 'LANG')})
 
     sys.settrace(_traceit)
 
 # OPTIONS #
-class MyPie(docpie.Docpie):
-    usage_name  = _('Usage:')
-    option_name = _('Options:')
-
-arguments = MyPie(_(__doc__)).docpie()
+arguments = docpie.docpie(__doc__)
 if arguments['--debug']:
     _debug()
 
