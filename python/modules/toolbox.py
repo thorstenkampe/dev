@@ -1,4 +1,4 @@
-##region FUNCTIONS ##
+# FUNCTIONS #
 import collections, itertools, socket, urllib
 
 def ident(x):
@@ -10,7 +10,6 @@ def even(integer):
 def odd(integer):
     return bool(integer % 2)
 
-#
 def dim(seq):
     """
     >>> dim(table)
@@ -91,9 +90,8 @@ def port_reachable(host, port = None):
             return False
         else:
             return True
-#endregion
 
-##region PARTITION ##
+# PARTITION #
 def partition(seq, split):
     """
     split sequence by length or string by separator
@@ -126,9 +124,8 @@ def partition(seq, split):
         return seq.split(split[0])
     else:
         raise TypeError("Incorrect type for argument 'split' in partition(seq, split)")
-#endregion
 
-##region TEST FUNCTIONS ##
+# TEST FUNCTIONS #
 import gc, time
 
 def ishashable(seq, keyfunc = ident):
@@ -194,9 +191,8 @@ def timer(iteration, *func_and_args):
         function(*args)
 
     print('total: %.3f' % (time.time() - start_time_total))
-#endregion
 
-##region TEST TYPES ##
+# TEST TYPES #
 string_     = 'The quick brown fox jumps over the lazy dog'
 
 list_       = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
@@ -216,4 +212,3 @@ unhashable  = [11, [22], 33]
 
 orderable   = [[11], [22], [33]]
 unorderable = [11, ['22'], 33]
-#endregion

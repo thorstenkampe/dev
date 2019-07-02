@@ -9,11 +9,11 @@ Options:
  -h   show help
  -d   show debug messages'
 
-## INITIALIZATION ##
+# INITIALIZATION #
 IFS=  # disable word splitting
 shopt -os nounset pipefail errexit
 
-## LOGGING ##
+# LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
 declare -A loglevel color
@@ -34,7 +34,7 @@ function log {
     fi
 }
 
-## TRAPS ##
+# TRAPS #
 # * create your own handler in the main section
 # * trap EXIT signal for exit handler; the exit handler will always run (after
 #   the error handler)
@@ -52,7 +52,7 @@ do
     trap "error_handler $signal" $signal
 done
 
-## DEFAULT OPTIONS ##
+# DEFAULT OPTIONS #
 function default_options {
     if   [[ $option == h ]]
     then
@@ -77,7 +77,7 @@ function default_options {
     fi
 }
 
-## MAIN CODE STARTS HERE ##
+# MAIN CODE STARTS HERE #
 while getopts hd option
 do
     default_options
