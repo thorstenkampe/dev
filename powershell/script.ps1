@@ -8,7 +8,7 @@ DESCRIPTION
 SCRIPT DESCRIPTION
 #>
 
-#[CmdletBinding(SupportsShouldProcess)]  # support for `ShouldProcess` and `ShouldContinue`
+[CmdletBinding(SupportsShouldProcess)]  # support for `ShouldProcess` and `ShouldContinue`
 Param([Switch] $Help)                    # make help available without `Get-Help`
 
 $ErrorActionPreference = 'Stop'
@@ -17,11 +17,11 @@ Set-StrictMode -Version latest
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 $verbosity = 'WARNING'  # default level
-$loglevel  = @{CRITICAL = 10; ERROR = 20; WARNING = 30; INFO = 40; DEBUG = 50}
+$loglevel  = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
 $color     = @{CRITICAL = 'Red'; ERROR = 'DarkRed'; WARNING = 'DarkYellow'; INFO = 'DarkGreen'; DEBUG = 'Gray'}
 
 function log($Level, $Message) {
-    if ($loglevel[$Level] -le $loglevel[$verbosity]) {
+    if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
         Write-Host -Object $Level -ForegroundColor $color[$Level] -NoNewline
         Write-Host -Object (": {0}" -f $Message)
     }

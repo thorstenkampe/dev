@@ -18,14 +18,14 @@ shopt -os nounset pipefail errexit
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
-declare -A loglevel color color_codes 
-loglevel=([CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50)
+declare -A loglevel color color_codes
+loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10)
 color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=white)
 # for color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 color_codes=([brightred]='1;31' [red]='0;31' [yellow]='0;33' [green]='0;32' [white]='0;37')
 
 function log {
-    if ((loglevel[$1] <= loglevel[$verbosity]))
+    if ((loglevel[$1] >= loglevel[$verbosity]))
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
