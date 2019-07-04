@@ -1,7 +1,5 @@
 ﻿#! /usr/bin/env pwsh
 
-# https://docs.microsoft.com/de-de/powershell/module/microsoft.powershell.core/about/about_comment_based_help
-
 <#
 .SYNOPSIS
 DESCRIPTION
