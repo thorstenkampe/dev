@@ -8,8 +8,9 @@ DESCRIPTION
 SCRIPT DESCRIPTION
 #>
 
-[CmdletBinding(SupportsShouldProcess)]  # support for `ShouldProcess` and `ShouldContinue`
-Param([Switch] $Help)                   # make help available without `Get-Help`
+# `SupportsShouldProcess`: support for `ShouldProcess` and `ShouldContinue`
+[CmdletBinding(SupportsShouldProcess)]
+Param([Switch] $Help)  # make help available without `Get-Help`
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
