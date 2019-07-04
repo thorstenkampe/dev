@@ -1,11 +1,16 @@
 ﻿#! /usr/bin/env pwsh
 
+# https://docs.microsoft.com/de-de/powershell/module/microsoft.powershell.core/about/about_comment_based_help
+
 <#
 .SYNOPSIS
 DESCRIPTION
 
 .DESCRIPTION
 SCRIPT DESCRIPTION
+
+.LINK
+https://github.com/thorstenkampe/dev/blob/master/powershell/script.ps1
 #>
 
 # `SupportsShouldProcess`: support for `ShouldProcess` and `ShouldContinue`
