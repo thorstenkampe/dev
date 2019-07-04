@@ -9,11 +9,18 @@ DESCRIPTION
 .DESCRIPTION
 SCRIPT DESCRIPTION
 
-.LINK
-https://github.com/thorstenkampe/dev/blob/master/powershell/script.ps1
+.PARAMETER Help
+show detailed help
+
+.PARAMETER WhatIf
+show what the script would do (dry run)
+
+.PARAMETER Confirm
+confirm the script's actions
 #>
 
-# `SupportsShouldProcess`: support for `ShouldProcess` and `ShouldContinue`
+# support `-Verbose`, `-Debug`, `-WhatIf`, `-Confirm`, `ShouldProcess()`, and
+# `ShouldContinue()`
 [CmdletBinding(SupportsShouldProcess)]
 Param([Switch] $Help)  # make help available without `Get-Help`
 
@@ -35,7 +42,7 @@ function log($Level, $Message) {
 
 # OPTIONS #
 if     ($Help) {                              # `-Help`
-    Get-Help -Name $MyInvocation.InvocationName -Full
+    Get-Help -Name $MyInvocation.InvocationName -Detailed
     exit 1
 }
 elseif ($VerbosePreference -eq 'Continue') {  # `-Verbose`
@@ -48,6 +55,7 @@ elseif ($DebugPreference -eq 'Continue') {    # `-Debug`
 }
 
 # MAIN CODE STARTS HERE #
-
+# test command to demonstrate `-WhatIf` and `-Confirm`
+New-Variable -Name TEST
 #
 Set-PSDebug -Trace 0
