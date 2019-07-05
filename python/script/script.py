@@ -12,7 +12,7 @@ Options:
 """
 
 # IMPORTS #
-import inspect, os, platform, signal, sys, traceback
+import inspect, platform, signal, sys, traceback
 import colorlog, docpie
 
 # TRAPS #
