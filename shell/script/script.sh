@@ -56,23 +56,21 @@ done
 
 # DEFAULT OPTIONS #
 function default_options {
-    if   [[ $option == h ]]
-    then
-        echo "$help"
-        exit
+    case $option in
+        (h)
+            echo "$help"
+            exit;;
 
-    elif [[ $option == d ]]
-    then
-        PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-        verbosity=DEBUG
+        (d)
+            PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+            verbosity=DEBUG
 
-        log DEBUG "bash $BASH_VERSION"
-        shopt -os xtrace
+            log DEBUG "bash $BASH_VERSION"
+            shopt -os xtrace;;
 
-    elif [[ $option == '?' ]]
-    then
-        exit 1
-    fi
+        ('?')
+            exit 1
+    esac
 }
 
 # MAIN CODE STARTS HERE #
