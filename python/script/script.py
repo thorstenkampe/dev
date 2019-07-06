@@ -49,4 +49,7 @@ if arguments['--debug']:
     _debug()
 
 # MAIN CODE STARTS HERE #
-# needs `def main()` for debugging
+def main():
+    pass
+
+main()
