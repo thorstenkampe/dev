@@ -36,24 +36,6 @@ function log {
     fi
 }
 
-# TRAPS #
-# * create your own handler in the main section
-# * trap EXIT signal for exit handler; the exit handler will always run (after
-#   the error handler)
-
-function error_handler {
-    error_code=$?
-    echo
-    log ERROR "received $1 signal, exiting..."
-    exit $error_code
-}
-
-for signal in ERR INT TERM
-do
-    # shellcheck disable=SC2064
-    trap "error_handler $signal" $signal
-done
-
 # DEFAULT OPTIONS #
 function default_options {
     case $option in

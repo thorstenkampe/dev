@@ -9,19 +9,8 @@ Options:
  -d, --debug   show debug messages
 """
 
-# IMPORTS #
-import inspect, platform, signal, sys, traceback
+import inspect, platform, sys, traceback
 import colorlog, docpie
-
-# TRAPS #
-# exit handler can be done with `atexit.register()`
-def error_handler(signum, frame):
-    logger.error('received %s signal, exiting...', signal.Signals(signum).name)
-    sys.exit(1)
-
-# `SIGTERM` is a NOOP on Windows (https://bugs.python.org/issue26350)
-for termsignal in signal.SIGINT, signal.SIGTERM:
-    signal.signal(termsignal, error_handler)
 
 # LOGGING #
 logger  = colorlog.getLogger(name = '__main__')
@@ -55,7 +44,6 @@ def _debug():
 
     sys.settrace(_traceit)
 
-# OPTIONS #
 arguments = docpie.docpie(__doc__)
 if arguments['--debug']:
     _debug()
