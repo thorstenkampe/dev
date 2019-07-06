@@ -21,14 +21,11 @@ handler.setFormatter(colorlog.ColoredFormatter(
 
 logger.addHandler(handler)
 
-# TRACEBACK #
+# DEBUGGING #
 def _notraceback(type_, value, trace_back):
     logger.critical(
         ''.join(traceback.format_exception_only(type_, value)).rstrip())
 
-sys.excepthook = _notraceback  # we want no traceback, just the exception
-
-# DEBUGGING #
 def _traceit(frame, event, arg):
     if frame.f_globals['__name__'] == '__main__' and event in ['call', 'line']:
 
@@ -44,7 +41,10 @@ def _debug():
 
     sys.settrace(_traceit)
 
+sys.excepthook = _notraceback  # we want no traceback, just the exception
+
 arguments = docpie.docpie(__doc__)
+
 if arguments['--debug']:
     _debug()
 
