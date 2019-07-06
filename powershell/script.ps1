@@ -41,7 +41,7 @@ function log($Level, $Message) {
 # OPTIONS #
 if     ($Help) {                              # `-Help`
     Get-Help -Name $MyInvocation.InvocationName -Detailed
-    exit 1
+    exit
 }
 elseif ($VerbosePreference -eq 'Continue') {  # `-Verbose`
     $verbosity = 'INFO'
