@@ -55,5 +55,3 @@ elseif ($DebugPreference -eq 'Continue') {    # `-Debug`
 }
 
 # MAIN CODE STARTS HERE #
-# test command to demonstrate `-WhatIf` and `-Confirm`
-New-Variable -Name TEST_VAR -Value test_value
