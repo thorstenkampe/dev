@@ -25,7 +25,6 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
 # https://stackoverflow.com/questions/2379514/powershell-formatting-values-in-another-culture/
-$old_culture = [cultureinfo]::currentculture
 [cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
 
 # LOGGING #
@@ -56,11 +55,5 @@ elseif ($DebugPreference -eq 'Continue') {    # `-Debug`
 }
 
 # MAIN CODE STARTS HERE #
-try {
-    # test command to demonstrate `-WhatIf` and `-Confirm`
-    New-Variable -Name TEST_VAR -Value test_value
-}
-finally {
-    [cultureinfo]::currentculture = $old_culture
-    Set-PSDebug -Trace 0
-}
+# test command to demonstrate `-WhatIf` and `-Confirm`
+New-Variable -Name TEST_VAR -Value test_value
