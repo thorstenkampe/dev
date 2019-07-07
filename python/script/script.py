@@ -9,6 +9,7 @@ Options:
  -d, --debug   show debug messages
 """
 
+# INITIALIZATION #
 import inspect, platform, sys, traceback
 import colorlog, docpie
 
@@ -43,6 +44,7 @@ def _debug():
 
 sys.excepthook = _notraceback  # we want no traceback, just the exception
 
+# DEFAULT OPTIONS #
 arguments = docpie.docpie(__doc__)
 
 if arguments['--debug']:

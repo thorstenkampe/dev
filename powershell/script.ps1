@@ -15,6 +15,7 @@ show what the script would do (dry run)
 confirm the script's actions
 #>
 
+# INITIALIZATION #
 # support `-Verbose`, `-Debug`, `-WhatIf`, `-Confirm`, `ShouldProcess()`, and
 # `ShouldContinue()`
 [CmdletBinding(SupportsShouldProcess)]
@@ -36,7 +37,7 @@ function log($Level, $Message) {
     }
 }
 
-# OPTIONS #
+# DEFAULT OPTIONS #
 if     ($Help) {                              # `-Help`
     Get-Help -Name $MyInvocation.InvocationName -Detailed
     exit
