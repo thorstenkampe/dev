@@ -24,6 +24,10 @@ Param([Switch] $Help)  # make help available without `Get-Help`
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
+# https://stackoverflow.com/questions/2379514/powershell-formatting-values-in-another-culture/
+$old_culture = [cultureinfo]::currentculture
+[cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
+
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 $verbosity = 'WARNING'  # default level
@@ -52,7 +56,11 @@ elseif ($DebugPreference -eq 'Continue') {    # `-Debug`
 }
 
 # MAIN CODE STARTS HERE #
-# test command to demonstrate `-WhatIf` and `-Confirm`
-New-Variable -Name TEST_VAR -Value test_value
-#
-Set-PSDebug -Trace 0
+try {
+    # test command to demonstrate `-WhatIf` and `-Confirm`
+    New-Variable -Name TEST_VAR -Value test_value
+}
+finally {
+    [cultureinfo]::currentculture = $old_culture
+    Set-PSDebug -Trace 0
+}
