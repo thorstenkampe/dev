@@ -20,10 +20,8 @@ confirm the script's actions
 # `ShouldContinue()`
 [CmdletBinding(SupportsShouldProcess)]
 Param([Switch] $Help)  # make help available without `Get-Help`
-
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
-
 # https://stackoverflow.com/questions/2379514/powershell-formatting-values-in-another-culture/
 [cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
 
