@@ -16,8 +16,7 @@ confirm the script's actions
 #>
 
 # INITIALIZATION #
-# support `-Verbose`, `-Debug`, `-WhatIf`, `-Confirm`, `ShouldProcess()`, and
-# `ShouldContinue()`
+# support `-Verbose`, `-Debug`, `-WhatIf`, `-Confirm`, `ShouldProcess()`, and `ShouldContinue()`
 [CmdletBinding(SupportsShouldProcess)]
 Param([Switch] $Help)  # make help available without `Get-Help`
 $ErrorActionPreference = 'Stop'
