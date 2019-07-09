@@ -16,20 +16,19 @@ export LANG=en_US.UTF-8  # "neutral" environment
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
-declare -A loglevel color color_codes
-loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10)
-color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=white)
+# CRITICAL: brightred, ERROR: red, WARNING: yellow, INFO: green, DEBUG: white)
 # for color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-color_codes=([brightred]='1;31' [red]='0;31' [yellow]='0;33' [green]='0;32' [white]='0;37')
+declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
+           colorcodes=([CRITICAL]='1;31' [ERROR]='0;31' [WARNING]='0;33' [INFO]='0;32' [DEBUG]='0;37')
 
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
     then
         if [[ -t 2 ]]  # only output color if stderr is attached to tty
         then
-            echo -e "\e[${color_codes[${color[$1]}]}m$1\e[m: $2"
+            echo -e "\e[${colorcodes[$1]}m$1\e[m: $2"
         else
-            echo -e "$1: $2"
+            echo "$1: $2"
         fi > /dev/stderr
     fi
 }
