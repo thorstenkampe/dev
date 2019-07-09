@@ -8,10 +8,10 @@ Options:
  -d   show debug messages'
 
 # INITIALIZATION #
-shopt -os nounset pipefail errexit
 IFS=  # disable word splitting
 # https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
 export LANG=en_US.UTF-8  # "neutral" environment
+shopt -os nounset pipefail errexit
 
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
