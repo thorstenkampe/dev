@@ -16,10 +16,11 @@ export LANG=en_US.UTF-8  # "neutral" environment
 # LOGGING #
 # modeled after Python modules `logging` and `colorlog`
 verbosity=WARNING  # default level
-# CRITICAL: brightred, ERROR: red, WARNING: yellow, INFO: green, DEBUG: white)
+declare -A loglevel colorcodes
+loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10)
 # for color codes see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
-           colorcodes=([CRITICAL]='1;31' [ERROR]='0;31' [WARNING]='0;33' [INFO]='0;32' [DEBUG]='0;37')
+# CRITICAL: brightred, ERROR: red, WARNING: yellow, INFO: green, DEBUG: white)
+colorcodes=([CRITICAL]='1;31' [ERROR]='0;31' [WARNING]='0;33' [INFO]='0;32' [DEBUG]='0;37')
 
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
