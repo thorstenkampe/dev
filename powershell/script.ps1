@@ -25,7 +25,6 @@ Set-StrictMode -Version latest
 [cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
 
 # LOGGING #
-# modeled after Python modules `logging` and `colorlog`
 $verbosity = 'WARNING'  # default level
 $loglevel  = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
 $color     = @{CRITICAL = 'Red'; ERROR = 'DarkRed'; WARNING = 'DarkYellow'; INFO = 'DarkGreen'; DEBUG = 'Gray'}
@@ -47,7 +46,6 @@ elseif ($VerbosePreference -eq 'Continue') {  # `-Verbose`
 }
 elseif ($DebugPreference -eq 'Continue') {    # `-Debug`
     $verbosity = 'DEBUG'
-    log -Level DEBUG -Message ("PowerShell $PSEdition {0}" -f $PSVersionTable.PSVersion)
     Set-PSDebug -Trace 1
 }
 
