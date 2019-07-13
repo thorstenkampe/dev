@@ -31,7 +31,7 @@ def _traceit(frame, event, arg):
 
 def _debug():
     logger.setLevel('DEBUG')
-    logger.debug('Python %s %s', platform.python_version(), platform.architecture()[0])
+    logger.debug('Python %s', platform.python_version())
     sys.settrace(_traceit)
 
 sys.excepthook = _notraceback  # we want no traceback, just the exception
