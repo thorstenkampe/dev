@@ -1,7 +1,7 @@
 # INITIALIZATION #
 PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os nounset pipefail errexit
-IFS=                     # disable word splitting
+IFS=''                   # disable word splitting
 export LANG=en_US.UTF-8  # neutral environment
 
 # LOGGING #
@@ -18,7 +18,7 @@ then
     colorcodes=([CRITICAL]='\e[1;31m' [ERROR]='\e[0;31m' [WARNING]='\e[0;33m' [INFO]='\e[0;32m'
                 [DEBUG]='\e[0;37m' [RESET]='\e[m')
 else
-    colorcodes=([CRITICAL]= [ERROR]= [WARNING]= [INFO]= [DEBUG]= [RESET]=)
+    colorcodes=([CRITICAL]='' [ERROR]='' [WARNING]='' [INFO]='' [DEBUG]='' [RESET]='')
 fi
 
 function log {
