@@ -4,17 +4,26 @@ shopt -os nounset pipefail errexit
 IFS=''                   # disable word splitting
 export LANG=en_US.UTF-8  # neutral environment
 
+# * color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+# * use `ansifilter` to discard color codes when redirecting to file
+declare -A colorcode=([red]='\e[31m' [green]='\e[32m' [yellow]='\e[33m' [white]='\e[37m'
+                      [brightred]='\e[1;31m' [reset]='\e[m')
+
 # LOGGING #
-[[ -o xtrace ]] && verbosity=DEBUG || verbosity=WARNING
+if [[ -o xtrace ]]
+then
+    verbosity=DEBUG
+else
+    verbosity=WARNING
+fi
+
 declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
-           color=([CRITICAL]='\e[1;31m' [ERROR]='\e[0;31m' [WARNING]='\e[0;33m' [INFO]='\e[0;32m' [DEBUG]='\e[0;37m' [RESET]='\e[m')
-# no color if stderr is not attached to tty
-[[ ! -t 2 ]] && color=([CRITICAL]='' [ERROR]='' [WARNING]='' [INFO]='' [DEBUG]='' [RESET]='')
+           color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=white)
 
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
     then
-        echo -e "${color[$1]}$1${color[RESET]}: $2" > /dev/stderr
+        echo -e "${colorcode[${color[$1]}]}$1${colorcode[reset]}: $2" >&2
     fi
 }
 
