@@ -5,13 +5,12 @@ IFS=''                   # disable word splitting
 export LANG=en_US.UTF-8  # neutral environment
 # * color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 # * use `ansifilter` to discard color codes when redirecting to file
-declare -A colorcode=([red]='\e[31m' [green]='\e[32m' [yellow]='\e[33m' [white]='\e[37m'
-                      [brightred]='\e[1;31m' [reset]='\e[m')
+declare -A colorcode=([red]='\e[31m' [green]='\e[32m' [yellow]='\e[33m' [brightred]='\e[1;31m' [reset]='\e[m')
 
 # LOGGING #
 [[ -o xtrace ]] && verbosity=DEBUG || verbosity=WARNING
 declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
-           color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=white)
+           color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=reset)
 
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
