@@ -9,12 +9,7 @@ declare -A colorcode=([red]='\e[31m' [green]='\e[32m' [yellow]='\e[33m' [white]=
                       [brightred]='\e[1;31m' [reset]='\e[m')
 
 # LOGGING #
-if [[ -o xtrace ]]
-then
-    verbosity=DEBUG
-else
-    verbosity=WARNING
-fi
+[[ -o xtrace ]] && verbosity=DEBUG || verbosity=WARNING
 
 declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
            color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=white)
