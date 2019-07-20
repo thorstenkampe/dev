@@ -24,15 +24,21 @@ Set-StrictMode -Version latest
 # https://stackoverflow.com/questions/2379514/powershell-formatting-values-in-another-culture/
 [cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
 
+Import-Module -Name PSWriteColor
+
 # LOGGING #
 $verbosity = 'WARNING'  # default level
 $loglevel  = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
-$color     = @{CRITICAL = 'Red'; ERROR = 'DarkRed'; WARNING = 'DarkYellow'; INFO = 'DarkGreen'; DEBUG = 'Gray'}
+$color     = @{CRITICAL = 'Red'; ERROR = 'DarkRed'; WARNING = 'DarkYellow'; INFO = 'DarkGreen'}
 
 function log($Level, $Message) {
     if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
-        Write-Host -Object $Level -ForegroundColor $color[$Level] -NoNewline
-        Write-Host -Object (": {0}" -f $Message)
+        if ($verbosity -eq 'DEBUG') {
+            Write-Host -Object "${Level}: $Message"
+        }
+        else {
+            Write-Color -Text $Level, ": $Message" -Color $color[$Level], Gray
+        }
     }
 }
 
