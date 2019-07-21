@@ -3,19 +3,16 @@ PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os nounset pipefail errexit
 IFS=''                   # disable word splitting
 export LANG=en_US.UTF-8  # neutral environment
-# * color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-# * use `ansifilter` to discard color codes when redirecting to file
-declare -A colorcode=([red]='\e[31m' [green]='\e[32m' [yellow]='\e[33m' [brightred]='\e[1;31m' [reset]='\e[m')
 
 # LOGGING #
 [[ -o xtrace ]] && verbosity=DEBUG || verbosity=WARNING
 declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10) \
-           color=([CRITICAL]=brightred [ERROR]=red [WARNING]=yellow [INFO]=green [DEBUG]=reset)
+           colorcode=([CRITICAL]='1;31' [ERROR]=31 [WARNING]=33 [INFO]=32 [DEBUG]='')
 
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
     then
-        echo -e "${colorcode[${color[$1]}]}$1${colorcode[reset]}: $2" >&2
+        echo -e "\e[${colorcode[$1]}m$1\e[m: $2" >&2
     fi
 }
 
