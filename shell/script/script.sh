@@ -12,7 +12,7 @@ declare -A loglevel=([CRITICAL]=50 [ERROR]=40 [WARNING]=30 [INFO]=20 [DEBUG]=10)
 function log {
     if ((loglevel[$1] >= loglevel[$verbosity]))
     then
-        echo -e "\e[${colorcode[$1]}m$1\e[m: $2" >&2
+        printf '\e[%sm%s\e[m: %s\n' "${colorcode[$1]}" "$1" "$2" >&2
     fi
 }
 
