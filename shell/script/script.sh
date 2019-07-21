@@ -20,7 +20,8 @@ function log {
 }
 
 # DEFAULT OPTIONS #
-function default_options {
+while getopts h option
+do
     case $option in
         (h)
             echo "$help"
@@ -29,11 +30,7 @@ function default_options {
         ('?')
             exit 1
     esac
-}
-
-# MAIN CODE STARTS HERE #
-while getopts h option
-do
-    default_options
 done
 shift $((OPTIND - 1))  # remove options from command line
+
+# MAIN CODE STARTS HERE #
