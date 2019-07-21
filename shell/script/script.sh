@@ -1,3 +1,6 @@
+# HELP #
+help='Usage: script.sh'
+
 # INITIALIZATION #
 PS4='+$(basename $BASH_SOURCE)${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os nounset pipefail errexit
@@ -16,4 +19,21 @@ function log {
     fi
 }
 
+# DEFAULT OPTIONS #
+function default_options {
+    case $option in
+        (h)
+            echo "$help"
+            exit;;
+
+        ('?')
+            exit 1
+    esac
+}
+
 # MAIN CODE STARTS HERE #
+while getopts h option
+do
+    default_options
+done
+shift $((OPTIND - 1))  # remove options from command line
