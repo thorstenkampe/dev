@@ -21,9 +21,6 @@ handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(levelname)s%(rese
 logger.addHandler(handler)
 
 # DEBUGGING #
-def _notraceback(type_, value, trace_back):
-    logger.critical(''.join(traceback.format_exception_only(type_, value)).rstrip())
-
 def _traceit(frame, event, arg):
     if frame.f_globals['__name__'] == '__main__' and event in ['call', 'line']:
         logger.debug('+[%s]: %s', frame.f_lineno, inspect.getframeinfo(frame).code_context[0].rstrip())
@@ -32,8 +29,6 @@ def _traceit(frame, event, arg):
 def _debug():
     logger.setLevel('DEBUG')
     sys.settrace(_traceit)
-
-sys.excepthook = _notraceback  # we want no traceback, just the exception
 
 # DEFAULT OPTIONS #
 arguments = docpie.docpie(__doc__)
