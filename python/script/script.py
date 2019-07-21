@@ -10,8 +10,7 @@ Options:
 """
 
 # INITIALIZATION #
-import inspect, sys, traceback
-import colorlog, docpie
+import inspect, sys, colorlog, docpie
 
 # LOGGING #
 logger  = colorlog.getLogger(name = '__main__')
