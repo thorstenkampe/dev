@@ -9,7 +9,6 @@ Options:
  -d, --debug   show debug messages
 """
 
-# INITIALIZATION #
 import inspect, sys, colorlog, docpie
 
 # LOGGING #
