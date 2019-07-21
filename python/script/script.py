@@ -1,8 +1,5 @@
 """
-script.py DESCRIPTION
-
-Usage:
- script.py
+Usage: script.py
 """
 
 import colorlog, docpie
