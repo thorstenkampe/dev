@@ -1,4 +1,3 @@
-# HELP #
 help='Usage: script.sh'
 
 # INITIALIZATION #
