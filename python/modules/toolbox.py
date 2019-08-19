@@ -162,13 +162,12 @@ def explore(obj):
     variables = {}
 
     for attribute in dir(obj):
-        if not attribute.startswith('_'):
-            try:
-                variables[attribute] = vars(obj)[attribute]
-            except KeyError:
-                methods.append(attribute)
-            except TypeError:
-                pass
+        try:
+            variables[attribute] = vars(obj)[attribute]
+        except KeyError:
+            methods.append(attribute)
+        except TypeError:
+            pass
     return {'VARS': variables, 'METHODS': methods}
 
 def timer(iteration, *func_and_args):
