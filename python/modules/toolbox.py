@@ -52,21 +52,21 @@ def periodic(counter, counter_at_sop, sop, eop):
     """
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
 
-def dictsort(dict_, sortby, keyfunc = ident):
+def dictsort(dict_, sortby, keyfunc=ident):
     """
     sort by key or value
-    >>> dictsort(dict_, sortby = 'key')
+    >>> dictsort(dict_, sortby='key')
     OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
-    >>> dictsort(dict_, sortby = 'value', keyfunc = len)
+    >>> dictsort(dict_, sortby='value', keyfunc=len)
     OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
     """
     if sortby not in ['key', 'value']:
         raise ValueError(f"'{sortby}' not in ['key', 'value']")
 
     def keyfunc_(key_value):
-        return keyfunc(key_value[sortby == 'value'])
+        return keyfunc(key_value[sortby=='value'])
 
-    return collections.OrderedDict(sorted(dict_.items(), key = keyfunc_))
+    return collections.OrderedDict(sorted(dict_.items(), key=keyfunc_))
 
 def count(dict_):
     """returns the count of a dictionary with multiple values
@@ -76,7 +76,7 @@ def count(dict_):
     return {key: len(dict_[key]) for key in dict_}
 
 # doesn't work through SSH tunnel
-def port_reachable(host, port = None):
+def port_reachable(host, port=None):
     if not port:
         url_components = urllib.parse.urlparse(host)
         host = url_components.hostname
@@ -142,7 +142,7 @@ def ishashable(seq, keyfunc = ident):
     else:
         return True
 
-def isorderable(seq, keyfunc = ident):
+def isorderable(seq, keyfunc=ident):
     """
     >>> isorderable(orderable)
     True
@@ -150,7 +150,7 @@ def isorderable(seq, keyfunc = ident):
     False
     """
     try:
-        seq.sort(key = keyfunc)
+        seq.sort(key=keyfunc)
     except TypeError:
         return False
     else:
