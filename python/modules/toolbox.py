@@ -11,10 +11,10 @@ def odd(integer):
     return bool(integer % 2)
 
 def dim(seq):
-    """
+    '''
     >>> dim(table)
     [4, 5]
-    """
+    '''
     dimension = []
     while isinstance(seq, (list, tuple, collections.abc.ValuesView)):
         dimension.append(len(seq))
@@ -25,41 +25,41 @@ def dim(seq):
     return dimension
 
 def equivalence(seq, keyfunc = ident):
-    """
+    '''
     partition seq into equivalence classes
     see http://en.wikipedia.org/wiki/Equivalence_relation
     >>> equivalence([1, 2, 3, 4], even)
     {False: [1, 3], True: [2, 4]}
-    """
+    '''
     eq = {}
     for obj in seq:
         eq.setdefault(keyfunc(obj), []).append(obj)
     return eq
 
 def flatten(seq):
-    """
+    '''
     >>> flatten(table)  # doctest: +ELLIPSIS
     ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
-    """
+    '''
     for dimension in dim(seq)[1:]:  # pylint: disable = unused-variable
         seq = itertools.chain.from_iterable(seq)
     return list(seq)
 
 def periodic(counter, counter_at_sop, sop, eop):
-    """
+    '''
     wrap counter in range(sop, eop + 1)
     sop = start of period; eop = end of period
-    """
+    '''
     return (counter - counter_at_sop) % (eop - sop + 1) + sop
 
 def dictsort(dict_, sortby, keyfunc=ident):
-    """
+    '''
     sort by key or value
     >>> dictsort(dict_, sortby='key')
     OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
     >>> dictsort(dict_, sortby='value', keyfunc=len)
     OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
-    """
+    '''
     if sortby not in ['key', 'value']:
         raise ValueError(f"'{sortby}' not in ['key', 'value']")
 
@@ -69,10 +69,10 @@ def dictsort(dict_, sortby, keyfunc=ident):
     return collections.OrderedDict(sorted(dict_.items(), key=keyfunc_))
 
 def count(dict_):
-    """returns the count of a dictionary with multiple values
+    '''returns the count of a dictionary with multiple values
     >>> count({'odd': [11, 33], 'even': [22, 44]})
     {'odd': 2, 'even': 2}
-    """
+    '''
     return {key: len(dict_[key]) for key in dict_}
 
 # doesn't work through SSH tunnel
@@ -93,7 +93,7 @@ def port_reachable(host, port=None):
 
 # PARTITION #
 def partition(seq, split):
-    """
+    '''
     split sequence by length or string by separator
     >>> list = ['a', 'b', 'c', 'd', 'e']
     >>> partition(list, 2)
@@ -103,7 +103,7 @@ def partition(seq, split):
     >>> string = 'The quick brown fox jumps over the lazy dog'
     >>> partition(string, [' ', 'the', 'The'])
     ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
-    """
+    '''
     if isinstance(split, int):
         return partition(seq, [split] * (len(seq) // split))
 
@@ -129,12 +129,12 @@ def partition(seq, split):
 import gc, time
 
 def ishashable(seq, keyfunc = ident):
-    """
+    '''
     >>> ishashable(hashable)
     True
     >>> ishashable(unhashable)
     False
-    """
+    '''
     try:
         dict(zip(map(keyfunc, seq), seq))
     except TypeError:
@@ -143,12 +143,12 @@ def ishashable(seq, keyfunc = ident):
         return True
 
 def isorderable(seq, keyfunc=ident):
-    """
+    '''
     >>> isorderable(orderable)
     True
     >>> isorderable(unorderable)
     False
-    """
+    '''
     try:
         seq.sort(key=keyfunc)
     except TypeError:
@@ -171,10 +171,10 @@ def explore(obj):
     return {'VARS': variables, 'METHODS': methods}
 
 def timer(iteration, *func_and_args):
-    """
+    '''
     print the time elapsed (in seconds) evaluating function iteration times
     (default is '1')
-    """
+    '''
     if isinstance(iteration, int):
         function, args = func_and_args[0], func_and_args[1:]
     else:
