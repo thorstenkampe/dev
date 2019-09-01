@@ -1,6 +1,6 @@
-"""
+'''
 Usage: script.py
-"""
+'''
 
 import docpie
 
