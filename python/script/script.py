@@ -2,9 +2,9 @@
 Usage: script.py
 '''
 
-import docpie
+import docopt
 
 # OPTIONS #
-arguments = docpie.docpie(__doc__)
+arguments = docopt.docopt()
 
 # MAIN CODE STARTS HERE #
