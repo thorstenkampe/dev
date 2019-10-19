@@ -1,8 +1,6 @@
 = README =
 :toc:
-:toc-title: Table of Contents
 :sectnums:
-:icons:     font
 :experimental:
 
 == Introduction ==
