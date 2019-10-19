@@ -2,8 +2,8 @@
 :toc:
 :toc-title: Table of Contents
 :sectnums:
-:experimental:
 :icons:     font
+:experimental:
 
 == Introduction ==
 Quick introduction to the project. Explain what it is, the functionality, and common usage.
