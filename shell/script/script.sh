@@ -1,9 +1,16 @@
+#! /usr/bin/env bash
+
 help='Usage: script.sh'
 
 # INITIALIZATION #
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os nounset pipefail errexit
 export LANG=en_US.UTF-8  # neutral environment
+
+function log {
+    # `<13>` = 8 * user + notice (https://en.wikipedia.org/wiki/Syslog#Facility)
+    logger --no-act --stderr --socket-errors off --tag "$1" "$2"
+}
 
 # OPTIONS #
 function do_options {
