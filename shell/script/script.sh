@@ -19,7 +19,8 @@ function do_options {
         case $option in
             (h)
                 echo "$help"
-                exit;;
+                exit
+                ;;
 
             ('?')
                 exit 1
