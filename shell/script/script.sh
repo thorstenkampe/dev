@@ -3,7 +3,7 @@
 help='Usage: script.sh'
 
 # INITIALIZATION #
-PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+PS4='+$(basename "$BASH_SOURCE")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os nounset pipefail errexit
 export LANG=en_US.UTF-8  # neutral environment
 
@@ -30,7 +30,8 @@ function do_options {
 }
 
 # MAIN CODE STARTS HERE #
-if [[ ${BASH_SOURCE[0]} == "$0" ]]
+# shellcheck disable=SC2128
+if [[ $BASH_SOURCE == "$0" ]]
 then
     do_options "$@"
 fi
