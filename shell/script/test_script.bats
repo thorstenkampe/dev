@@ -2,6 +2,7 @@
 
 load /usr/local/bin/bats-modules/bats-support/load.bash
 load /usr/local/bin/bats-modules/bats-assert/load.bash
+load /usr/local/bin/bats-modules/bats-file/load.bash
 
 source script.sh
 shopt -ou nounset
@@ -13,6 +14,12 @@ shopt -ou nounset
     assert_success
 }
 
+@test ps {
+    run ps --pid $$ --format comm=
+    assert_output bash
+    assert_success
+}
+
 @test 'no option' {
     run do_options
     refute_output
@@ -21,8 +28,17 @@ shopt -ou nounset
 
 @test 'option help' {
     run do_options -h
-    assert_output 'Usage: script.sh'
+    assert_output 'Usage: script.sh [-l <logfile>]'
     assert_success
+}
+
+@test 'option log' {
+    rm -f script.log
+    run do_options -l script.log
+    assert_file_exist script.log
+    assert_output
+    # `assert_success` doesn't work because of `exec` in main script
+    rm script.log
 }
 
 @test 'unknown option' {

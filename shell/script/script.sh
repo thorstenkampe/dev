@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-help='Usage: script.sh'
+help='Usage: script.sh [-l <logfile>]'
 
 # INITIALIZATION #
 PS4='+$(basename "$BASH_SOURCE")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
@@ -12,14 +12,26 @@ function log {
     logger --no-act --stderr --socket-errors off --tag "$1" "$2"
 }
 
+if [[ $OSTYPE == cygwin ]]
+then
+    function ps {
+        procps "$@"
+    }
+fi
+
 # OPTIONS #
 function do_options {
-    while getopts h option
+    while getopts hl: option
     do
         case $option in
-            (h)
-                echo "$help"
+            (h) echo "$help"
                 exit
+                ;;
+
+            (l) if [[ $(ps --pid $PPID --format comm=) != logsave ]]
+                then
+                    exec logsave -a "$OPTARG" "$0" "$@"
+                fi
                 ;;
 
             ('?')
