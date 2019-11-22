@@ -6,6 +6,7 @@ load /usr/local/bin/bats-modules/bats-file/load.bash
 
 source script.sh
 shopt -ou nounset
+shopt -u failglob
 
 #
 @test log {
@@ -36,8 +37,8 @@ shopt -ou nounset
     rm -f script.log
     run do_options -l script.log
     assert_file_exist script.log
-    assert_output
-    # `assert_success` doesn't work because of `exec` in main script
+    # `refute_output` and `assert_success` don't work because of `exec` in main
+    # script
     rm script.log
 }
 
@@ -45,4 +46,10 @@ shopt -ou nounset
     run do_options -x
     assert_output --partial ': illegal option -- x'
     assert_failure
+}
+
+@test main {
+    run main
+    refute_output
+    assert_success
 }
