@@ -57,7 +57,7 @@ shopt -u failglob
 
 @test 'unknown option' {
     run do_options -x
-    assert_output --partial ': illegal option -- x'
+    assert_output --partial ' -- x'
     assert_failure
 }
 
