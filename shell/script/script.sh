@@ -55,7 +55,6 @@ function do_options {
                 exit 1
         esac
     done
-    shift $((OPTIND - 1))  # remove options from command line
 }
 
 # MAIN CODE STARTS HERE #
