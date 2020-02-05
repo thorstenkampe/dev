@@ -18,13 +18,6 @@ function log {
     fi
 }
 
-if [[ $OSTYPE == cygwin ]]
-then
-    function ps {
-        procps "$@"
-    }
-fi
-
 function error_handler {
     status=$?
     log ERROR "command \"$1\" in line $2${3:+ (function $3)}"
