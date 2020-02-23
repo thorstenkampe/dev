@@ -28,6 +28,12 @@ shopt -u failglob
     assert_success
 }
 
+@test ps {
+    run ps --pid $$ --format comm=
+    assert_output bash
+    assert_success
+}
+
 @test 'no option' {
     run do_options
     refute_output
