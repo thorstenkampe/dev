@@ -59,12 +59,12 @@ function do_options {
 
 # MAIN CODE STARTS HERE #
 function main {
-    :
+    shift $((OPTIND - 1))  # remove options from command line
 }
 
 # shellcheck disable=SC2128
 if [[ $BASH_SOURCE == "$0" ]]
 then
     do_options "$@"
-    main
+    main "$@"
 fi
