@@ -9,22 +9,9 @@ shopt -ou nounset
 shopt -u failglob
 
 #
-@test 'log error message (log level unset)' {
-    unset VERBOSITY
+@test 'log error message' {
     run log ERROR 'test message'
     assert_output --regexp '<13>.* ERROR: test message'
-    assert_success
-}
-
-@test 'log debug message (empty log level)' {
-    VERBOSITY= run log DEBUG 'test message'
-    refute_output
-    assert_success
-}
-
-@test 'log debug message (explicit debug log level)' {
-    VERBOSITY=DEBUG run log DEBUG 'test message'
-    assert_output --regexp '<13>.* DEBUG: test message'
     assert_success
 }
 
