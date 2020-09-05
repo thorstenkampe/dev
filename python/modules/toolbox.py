@@ -41,7 +41,7 @@ def flatten(seq):
     >>> flatten(table)  # doctest: +ELLIPSIS
     ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
     '''
-    for dimension in dim(seq)[1:]:  # pylint: disable = unused-variable
+    for _ in dim(seq)[1:]:
         seq = itertools.chain.from_iterable(seq)
     return list(seq)
 
@@ -102,7 +102,7 @@ def partition(seq, split):
     [['a'], ['b', 'c'], ['d', 'e']]
     >>> string = 'The quick brown fox jumps over the lazy dog'
     >>> partition(string, [' ', 'the', 'The'])
-    ['', '', 'quick', 'brown', 'fox', 'jumps', 'over', '', '', 'lazy', 'dog']
+    ['quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog']
     '''
     if isinstance(split, int):
         return partition(seq, [split] * (len(seq) // split))
@@ -121,7 +121,7 @@ def partition(seq, split):
     elif isinstance(split[0], str):
         for separator in split[1:]:
             seq = seq.replace(separator, split[0])
-        return seq.split(split[0])
+        return [item for item in seq.split(split[0]) if item]
     else:
         raise TypeError("Incorrect type for argument 'split' in partition(seq, split)")
 
@@ -157,17 +157,20 @@ def isorderable(seq, keyfunc=ident):
         return True
 
 #
-def explore(obj):
+def explore(object):
     methods   = []
     variables = {}
 
-    for attribute in dir(obj):
+    try:
+        varsobj = vars(object)
+    except TypeError:
+        return dir(object)
+
+    for attribute in dir(object):
         try:
-            variables[attribute] = vars(obj)[attribute]
+            variables[attribute] = varsobj[attribute]
         except KeyError:
             methods.append(attribute)
-        except TypeError:
-            pass
     return {'VARS': variables, 'METHODS': methods}
 
 def timer(iteration, *func_and_args):
@@ -186,7 +189,7 @@ def timer(iteration, *func_and_args):
     gc.collect()  # force garbage collection
     start_time_total = time.time()
 
-    for index in iteration:  # pylint: disable = unused-variable
+    for _ in iteration:
         function(*args)
 
     print('total: %.3f' % (time.time() - start_time_total))
@@ -199,6 +202,7 @@ list_       = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
 tuple_      = (11, 22, 33, 44, 55, 66, 77, 88, 99)
 
 dict_       = {1: '1111', 2: '222', 4: '33', 3: '4'}
+# dict.items() style object that cannot be expressed as as dict
 dictitem    = [([1], '1111'), ([2], '222'), ([4], '33'), ([3], '4')]
 
 table       = [('a1', 'b1', 'c1', 'd1', 'e1'),
