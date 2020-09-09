@@ -15,12 +15,6 @@ shopt -u failglob
     assert_success
 }
 
-@test ps {
-    run ps --pid $$ --format comm=
-    assert_output bash
-    assert_success
-}
-
 @test 'no option' {
     run do_options
     refute_output
@@ -29,17 +23,8 @@ shopt -u failglob
 
 @test 'option help' {
     run do_options -h
-    assert_output 'Usage: script.sh [-l <logfile>]'
+    assert_output 'Usage: script.sh'
     assert_success
-}
-
-@test 'option log' {
-    rm -f script.log
-    run do_options -l script.log
-    assert_file_exist script.log
-    # `refute_output` and `assert_success` don't work because of `exec` in main
-    # script
-    rm script.log
 }
 
 @test 'unknown option' {

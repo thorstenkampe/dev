@@ -8,18 +8,11 @@ export LANG=en_US.UTF-8  # neutral environment
 
 PATH=/usr/sbin:$PATH
 
-help='Usage: script.sh [-l <logfile>]'
+help='Usage: script.sh'
 
 function log {
     echo "$(date +"%F %T")" "$1": "$2" > /dev/stderr
 }
-
-if [[ $OSTYPE == cygwin ]]
-then
-    function ps {
-        procps "$@"
-    }
-fi
 
 function error_handler {
     status=$?
@@ -31,21 +24,12 @@ trap 'error_handler "$BASH_COMMAND" $LINENO ${FUNCNAME-}' err
 
 # OPTIONS #
 function do_options {
-    while getopts hl: option
+    while getopts h option
     do
         case $option in
             (h)
                 echo "$help"
                 exit
-                ;;
-
-            (l)
-                # on Cygwin there might not be a parent process
-                parent_process=$(ps --pid $PPID --format comm=) || true
-                if [[ $parent_process != logsave ]]
-                then
-                    exec logsave -a "$OPTARG" "$0" "$@"
-                fi
                 ;;
 
             ('?')
