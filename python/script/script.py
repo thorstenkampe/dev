@@ -1,4 +1,4 @@
-from click             import command            # https://click.palletsprojects.com/en/7.x/#documentation
+from click import command  # https://click.palletsprojects.com/en/7.x/#documentation
 from click_help_colors import HelpColorsCommand  # https://github.com/click-contrib/click-help-colors
 
 @command(
