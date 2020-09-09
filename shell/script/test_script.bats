@@ -11,7 +11,7 @@ shopt -u failglob
 #
 @test 'log error message' {
     run log ERROR 'test message'
-    assert_output --regexp '<13>.* ERROR: test message'
+    assert_output --regexp '.* ERROR: test message'
     assert_success
 }
 
