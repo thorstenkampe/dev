@@ -15,24 +15,6 @@ shopt -u failglob
     assert_success
 }
 
-@test 'no option' {
-    run do_options
-    refute_output
-    assert_success
-}
-
-@test 'option help' {
-    run do_options -h
-    assert_output 'Usage: script.sh'
-    assert_success
-}
-
-@test 'unknown option' {
-    run do_options -x
-    assert_output --partial ' -- x'
-    assert_failure
-}
-
 @test main {
     run main
     refute_output
