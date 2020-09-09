@@ -11,8 +11,7 @@ PATH=/usr/sbin:$PATH
 help='Usage: script.sh [-l <logfile>]'
 
 function log {
-    # log message prefix `<13>` = 8 * user + notice (https://en.wikipedia.org/wiki/Syslog#Facility)
-    logger --no-act --stderr --socket-errors off --tag "$1" "$2"
+    echo "$(date +"%F %T")" "$1": "$2" > /dev/stderr
 }
 
 if [[ $OSTYPE == cygwin ]]
