@@ -1,9 +1,9 @@
-from click import command  # https://click.palletsprojects.com/en/7.x/#documentation
-from click_help_colors import HelpColorsCommand  # https://github.com/click-contrib/click-help-colors
+# https://click.palletsprojects.com/en/7.x/#documentation, https://github.com/click-contrib/click-help-colors
+import click, click_help_colors
 
-@command(
+@click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
-    cls                = HelpColorsCommand,
+    cls                = click_help_colors.HelpColorsCommand,
     help_headers_color = 'cyan',
     help_options_color = 'bright_white'
 )
