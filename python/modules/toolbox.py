@@ -1,217 +1,98 @@
-# FUNCTIONS #
-import collections, itertools, socket, urllib
+import configparser, importlib.metadata, pathlib, re, socket, urllib
+import outdated, pycompat
+import tb_sql
+if pycompat.system.is_windows:
+    import pythoncom, pywintypes, win32com.client
+    pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
+from collections.abc import MappingView
+from pandas          import DataFrame, Series
+
+def file_version(file):
+    if pycompat.system.is_windows:
+        # * http://timgolden.me.uk/python/win32_how_do_i/get_dll_version.html
+        # * https://github.com/mhammond/pywin32/blob/d64fac8d7bda2cb1d81e2c9366daf99e802e327f/win32/Demos/getfilever.py
+        # * https://stackoverflow.com/questions/580924/how-to-access-a-files-properties-on-windows
+        try:
+            return win32com.client.Dispatch('Scripting.FileSystemObject').GetFileVersion(file)
+        except pywintypes.com_error:
+            pass
+    else:
+        try:
+            return '.'.join(re.findall(r'\d+\.\d+', pathlib.Path(file).name))
+        except IndexError:
+            pass
+
+def pkg_version(pkg):
+    '''return the installed version of package or None if not installed'''
+    try:
+        return importlib.metadata.version(pkg)
+    except importlib.metadata.PackageNotFoundError:
+        return None
+
+def latest_version(pkg):
+    return outdated.check_outdated(pkg, '')[1]
 
 def ident(x):
     return x
 
-def even(integer):
-    return not odd(integer)
+def dmap(dict_, keyfunc):
+    '''apply function to values of dictionary'''
+    return {key: keyfunc(dict_[key]) for key in dict_}
 
-def odd(integer):
-    return bool(integer % 2)
-
-def dim(seq):
-    '''
-    >>> dim(table)
-    [4, 5]
-    '''
-    dimension = []
-    while isinstance(seq, (list, tuple, collections.abc.ValuesView)):
-        dimension.append(len(seq))
+def cast_config(config):  # NOSONAR
+    '''cast ini values to integer, float, boolean, or None if possible'''
+    def cast(value):
         try:
-            seq = list(seq)[0]
-        except IndexError:  # sequence is empty
-            break
-    return dimension
+            value = int(value)
+        except ValueError:
+            try:
+                value = float(value)
+            except ValueError:
+                if value in ['True', 'False', 'None']:
+                    value = eval(value)
 
-def equivalence(seq, keyfunc = ident):
-    '''
-    partition seq into equivalence classes
-    see http://en.wikipedia.org/wiki/Equivalence_relation
-    >>> equivalence([1, 2, 3, 4], even)
-    {False: [1, 3], True: [2, 4]}
-    '''
-    eq = {}
-    for obj in seq:
-        eq.setdefault(keyfunc(obj), []).append(obj)
-    return eq
+        return value
 
-def flatten(seq):
-    '''
-    >>> flatten(table)  # doctest: +ELLIPSIS
-    ['a1', 'b1', 'c1', 'd1', 'e1', 'a2', ..., 'a4', 'b4', 'c4', 'd4', 'e4']
-    '''
-    for _ in dim(seq)[1:]:
-        seq = itertools.chain.from_iterable(seq)
-    return list(seq)
+    myconfig = {}
 
-def periodic(counter, counter_at_sop, sop, eop):
-    '''
-    wrap counter in range(sop, eop + 1)
-    sop = start of period; eop = end of period
-    '''
-    return (counter - counter_at_sop) % (eop - sop + 1) + sop
+    for section in config.sections():
+        myconfig[section] = dmap(config[section], cast)
 
-def dictsort(dict_, sortby, keyfunc=ident):
-    '''
-    sort by key or value
-    >>> dictsort(dict_, sortby='key')
-    OrderedDict([(1, '1111'), (2, '222'), (3, '4'), (4, '33')])
-    >>> dictsort(dict_, sortby='value', keyfunc=len)
-    OrderedDict([(3, '4'), (4, '33'), (2, '222'), (1, '1111')])
-    '''
-    if sortby not in ['key', 'value']:
-        raise ValueError(f"'{sortby}' not in ['key', 'value']")
+    return myconfig
 
-    def keyfunc_(key_value):
-        return keyfunc(key_value[sortby=='value'])
+def typeof(obj):
+    '''equivalent of `type` for `isinstance`'''
+    for type_ in (dict, list, set, tuple, MappingView, Series, DataFrame):
+        if isinstance(obj, type_):
+            return type_
 
-    return collections.OrderedDict(sorted(dict_.items(), key=keyfunc_))
+    return None
 
-def count(dict_):
-    '''returns the count of a dictionary with multiple values
-    >>> count({'odd': [11, 33], 'even': [22, 44]})
-    {'odd': 2, 'even': 2}
-    '''
-    return {key: len(dict_[key]) for key in dict_}
+def host_reachable(url):
+    # * doesn't work through SSH tunnel
+    # * https://docs.python.org/3/howto/sockets.html
+    default_port = {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432}
+    urlp = urllib.parse.urlsplit(url)
 
-# doesn't work through SSH tunnel
-def port_reachable(host, port=None):
-    if not port:
-        url_components = urllib.parse.urlparse(host)
-        host = url_components.hostname
-        port = url_components.port
+    if not urlp.scheme:
+        raise ValueError('no URL scheme given')
 
-    with socket.socket() as sock:
-        sock.settimeout(0.048)
-        try:
-            sock.connect((host, port))
-        except (socket.timeout, socket.gaierror):
-            return False
-        else:
-            return True
-
-# PARTITION #
-def partition(seq, split):
-    '''
-    split sequence by length or string by separator
-    >>> list = ['a', 'b', 'c', 'd', 'e']
-    >>> partition(list, 2)
-    [['a', 'b'], ['c', 'd'], ['e']]
-    >>> partition(list, [1, 2])
-    [['a'], ['b', 'c'], ['d', 'e']]
-    >>> string = 'The quick brown fox jumps over the lazy dog'
-    >>> partition(string, [' ', 'the', 'The'])
-    ['quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog']
-    '''
-    if isinstance(split, int):
-        return partition(seq, [split] * (len(seq) // split))
-
-    elif isinstance(split[0], int):
-        part = []
-        for slice_ in split:
-            part.append(seq[:slice_])
-            seq = seq[slice_:]
-
-        if seq:
-            part += [seq]
-
-        return part
-
-    elif isinstance(split[0], str):
-        for separator in split[1:]:
-            seq = seq.replace(separator, split[0])
-        return [item for item in seq.split(split[0]) if item]
-    else:
-        raise TypeError("Incorrect type for argument 'split' in partition(seq, split)")
-
-# TEST FUNCTIONS #
-import gc, time
-
-def ishashable(seq, keyfunc = ident):
-    '''
-    >>> ishashable(hashable)
-    True
-    >>> ishashable(unhashable)
-    False
-    '''
-    try:
-        dict(zip(map(keyfunc, seq), seq))
-    except TypeError:
-        return False
-    else:
+    if tb_sql.islocaldb(url):
         return True
 
-def isorderable(seq, keyfunc=ident):
-    '''
-    >>> isorderable(orderable)
-    True
-    >>> isorderable(unorderable)
-    False
-    '''
-    try:
-        seq.sort(key=keyfunc)
-    except TypeError:
-        return False
-    else:
-        return True
-
-#
-def explore(object):
-    methods   = []
-    variables = {}
-
-    try:
-        varsobj = vars(object)
-    except TypeError:
-        return dir(object)
-
-    for attribute in dir(object):
+    if urlp.port:
+        port = urlp.port
+    else:  # no port from parsed URL
         try:
-            variables[attribute] = varsobj[attribute]
+            port = default_port[urlp.scheme.split('+')[0]]
         except KeyError:
-            methods.append(attribute)
-    return {'VARS': variables, 'METHODS': methods}
+            msg = f'no port given and can\'t find default port for scheme "{urlp.scheme}"'
+            raise ValueError(msg) from None
 
-def timer(iteration, *func_and_args):
-    '''
-    print the time elapsed (in seconds) evaluating function iteration times
-    (default is '1')
-    '''
-    if isinstance(iteration, int):
-        function, args = func_and_args[0], func_and_args[1:]
+    try:
+        sock = socket.create_connection((urlp.hostname, port), timeout=0.048)
+    except (ConnectionRefusedError, socket.gaierror, socket.timeout):
+        return False
     else:
-        # if first argument is not a number, set function to iteration and
-        # iteration to '1'
-        iteration, function, args = 1, iteration, func_and_args
-
-    iteration = range(iteration)
-    gc.collect()  # force garbage collection
-    start_time_total = time.time()
-
-    for _ in iteration:
-        function(*args)
-
-    print('total: %.3f' % (time.time() - start_time_total))
-
-# TEST TYPES #
-string_     = 'The quick brown fox jumps over the lazy dog'
-
-list_       = ['aaaaa', 'bbbb', 'ccc', 'dd', 'e']
-
-tuple_      = (11, 22, 33, 44, 55, 66, 77, 88, 99)
-
-dict_       = {1: '1111', 2: '222', 4: '33', 3: '4'}
-# dict.items() style object that cannot be expressed as as dict
-dictitem    = [([1], '1111'), ([2], '222'), ([4], '33'), ([3], '4')]
-
-table       = [('a1', 'b1', 'c1', 'd1', 'e1'),
-               ('a2', 'b2', 'c2', 'd2', 'e2'),
-               ('a3', 'b3', 'c3', 'd3', 'e3'),
-               ('a4', 'b4', 'c4', 'd4', 'e4')]
-
-hashable    = [11, '22', 33]
-unhashable  = [11, [22], 33]
-
-orderable   = [[11], [22], [33]]
-unorderable = [11, ['22'], 33]
+        sock.close()
+        return True
