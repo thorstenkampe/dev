@@ -1,6 +1,8 @@
 # INITIALIZATION #
 [CmdletBinding()]
-Param([Switch] $Help)  # make help available without `Get-Help`
+Param(
+    [Switch] $Help  # make help available without `Get-Help`
+)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
