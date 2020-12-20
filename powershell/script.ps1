@@ -1,4 +1,4 @@
-# INITIALIZATION #
+# initialization #
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory, ParameterSetName='Help')]
@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 [cultureinfo]::currentculture = [cultureinfo]::InvariantCulture  # "neutral" environment
 
-# OPTIONS #
+# options #
 if ($Help) {  # `-Help`
     Get-Help -Name $MyInvocation.InvocationName
     exit
