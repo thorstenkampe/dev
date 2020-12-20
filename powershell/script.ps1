@@ -1,6 +1,7 @@
 # INITIALIZATION #
 [CmdletBinding()]
 Param(
+    [Parameter(Mandatory, ParameterSetName='Help')]
     [Switch] $Help  # make help available without `Get-Help`
 )
 
