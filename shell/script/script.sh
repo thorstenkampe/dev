@@ -36,7 +36,7 @@ function parse_options {
 }
 
 # MAIN CODE STARTS HERE #
-# below is an example on how to use the parsed options
+# below is an example how to use the parsed options
 parse_options a:bc
 
 # $ script.sh -a 1 -b
