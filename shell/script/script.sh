@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# INITIALIZATION #
+# initialization #
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
@@ -8,7 +8,13 @@ export LANG=en_US.UTF-8  # neutral environment
 
 PATH=/usr/bin:/bin:$PATH  # Cygwin: standard POSIX paths first
 
-# OPTIONS #
+# logging #
+# run `logsave -a <logfile> script.sh [...]` to log to file
+function log {
+    echo "$(date +"%F %T")" "$1": "$2" > /dev/stderr
+}
+
+# options #
 _args=("$@")
 declare -A options
 function parse_options {
