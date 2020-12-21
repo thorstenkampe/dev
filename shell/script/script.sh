@@ -11,7 +11,7 @@ PATH=/usr/bin:/bin:$PATH  # Cygwin: standard POSIX paths first
 # logging #
 # run `logsave -a <logfile> script.sh [...]` to log to file
 function log {
-    echo "$(date +"%F %T")" "$1": "$2" > /dev/stderr
+    echo "$(date +"%F %T") $1: $2" > /dev/stderr
 }
 
 # options #
@@ -48,16 +48,12 @@ parse_options a:bc
 # $ script.sh -a 1 -b
 # a: 1
 # b:
-# c: [not set]
 for option in a b c
 do
     # shellcheck disable=SC2102
     # `-v` for associative arrays in bash 4.3
     if [[ -v options[$option] ]]
     then
-        optarg=${options[$option]}
-    else
-        optarg='[not set]'
+        echo "$option: ${options[$option]}"
     fi
-    echo "$option: $optarg"
 done
