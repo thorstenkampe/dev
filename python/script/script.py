@@ -1,4 +1,3 @@
-# https://click.palletsprojects.com/en/7.x/#documentation, https://github.com/click-contrib/click-help-colors
 import click, click_help_colors
 
 @click.command(
