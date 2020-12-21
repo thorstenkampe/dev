@@ -11,7 +11,7 @@ PATH=/usr/bin:/bin:$PATH  # Cygwin: standard POSIX paths first
 # logging #
 # run `logsave -a <logfile> script.sh [...]` to log to file
 function log {
-    echo "$(date +"%F %T") $1: $2" > /dev/stderr
+    echo "$(date +"%F %T") $1: $2" >&2
 }
 
 # options #
@@ -30,7 +30,7 @@ function parse_options {
                 # (`getopts a:` and `script.sh -a -b`)
                 if [[ ${OPTARG-} == -* ]]
                 then
-                    echo "$0: option requires an argument -- $option" > /dev/stderr
+                    echo "$0: option requires an argument -- $option" >&2
                     exit 1
                 fi
 
@@ -57,3 +57,5 @@ do
         echo "$option: ${options[$option]}"
     fi
 done
+log ERROR test
+
