@@ -19,9 +19,7 @@ function log($Level, $Message) {
         DEBUG    = 'Gray'
     }
 
-    Write-Color -Text $Level, ": $Message"  `
-                -Color $color[$Level], Gray `
-                -ShowTime
+    Write-Color -Text $Level, ": $Message" -Color $color[$Level], Gray -ShowTime
 }
 
 # options #
