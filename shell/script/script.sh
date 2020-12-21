@@ -57,5 +57,3 @@ do
         echo "$option: ${options[$option]}"
     fi
 done
-log ERROR test
-
