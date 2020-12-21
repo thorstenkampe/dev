@@ -11,15 +11,8 @@ Set-StrictMode -Version latest
 
 # logging #
 function log($Level, $Message) {
-    $color = @{
-        CRITICAL = 'Red'
-        ERROR    = 'DarkRed'
-        WARNING  = 'DarkYellow'
-        INFO     = 'DarkGreen'
-        DEBUG    = 'Gray'
-    }
-
-    Write-Color -Text $Level, ": $Message" -Color $color[$Level], Gray -ShowTime
+    $date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    Write-Output -InputObject "$date ${Level}: $Message"
 }
 
 # options #
