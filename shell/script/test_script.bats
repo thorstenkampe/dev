@@ -2,9 +2,8 @@
 
 export LANGUAGE=en_EN:en
 
-load /usr/local/bin/bats-modules/bats-support/load.bash
-load /usr/local/bin/bats-modules/bats-assert/load.bash
-load /usr/local/bin/bats-modules/bats-file/load.bash
+load /usr/local/libexec/bats-assert/load.bash
+load /usr/local/libexec/bats-support/load.bash
 
 source script.sh
 shopt -ou nounset
@@ -25,7 +24,7 @@ shopt -u failglob
 }
 
 @test 'standard options' {
-    # $ script.sh -a 1 -b
+    # $ script.sh -a 1 -b arg1 arg2)
     _args=(-a 1 -b arg1 arg2)
 
     run parse_options a:bc
@@ -46,15 +45,8 @@ shopt -u failglob
     assert_failure
 }
 
-@test 'option requires argument (I)' {
+@test 'option requires argument' {
     _args=(-a)
-    run parse_options a:bc
-    assert_output --partial ': option requires an argument -- a'
-    assert_failure
-}
-
-@test 'option requires argument (II)' {
-    _args=(-a -b)
     run parse_options a:bc
     assert_output --partial ': option requires an argument -- a'
     assert_failure
