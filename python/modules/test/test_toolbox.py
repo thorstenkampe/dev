@@ -1,5 +1,5 @@
 # pylint: disable = too-few-public-methods
-import configparser, re
+import re
 import pip, pycompat
 from socket  import create_server
 from pytest  import raises

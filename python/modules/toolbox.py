@@ -1,4 +1,4 @@
-import configparser, importlib.metadata, pathlib, re, socket, urllib
+import importlib.metadata, pathlib, re, socket, urllib
 import outdated, pycompat
 import tb_sql
 if pycompat.system.is_windows:
@@ -49,6 +49,7 @@ def cast_config(config):  # NOSONAR
                 value = float(value)
             except ValueError:
                 if value in ['True', 'False', 'None']:
+                    # pylint: disable = eval-used
                     value = eval(value)
 
         return value

@@ -34,7 +34,7 @@ def groupby(iter_, keyfunc=tb.ident, axis=None):
     type_    = tb.typeof(iter_)
     eq_class = defaultdict(type_)
 
-    if axis and type_ != DataFrame :
+    if axis and type_ != DataFrame:
         raise TypeError('axis specified but iterable is not dataframe')
 
     if axis not in [None, 'rows', 'columns']:
