@@ -8,7 +8,7 @@ _args=("$@")
 
 #
 function log {
-    echo "$(date +"%F %T") $1: $2" >&2
+    echo "$1: $2" >&2
 }
 
 function parse_options {
