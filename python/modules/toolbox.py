@@ -35,6 +35,9 @@ def latest_version(pkg):
 def ident(x):
     return x
 
+def remove_ansi(text):
+    return re.sub(r'\x1b\[[\d;]+m', '', text)
+
 def dmap(dict_, keyfunc):
     '''apply function to values of dictionary'''
     return {key: keyfunc(dict_[key]) for key in dict_}
