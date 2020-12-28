@@ -20,12 +20,16 @@ function parse_options {
         then
             exit 1
         else
+            # shellcheck disable=SC2034
             options[$option]=${OPTARG-}
         fi
     done
 }
 
+function is_option_set {
+    [[ -v options[$1] ]]  # `-v` for associative arrays in bash 4.3
+}
+
 # MAIN CODE STARTS HERE #
 # !! `getopts a:b`: -a -b -> -a='-b'; -ab -> -a='b'; -a=b -> -a='=b'
-# test for option: `[[ -v options[<option>] ]]`
 parse_options ''  # script supports no options

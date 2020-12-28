@@ -1,7 +1,5 @@
 #! /usr/bin/env bats
 
-export LANGUAGE=en_EN:en
-
 load /usr/local/libexec/bats-assert/load.bash
 load /usr/local/libexec/bats-support/load.bash
 
@@ -26,25 +24,36 @@ shopt -u failglob
 }
 
 @test 'standard options' {
-    # $ script.sh -a 1 -b arg1 arg2)
     _args=(-a 1 -b arg1 arg2)
 
     run parse_options a:bc
 
     assert_success
     refute_output
+}
 
+@test 'test options' {
+    _args=(-a 1 -b arg1 arg2)
     parse_options a:bc
+
+    is_option_set a
+    is_option_set b
+    run is_option_set c
+    assert_failure
+}
+
+@test 'test option arguments' {
+    # $ script.sh -a 1 -b arg1 arg2)
+    _args=(-a 1 -b arg1 arg2)
+    parse_options a:bc
+
     assert_equal "${options[a]}" 1
     assert_equal "${options[b]}" ''
-
-    run test -v options[c]  # `-v` for associative arrays in bash 4.3
-    assert_failure
 }
 
 @test 'unknown option' {
     _args=(-x)
-    run parse_options a:bc
+    LANGUAGE=en_EN:en run parse_options a:bc
 
     assert_failure
     assert_output --partial ': illegal option -- x'
@@ -52,7 +61,7 @@ shopt -u failglob
 
 @test 'option requires argument' {
     _args=(-a)
-    run parse_options a:bc
+    LANGUAGE=en_EN:en run parse_options a:bc
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
