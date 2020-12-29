@@ -6,7 +6,6 @@ shopt -s dotglob failglob inherit_errexit
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 _params=("$@")
 
-#
 function log {
     echo "$1: $2" >&2
 }
