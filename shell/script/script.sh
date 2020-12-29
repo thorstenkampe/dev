@@ -4,7 +4,7 @@ shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-_args=("$@")
+_params=("$@")
 
 #
 function log {
@@ -12,22 +12,28 @@ function log {
 }
 
 function parse_options {
-    declare -gA options
+    unset opts OPTIND
+    declare -gA opts
 
-    while getopts "$1" option "${_args[@]}"
+    while getopts "$1" opt "${_params[@]}"
     do
-        if [[ $option == '?' ]]
+        if [[ $opt == '?' ]]
         then
             exit 1
         else
             # shellcheck disable=SC2034
-            options[$option]=${OPTARG-}
+            opts[$opt]=${OPTARG-}
         fi
     done
+
+    # shellcheck disable=SC2034
+    # store remaining arguments in args array
+    args=("${_params[@]:OPTIND-1}")
 }
 
 function is_option_set {
-    [[ -v options[$1] ]]  # `-v` for associative arrays in bash 4.3
+    # get option argument with `${opts[<opt>]}`
+    [[ -v opts[$1] ]]
 }
 
 # MAIN CODE STARTS HERE #
