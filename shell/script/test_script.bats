@@ -37,14 +37,6 @@ function setup {
     assert_equal "${opts[b]}" ''
 }
 
-@test 'arguments' {
-    parse_options a:bc
-
-    # shellcheck disable=SC2154
-    assert_equal "${args[0]}" arg1
-    assert_equal "${args[1]}" arg2
-}
-
 #
 @test 'unknown option' {
     _params=(-x)

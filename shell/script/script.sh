@@ -24,10 +24,6 @@ function parse_options {
             opts[$opt]=${OPTARG-}
         fi
     done
-
-    # shellcheck disable=SC2034
-    # store remaining arguments in args array
-    args=("${_params[@]:OPTIND-1}")
 }
 
 function is_option_set {
@@ -37,4 +33,5 @@ function is_option_set {
 
 # MAIN CODE STARTS HERE #
 # !! `getopts a:b`: -a -b -> -a='-b'; -ab -> -a='b'; -a=b -> -a='=b'
-parse_options ''  # script supports no options
+parse_options ''     # script supports no options
+shift $((OPTIND-1))  # make arguments available as $1, $2...
