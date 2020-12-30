@@ -33,5 +33,5 @@ function is_option_set {
 
 # MAIN CODE STARTS HERE #
 # !! `getopts a:b`: -a -b -> -a='-b'; -ab -> -a='b'; -a=b -> -a='=b'
-parse_options 'a:'     # script supports no options
+parse_options ''     # script supports no options
 shift $((OPTIND-1))  # make arguments available as $1, $2...
