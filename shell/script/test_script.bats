@@ -9,6 +9,7 @@ function setup {
     shopt -ou nounset
     shopt -u failglob
 
+    export LANGUAGE=en_US
     _params=(-a 1 -b arg1 arg2)
 }
 
@@ -40,7 +41,7 @@ function setup {
 #
 @test 'unknown option' {
     _params=(-x)
-    LANGUAGE=en_EN:en run parse_options a:bc
+    run parse_options a:bc
 
     assert_failure
     assert_output --partial ': illegal option -- x'
@@ -49,7 +50,7 @@ function setup {
 @test 'option requires argument' {
     # shellcheck disable=SC2034
     _params=(-a)
-    LANGUAGE=en_EN:en run parse_options a:bc
+    run parse_options a:bc
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
