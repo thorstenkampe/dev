@@ -16,7 +16,7 @@ function parse_options {
 
     while getopts "$1" opt "${_params[@]}"
     do
-        if [[ $opt == '?' ]]
+        if [[ $opt == '?' ]]  # invalid option or required argument missing
         then
             exit 1
         else
@@ -33,5 +33,5 @@ function is_option_set {
 
 # MAIN CODE STARTS HERE #
 # !! `getopts a:b`: -a -b -> -a='-b'; -ab -> -a='b'; -a=b -> -a='=b'
-parse_options ''     # script supports no options
+parse_options 'a:'     # script supports no options
 shift $((OPTIND-1))  # make arguments available as $1, $2...
