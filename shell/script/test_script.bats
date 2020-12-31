@@ -10,19 +10,19 @@ function setup {
     shopt -u failglob
 
     export LANGUAGE=en_US
-    _params=(-a 1 -b arg1 arg2)
+    std_params=(-a 1 -b arg1)
 }
 
 #
 @test 'parse options' {
-    run parse_opts a:bc
+    run parse_opts a:bc "${std_params[@]}"
 
     assert_success
     refute_output
 }
 
 @test 'test options set' {
-    parse_opts a:bc
+    parse_opts a:bc "${std_params[@]}"
 
     has_opt a
     has_opt b
@@ -31,7 +31,7 @@ function setup {
 }
 
 @test 'option arguments' {
-    parse_opts a:bc
+    parse_opts a:bc "${std_params[@]}"
 
     # shellcheck disable=SC2154
     assert_equal "${opts[a]}" 1
@@ -40,8 +40,7 @@ function setup {
 
 #
 @test 'unknown option' {
-    _params=(-x)
-    run parse_opts a:bc
+    run parse_opts a:bc -x
 
     assert_failure
     assert_output --partial ': illegal option -- x'
@@ -49,8 +48,7 @@ function setup {
 
 @test 'option requires argument' {
     # shellcheck disable=SC2034
-    _params=(-a)
-    run parse_opts a:bc
+    run parse_opts a:bc -a
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
