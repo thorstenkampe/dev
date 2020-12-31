@@ -15,23 +15,23 @@ function setup {
 
 #
 @test 'parse options' {
-    run parse_options a:bc
+    run parse_opts a:bc
 
     assert_success
     refute_output
 }
 
 @test 'test options set' {
-    parse_options a:bc
+    parse_opts a:bc
 
-    is_option_set a
-    is_option_set b
-    run is_option_set c
+    has_opt a
+    has_opt b
+    run has_opt c
     assert_failure
 }
 
 @test 'option arguments' {
-    parse_options a:bc
+    parse_opts a:bc
 
     # shellcheck disable=SC2154
     assert_equal "${opts[a]}" 1
@@ -41,7 +41,7 @@ function setup {
 #
 @test 'unknown option' {
     _params=(-x)
-    run parse_options a:bc
+    run parse_opts a:bc
 
     assert_failure
     assert_output --partial ': illegal option -- x'
@@ -50,7 +50,7 @@ function setup {
 @test 'option requires argument' {
     # shellcheck disable=SC2034
     _params=(-a)
-    run parse_options a:bc
+    run parse_opts a:bc
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
