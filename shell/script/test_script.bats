@@ -6,32 +6,28 @@ load /usr/local/libexec/bats-support/load.bash
 function setup {
     # shellcheck disable=SC1091
     source script.sh
-    shopt -ou nounset
-    shopt -u failglob
-
     export LANGUAGE=en_US
-    std_params=(-a 1 -b arg1)
 }
 
 #
 @test 'parse options' {
-    run parse_opts a:bc "${std_params[@]}"
+    run parse_opts a:bc -a 1 -b arg1
 
     assert_success
     refute_output
 }
 
 @test 'test options set' {
-    parse_opts a:bc "${std_params[@]}"
+    parse_opts a:bc -a 1 -b arg1
 
-    has_opt a
-    has_opt b
-    run has_opt c
+    set_opt a
+    set_opt b
+    run set_opt c
     assert_failure
 }
 
 @test 'option arguments' {
-    parse_opts a:bc "${std_params[@]}"
+    parse_opts a:bc -a 1 -b arg1
 
     # shellcheck disable=SC2154
     assert_equal "${opts[a]}" 1

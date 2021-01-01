@@ -16,7 +16,8 @@ function parse_opts {
     shift
 
     while getopts "$optstr" opt; do
-        if [[ $opt == '?' ]]; then  # unknown option or required argument missing
+        if [[ $opt == '?' ]]; then
+            # unknown option or required argument missing
             exit 1
         else
             opts[$opt]=${OPTARG-}
@@ -24,12 +25,13 @@ function parse_opts {
     done
 }
 
-function has_opt {
+function set_opt {
     # get option argument with `${opts[<opt>]}`
     [[ -v opts[$1] ]]
 }
 
 # MAIN CODE STARTS HERE #
-# !! `getopts a:b`: -a -b -> -a='-b'; -ab -> -a='b'; -a=b -> -a='=b'
-parse_opts '' "$@"   # script supports no options
-shift $((OPTIND-1))  # make arguments available as $1, $2...
+# `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (both should be "required argument
+# missing")
+parse_opts '' "$@"     # script supports no options
+shift $((OPTIND - 1))  # make arguments available as $1, $2...
