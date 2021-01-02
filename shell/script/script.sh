@@ -38,8 +38,7 @@ shift $((OPTIND - 1))  # make arguments available as $1, $2...
 if set_opt '-h'; then
     echo 'Usage: script.sh [-d] [-h]'
     exit
-fi
 
-if set_opt '-d'; then
+elif set_opt '-d'; then
     debug
 fi
