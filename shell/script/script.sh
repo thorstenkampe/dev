@@ -32,7 +32,7 @@ function debug {
 
 # MAIN CODE STARTS HERE #
 # `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
-parse_opts dh "$@"     # script supports no options
+parse_opts dh "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
 
 if set_opt '-h'; then
