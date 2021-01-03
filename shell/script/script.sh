@@ -3,6 +3,8 @@
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
 
+PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+
 function parse_opts {
     unset opts OPTIND
     declare -gA opts
@@ -25,20 +27,12 @@ function set_opt {
     [[ -v opts[$1] ]]
 }
 
-function debug {
-    PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
-    shopt -os xtrace
-}
-
 # MAIN CODE STARTS HERE #
 # `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
-parse_opts dh "$@"
+parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
 
 if set_opt '-h'; then
-    echo 'Usage: script.sh [-d] [-h]'
+    echo 'Usage: script.sh [-h]'
     exit
-
-elif set_opt '-d'; then
-    debug
 fi

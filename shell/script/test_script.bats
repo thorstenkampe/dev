@@ -4,13 +4,11 @@ load /usr/local/libexec/bats-assert/load.bash
 load /usr/local/libexec/bats-support/load.bash
 
 function setup {
-    # shellcheck disable=SC1091
-    source script.sh
     export LANGUAGE=en_US
 }
 
-#
 @test 'parse options' {
+    source script.sh
     run parse_opts a:bc -a 1 -b arg1
 
     assert_success
@@ -18,6 +16,7 @@ function setup {
 }
 
 @test 'test options set' {
+    source script.sh
     parse_opts a:bc -a 1 -b arg1
 
     set_opt -a
@@ -27,6 +26,7 @@ function setup {
 }
 
 @test 'option arguments' {
+    source script.sh
     parse_opts a:bc -a 1 -b arg1
 
     # shellcheck disable=SC2154
@@ -34,8 +34,8 @@ function setup {
     assert_equal "${opts[-b]}" ''
 }
 
-#
 @test 'unknown option' {
+    source script.sh
     run parse_opts a:bc -x
 
     assert_failure
@@ -43,15 +43,22 @@ function setup {
 }
 
 @test 'option requires argument' {
-    # shellcheck disable=SC2034
+    source script.sh
     run parse_opts a:bc -a
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
 }
 
-#
+@test 'help option' {
+    run ./script.sh -h
+
+    assert_success
+    assert_output 'Usage: script.sh [-h]'
+}
+
 @test 'log error message' {
+    source script.sh
     run log ERROR 'test message'
 
     assert_success
