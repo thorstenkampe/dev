@@ -28,6 +28,7 @@ function set_opt {
 }
 
 # MAIN CODE STARTS HERE #
+
 # `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
