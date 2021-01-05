@@ -6,9 +6,20 @@ Param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
-if ($Help) {
-    Get-Help -Name $MyInvocation.InvocationName
+$script = $MyInvocation.InvocationName
+
+function Show-Help {
+    Get-Help -Name $script
     exit
 }
 
+if ($Help) {
+    Show-Help
+}
+
 # MAIN CODE STARTS HERE #
+
+if (-not $Help) {
+    Show-Help
+}
+
