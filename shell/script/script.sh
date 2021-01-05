@@ -14,7 +14,7 @@ function parse_opts {
             # unknown option or required argument missing
             exit 1
         else
-            opts[-$opt]=${OPTARG-}
+            opts[$opt]=${OPTARG-}
         fi
     done
 }
@@ -29,11 +29,15 @@ function set_opt {
 
 # MAIN CODE STARTS HERE #
 
-# `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
-parse_opts h "$@"
-shift $((OPTIND - 1))  # make arguments available as $1, $2...
+# if script is not sourced (i.e. for testing via BATS)
+if [[ ${BASH_SOURCE[0]} == "$0" ]]
+then
+    # `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
+    parse_opts h "$@"
+    shift $((OPTIND - 1))  # make arguments available as $1, $2...
 
-if set_opt '-h'; then
-    echo 'Usage: script.sh [-h]'
-    exit
+    if set_opt h || [[ $# == 0 ]]; then
+        echo 'Usage: script.sh [-h]'
+        exit
+    fi
 fi

@@ -19,9 +19,9 @@ function setup {
     source script.sh
     parse_opts a:bc -a 1 -b arg1
 
-    set_opt -a
-    set_opt -b
-    run set_opt -c
+    set_opt a
+    set_opt b
+    run set_opt c
     assert_failure
 }
 
@@ -30,8 +30,8 @@ function setup {
     parse_opts a:bc -a 1 -b arg1
 
     # shellcheck disable=SC2154
-    assert_equal "${opts[-a]}" 1
-    assert_equal "${opts[-b]}" ''
+    assert_equal "${opts[a]}" 1
+    assert_equal "${opts[b]}" ''
 }
 
 @test 'unknown option' {
@@ -52,6 +52,13 @@ function setup {
 
 @test 'help option' {
     run ./script.sh -h
+
+    assert_success
+    assert_output 'Usage: script.sh [-h]'
+}
+
+@test 'no option' {
+    run ./script.sh
 
     assert_success
     assert_output 'Usage: script.sh [-h]'
