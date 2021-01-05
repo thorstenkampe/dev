@@ -35,8 +35,7 @@ function setup {
 }
 
 @test 'unknown option' {
-    source script.sh
-    run parse_opts a:bc -x
+    run ./script.sh -x
 
     assert_failure
     assert_output --partial ': illegal option -- x'
@@ -62,12 +61,4 @@ function setup {
 
     assert_success
     assert_output 'Usage: script.sh [-h]'
-}
-
-@test 'log error message' {
-    source script.sh
-    run log ERROR 'test message'
-
-    assert_success
-    assert_output 'ERROR: test message'
 }

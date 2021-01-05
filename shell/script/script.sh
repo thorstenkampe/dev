@@ -19,25 +19,19 @@ function parse_opts {
     done
 }
 
-function log {
-    echo "$1: $2" >&2
-}
-
 function set_opt {
     [[ -v opts[$1] ]]
 }
 
 # MAIN CODE STARTS HERE #
 
-# if script is not sourced (i.e. for testing via BATS)
-if [[ ${BASH_SOURCE[0]} == "$0" ]]
-then
-    # `getopts a:b`: -a -b -> -a=-b; -ab -> -a=b (should be "required argument missing")
-    parse_opts h "$@"
-    shift $((OPTIND - 1))  # make arguments available as $1, $2...
+# if script is sourced (i.e. for testing via BATS)
+[[ ${BASH_SOURCE[0]} != "$0" ]] && return
 
-    if set_opt h || [[ $# == 0 ]]; then
-        echo 'Usage: script.sh [-h]'
-        exit
-    fi
+parse_opts h "$@"
+shift $((OPTIND - 1))  # make arguments available as $1, $2...
+
+if set_opt h || [[ $# == 0 ]]; then
+    echo 'Usage: script.sh [-h]'
+    exit
 fi
