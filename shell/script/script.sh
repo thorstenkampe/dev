@@ -23,15 +23,25 @@ function set_opt {
     [[ -v opts[$1] ]]
 }
 
+if [[ $OSTYPE == cygwin ]]; then
+    PATH=/usr/bin:$PATH
+
+    function ps {
+        procps "$@"
+    }
+fi
+
 # MAIN CODE STARTS HERE #
 
 # if script is sourced (i.e. for testing via BATS)
-[[ ${BASH_SOURCE[0]} != "$0" ]] && return
+if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
+    return
+fi
 
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
 
-if set_opt h || [[ $# == 0 ]]; then
+if set_opt h; then
     echo 'Usage: script.sh [-h]'
     exit
 fi

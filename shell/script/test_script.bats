@@ -60,5 +60,12 @@ function setup {
     run ./script.sh
 
     assert_success
-    assert_output 'Usage: script.sh [-h]'
+    refute_output
+}
+
+@test ps {
+    source script.sh
+    run ps --pid $$ --format comm=
+    assert_output bash
+    assert_success
 }
