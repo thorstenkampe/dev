@@ -1,7 +1,13 @@
 #! /usr/bin/env bats
 
-load /usr/local/libexec/bats-assert/load.bash
-load /usr/local/libexec/bats-support/load.bash
+if [[ $OSTYPE == msys ]]; then
+    prefix=/f/cygwin
+else
+    prefix=
+fi
+
+load "$prefix/usr/local/libexec/bats-assert/load.bash"
+load "$prefix/usr/local/libexec/bats-support/load.bash"
 
 function setup {
     export LANGUAGE=en_US
@@ -66,6 +72,7 @@ function setup {
 @test ps {
     source script.sh
     run ps --pid $$ --format comm=
+
     assert_output bash
     assert_success
 }
