@@ -25,9 +25,7 @@ function set_opt {
 
 if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
     PATH=/usr/bin:$PATH
-fi
 
-if [[ $OSTYPE == cygwin ]]; then
     function ps {
         procps "$@"
     }

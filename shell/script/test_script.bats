@@ -1,5 +1,3 @@
-#! /usr/bin/env bats
-
 if [[ $OSTYPE == msys ]]; then
     prefix=/f/cygwin
 else
