@@ -8,7 +8,7 @@ fi
 load "${prefix-}/usr/local/libexec/bats-assert/load.bash"
 load "${prefix-}/usr/local/libexec/bats-support/load.bash"
 
-@test 'parse options' {
+@test 'parse valid options' {
     source script.sh
     run parse_opts a:bc -a 1 -b arg1
 
@@ -65,10 +65,19 @@ load "${prefix-}/usr/local/libexec/bats-support/load.bash"
     refute_output
 }
 
-@test ps {
+@test 'ps' {
     source script.sh
     run ps --pid $$ --format comm=
 
     assert_output bash
+    assert_success
+}
+
+@test 'find' {
+    PATH=/cygdrive/c/WINDOWS/system32:/c/WINDOWS/system32:$PATH
+    source script.sh
+    run which find
+
+    assert_output /usr/bin/find
     assert_success
 }

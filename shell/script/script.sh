@@ -31,12 +31,12 @@ if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
     }
 fi
 
-# MAIN CODE STARTS HERE #
-
 # if script is sourced (i.e. for testing via BATS)
 if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
     return
 fi
+
+# MAIN CODE STARTS HERE #
 
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
