@@ -44,12 +44,6 @@ function sendmail {
                 "$@"
 }
 
-function error_handler {
-    exit_code=$?
-    eval "${1-}" || true
-    exit $exit_code
-}
-
 # if script is sourced (i.e. for testing via BATS)
 if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
     return
@@ -57,7 +51,11 @@ fi
 
 # MAIN CODE STARTS HERE #
 
-trap "error_handler 'sendmail -to RECIPIENT -sub SUBJECT body -msg MESSAGE'" ERR
+function send_error_email {
+    sendmail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+}
+
+trap send_error_email ERR
 
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
