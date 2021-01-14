@@ -36,13 +36,20 @@ function sendmail {
     user=$(whoami)
 
     # https://github.com/muquit/mailsend-go
-    mailsend-go -smtp localhost          \
+    mailsend-go -q                       \
+                -smtp localhost          \
                 -port 25                 \
                 -fname "$user@$HOSTNAME" \
                 -from FROM               \
                 auth -user USER          \
                      -pass PASSWORD      \
                 "$@"
+}
+
+function error_handler {
+    exit_code=$?
+    eval "${1-}" || true
+    exit $exit_code
 }
 
 # if script is sourced (i.e. for testing via BATS)
@@ -52,16 +59,7 @@ fi
 
 # MAIN CODE STARTS HERE #
 
-function error_handler {
-    exit_code=$?
-    sendmail -to RECIPIENT     \
-             -sub SUBJECT      \
-             body -msg MESSAGE \
-    || true
-    exit $exit_code
-}
-
-trap error_handler ERR
+trap "error_handler 'sendmail -to RECIPIENT -sub SUBJECT body -msg MESSAGE'" ERR
 
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
