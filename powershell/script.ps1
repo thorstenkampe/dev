@@ -22,4 +22,3 @@ if ($Help) {
 if (-not $Help) {
     Show-Help
 }
-
