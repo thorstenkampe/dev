@@ -7,6 +7,7 @@ PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
 if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
     PATH=/usr/bin:$PATH
+    USER=$(whoami)
 
     function ps {
         procps "$@"
@@ -32,14 +33,11 @@ function set_opt {
 }
 
 function sendmail {
-    local user
-    user=$(whoami)
-
     # https://github.com/muquit/mailsend-go
     mailsend-go -q                       \
                 -smtp localhost          \
                 -port 25                 \
-                -fname "$user@$HOSTNAME" \
+                -fname "$USER@$HOSTNAME" \
                 -from FROM               \
                 auth -user USER          \
                      -pass PASSWORD      \
