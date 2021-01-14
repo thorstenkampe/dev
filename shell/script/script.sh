@@ -5,6 +5,14 @@ shopt -s dotglob failglob inherit_errexit
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
+if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
+    PATH=/usr/bin:$PATH
+
+    function ps {
+        procps "$@"
+    }
+fi
+
 function parse_opts {
     unset opts OPTIND
     declare -gA opts
@@ -22,14 +30,6 @@ function parse_opts {
 function set_opt {
     [[ -v opts[$1] ]]
 }
-
-if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
-    PATH=/usr/bin:$PATH
-
-    function ps {
-        procps "$@"
-    }
-fi
 
 function sendmail {
     local user
