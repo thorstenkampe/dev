@@ -31,12 +31,37 @@ if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
     }
 fi
 
+function sendmail {
+    local user
+    user=$(whoami)
+
+    # https://github.com/muquit/mailsend-go
+    mailsend-go -smtp localhost          \
+                -port 25                 \
+                -fname "$user@$HOSTNAME" \
+                -from FROM               \
+                auth -user USER          \
+                     -pass PASSWORD      \
+                "$@"
+}
+
 # if script is sourced (i.e. for testing via BATS)
 if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
     return
 fi
 
 # MAIN CODE STARTS HERE #
+
+function error_handler {
+    exit_code=$?
+    sendmail -to RECIPIENT     \
+             -sub SUBJECT      \
+             body -msg MESSAGE \
+    || true
+    exit $exit_code
+}
+
+trap error_handler ERR
 
 parse_opts h "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...

@@ -69,8 +69,8 @@ load "${prefix-}/usr/local/libexec/bats-support/load.bash"
     source script.sh
     run ps --pid $$ --format comm=
 
-    assert_output bash
     assert_success
+    assert_output bash
 }
 
 @test 'find' {
@@ -78,6 +78,16 @@ load "${prefix-}/usr/local/libexec/bats-support/load.bash"
     source script.sh
     run which find
 
-    assert_output /usr/bin/find
     assert_success
+    assert_output /usr/bin/find
+}
+
+@test 'send email' {
+    source script.sh
+    msmtpd --port 60587 &
+    run sendmail -port 60587 -from noreply@thorstenkampe.de -to test@thorstenkampe.de
+    kill $!
+
+    assert_success
+    assert_output 'Mail Sent Successfully'
 }
