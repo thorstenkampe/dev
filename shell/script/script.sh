@@ -5,8 +5,10 @@ shopt -s dotglob failglob inherit_errexit
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
+_params=("$@")
+
 if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
-    PATH=/usr/bin:$PATH
+    PATH=/usr/sbin:/usr/bin:$PATH
     USER=$(whoami)
 
     function ps {
@@ -30,6 +32,15 @@ function parse_opts {
 
 function set_opt {
     [[ -v opts[$1] ]]
+}
+
+function logtofile {
+    # on Cygwin there might not be a parent process
+    parent_process=$(ps --pid $PPID --format comm=) || true
+    if [[ $parent_process != logsave ]]
+    then
+        exec logsave -a "${opts[l]}" "$BASH_ARGV0" "${_params[@]}"
+    fi
 }
 
 function sendmail {
@@ -57,10 +68,13 @@ function send_error_email {
 
 trap send_error_email ERR
 
-parse_opts h "$@"
+parse_opts hl: "$@"
 shift $((OPTIND - 1))  # make arguments available as $1, $2...
 
 if set_opt h; then
-    echo 'Usage: script.sh [-h]'
+    echo 'Usage: script.sh [-h] [-l <logfile>]'
     exit
+
+elif set_opt l; then
+    logtofile
 fi
