@@ -1,11 +1,7 @@
-import tabulate
 import toolbox as tb
 from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
-
-def dfprint(df):
-    print(tabulate.tabulate(df, headers='keys', tablefmt='fancy_grid', floatfmt='.1f'))
 
 def dfsplit(df):
     return df.to_dict(orient='split')
