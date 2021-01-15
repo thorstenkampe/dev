@@ -34,7 +34,7 @@ function set_opt {
     [[ -v opts[$1] ]]
 }
 
-function logtofile {
+function log_to_file {
     # on Cygwin there might not be a parent process
     parent_process=$(ps --pid $PPID --format comm=) || true
     if [[ $parent_process != logsave ]]
@@ -43,7 +43,7 @@ function logtofile {
     fi
 }
 
-function sendmail {
+function send_mail {
     # https://github.com/muquit/mailsend-go
     mailsend-go -q                       \
                 -smtp localhost          \
@@ -63,7 +63,7 @@ fi
 # MAIN CODE STARTS HERE #
 
 function send_error_email {
-    sendmail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+    send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
 trap send_error_email ERR
@@ -76,5 +76,5 @@ if set_opt h; then
     exit
 
 elif set_opt l; then
-    logtofile
+    log_to_file
 fi
