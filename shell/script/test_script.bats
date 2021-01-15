@@ -79,6 +79,9 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
 }
 
 @test 'send email' {
+if [[ $OSTYPE == msys ]]; then
+    fail 'MSYS not supported'
+else
     local email_address=noreply@thorstenkampe.de
     source script.sh
     msmtpd --port 60587 &
@@ -86,11 +89,16 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     kill $!
 
     assert_success
+fi
 }
 
 @test 'option log' {
+if [[ $OSTYPE == msys ]]; then
+    fail 'MSYS not supported'
+else
     rm -f script.log
     run ./script.sh -l script.log
 
     assert_file_exist script.log
+fi
 }
