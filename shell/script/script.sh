@@ -37,8 +37,7 @@ function set_opt {
 function log_to_file {
     # on Cygwin there might not be a parent process
     parent_process=$(ps --pid $PPID --format comm=) || true
-    if [[ $parent_process != logsave ]]
-    then
+    if [[ $parent_process != logsave ]]; then
         exec logsave -a "${opts[l]}" "$BASH_ARGV0" "${_params[@]}"
     fi
 }

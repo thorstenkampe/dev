@@ -79,9 +79,10 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
 }
 
 @test 'send email' {
+    local email_address=noreply@thorstenkampe.de
     source script.sh
     msmtpd --port 60587 &
-    run send_mail -port 60587 -from noreply@thorstenkampe.de -to noreply@thorstenkampe.de
+    run send_mail -port 60587 -from $email_address -to $email_address
     kill $!
 
     assert_success
