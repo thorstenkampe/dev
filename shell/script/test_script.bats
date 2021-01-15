@@ -7,6 +7,7 @@ fi
 
 load "${prefix-}/usr/local/libexec/bats-assert/load.bash"
 load "${prefix-}/usr/local/libexec/bats-support/load.bash"
+load "${prefix-}/usr/local/libexec/bats-file/load.bash"
 
 @test 'parse valid options' {
     source script.sh
@@ -55,7 +56,7 @@ load "${prefix-}/usr/local/libexec/bats-support/load.bash"
     run ./script.sh -h
 
     assert_success
-    assert_output 'Usage: script.sh [-h]'
+    assert_output 'Usage: script.sh [-h] [-l <logfile>]'
 }
 
 @test 'no option' {
@@ -90,4 +91,13 @@ load "${prefix-}/usr/local/libexec/bats-support/load.bash"
 
     assert_success
     refute_output
+}
+
+@test 'option log' {
+    rm -f script.log
+    run ./script.sh -l script.log
+
+    assert_success
+    refute_output
+    assert_file_exist script.log
 }
