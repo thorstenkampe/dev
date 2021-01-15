@@ -14,7 +14,6 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     run parse_opts a:bc -a 1 -b arg1
 
     assert_success
-    refute_output
 }
 
 @test 'test options set' {
@@ -55,7 +54,6 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     shopt -u failglob
     run ./script.sh -h
 
-    assert_success
     assert_output 'Usage: script.sh [-h] [-l <logfile>]'
 }
 
@@ -63,14 +61,12 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     run ./script.sh
 
     assert_success
-    refute_output
 }
 
 @test 'ps' {
     source script.sh
     run ps --pid $$ --format comm=
 
-    assert_success
     assert_output bash
 }
 
@@ -79,7 +75,6 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     source script.sh
     run which find
 
-    assert_success
     assert_output /usr/bin/find
 }
 
@@ -90,14 +85,11 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
     kill $!
 
     assert_success
-    refute_output
 }
 
 @test 'option log' {
     rm -f script.log
     run ./script.sh -l script.log
 
-    assert_success
-    refute_output
     assert_file_exist script.log
 }
