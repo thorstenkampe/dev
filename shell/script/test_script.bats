@@ -1,13 +1,9 @@
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
 
-if [[ $OSTYPE == msys ]]; then
-    prefix=/f/cygwin
-fi
-
-load "${prefix-}/usr/local/libexec/bats-assert/load.bash"
-load "${prefix-}/usr/local/libexec/bats-support/load.bash"
-load "${prefix-}/usr/local/libexec/bats-file/load.bash"
+load /usr/local/libexec/bats-assert/load.bash
+load /usr/local/libexec/bats-support/load.bash
+load /usr/local/libexec/bats-file/load.bash
 
 @test 'parse valid options' {
     source script.sh
@@ -79,9 +75,8 @@ load "${prefix-}/usr/local/libexec/bats-file/load.bash"
 }
 
 @test 'send email' {
-if [[ $OSTYPE == msys ]]; then
-    fail 'MSYS not supported'
-else
+    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
+
     local email_address=noreply@thorstenkampe.de
     source script.sh
     msmtpd --port 60587 &
@@ -89,16 +84,13 @@ else
     kill $!
 
     assert_success
-fi
 }
 
 @test 'option log' {
-if [[ $OSTYPE == msys ]]; then
-    fail 'MSYS not supported'
-else
+    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
+
     rm -f script.log
     run ./script.sh -l script.log
 
     assert_file_exist script.log
-fi
 }
