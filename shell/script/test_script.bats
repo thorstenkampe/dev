@@ -94,3 +94,17 @@ load /usr/local/libexec/bats-file/load.bash
 
     assert_file_exist script.log
 }
+
+@test 'log info message' {
+    source script.sh
+    run log INFO 'test message'
+
+    refute_output
+}
+
+@test 'log verbosity info message' {
+    source script.sh
+    verbosity=INFO run log INFO 'test message'
+
+    assert_output 'INFO: test message'
+}
