@@ -18,6 +18,7 @@ fi
 
 function parse_opts {
     unset opts OPTIND
+    local opt
     declare -gA opts
 
     while getopts "$1" opt "${@:2}"; do
@@ -43,6 +44,7 @@ function log {
 }
 
 function log_to_file {
+    local parent_process
     # on Cygwin there might not be a parent process
     parent_process=$(ps --pid $PPID --format comm=) || true
     if [[ $parent_process != logsave ]]; then
@@ -61,16 +63,14 @@ function send_mail {
                 "$@"
 }
 
-# if script is sourced (i.e. for testing via BATS)
-if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
-    return
-fi
-
 # MAIN CODE STARTS HERE #
 
 function send_error_email {
     send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
+
+# stop if script is sourced (i.e. for testing via BATS)
+[[ ${BASH_SOURCE[0]} != "$0" ]] && return
 
 trap send_error_email ERR
 
