@@ -5,11 +5,11 @@ shopt -s dotglob failglob inherit_errexit
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
-_params=("$@")
+_params=( "$@" )
+USER=$(whoami)
 
 if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
     PATH=/usr/sbin:/usr/bin:$PATH
-    USER=$(whoami)
 
     function ps {
         procps "$@"
@@ -36,7 +36,7 @@ function set_opt {
 }
 
 function log {
-    declare -A loglevel=([CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50)
+    declare -A loglevel=( [CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50 )
 
     if (( loglevel[$1] <= loglevel[${verbosity-WARNING}] )); then
         echo "$1": "$2" >&2
@@ -63,6 +63,10 @@ function send_mail {
                 "$@"
 }
 
+function is_sourced {
+    [[ ${BASH_SOURCE[0]} != "$0" ]]
+}
+
 # MAIN CODE STARTS HERE #
 
 function send_error_email {
@@ -70,7 +74,7 @@ function send_error_email {
 }
 
 # stop if script is sourced (i.e. for testing via BATS)
-[[ ${BASH_SOURCE[0]} != "$0" ]] && return
+is_sourced && return
 
 trap send_error_email ERR
 
