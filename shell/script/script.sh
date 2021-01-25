@@ -6,15 +6,16 @@ shopt -s dotglob failglob inherit_errexit
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
 _params=( "$@" )
+scriptname=$(basename "$0")
 USER=$(whoami)
 
-if [[ $OSTYPE =~ ^(cygwin|msys)$ ]]; then
-    PATH=/usr/sbin:/usr/bin:$PATH
+function is_sourced {
+    [[ ${BASH_SOURCE[0]} != "$0" ]]
+}
 
-    function ps {
-        procps "$@"
-    }
-fi
+function is_windows {
+    [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
+}
 
 function parse_opts {
     unset opts OPTIND
@@ -45,7 +46,6 @@ function log {
 
 function log_to_file {
     local parent_process
-    # on Cygwin there might not be a parent process
     parent_process=$(ps --pid $PPID --format comm=) || true
     if [[ $parent_process != logsave ]]; then
         exec logsave -a "${opts[l]}" "$BASH_ARGV0" "${_params[@]}"
@@ -63,9 +63,13 @@ function send_mail {
                 "$@"
 }
 
-function is_sourced {
-    [[ ${BASH_SOURCE[0]} != "$0" ]]
-}
+if is_windows; then
+    PATH=/usr/sbin:/usr/bin:$PATH
+
+    function ps {
+        procps "$@"
+    }
+fi
 
 # MAIN CODE STARTS HERE #
 
@@ -76,13 +80,13 @@ function send_error_email {
 # stop if script is sourced (i.e. for testing via BATS)
 is_sourced && return
 
-trap send_error_email ERR
+#trap send_error_email ERR
 
 parse_opts hl: "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
 if set_opt h; then
-    echo 'Usage: script.sh [-h] [-l <logfile>]'
+    echo "Usage: $scriptname [-h] [-l <logfile>]"
     exit
 
 elif set_opt l; then
