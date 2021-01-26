@@ -48,7 +48,7 @@ function log_to_file {
     local parent_process
     parent_process=$(ps --pid $PPID --format comm=) || true
     if [[ $parent_process != logsave ]]; then
-        exec logsave -a "${opts[l]}" "$BASH_ARGV0" "${_params[@]}"
+        exec logsave -a "${opts[l]}" "${BASH_SOURCE[0]}" "${_params[@]}"
     fi
 }
 
