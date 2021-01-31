@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 shopt -os errexit errtrace nounset pipefail
-shopt -s dotglob failglob inherit_errexit
+shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
@@ -40,7 +40,7 @@ function log {
     declare -A loglevel=( [CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50 )
 
     if (( loglevel[$1] <= loglevel[${verbosity-WARNING}] )); then
-        echo "$1": "$2" >&2
+        echo -e "$1": "$2" >&2
     fi
 }
 
@@ -85,7 +85,7 @@ is_sourced && return
 parse_opts hl: "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-if set_opt h; then
+if   set_opt h; then
     echo "Usage: $scriptname [-h] [-l <logfile>]"
     exit
 
