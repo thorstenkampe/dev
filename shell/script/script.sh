@@ -88,6 +88,7 @@ shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 if set_opt h; then
     echo "Usage: $scriptname [-h] [-l <logfile>]"
     exit
+fi
 
 if set_opt l; then
     log_to_file
