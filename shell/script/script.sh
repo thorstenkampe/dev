@@ -82,13 +82,19 @@ is_sourced && return
 
 #trap send_error_email ERR
 
-parse_opts hl: "$@"
+parse_opts hld: "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-if   set_opt h; then
+if set_opt h; then
     echo "Usage: $scriptname [-h] [-l <logfile>]"
     exit
 
-elif set_opt l; then
+if set_opt l; then
     log_to_file
+fi
+
+if set_opt d; then
+    verbosity=DEBUG
+else
+    verbosity=WARNING
 fi
