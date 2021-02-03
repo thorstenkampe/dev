@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+## Ticket: https://jira.persis.de/browse/ITB-406
+##
+## Ziel: [...]
+##
+## Historie:
+## 2019-07-05, DG, initiale Version
+
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
