@@ -25,7 +25,7 @@ function parse_opts {
     while getopts "$1" opt "${@:2}"; do
         if [[ $opt == '?' ]]; then
             # unknown option or required argument missing
-            exit 1
+            return 1
         else
             opts[$opt]=${OPTARG-}
         fi
@@ -82,7 +82,7 @@ is_sourced && return
 
 #trap send_error_email ERR
 
-parse_opts hld: "$@"
+parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
 if set_opt h; then
