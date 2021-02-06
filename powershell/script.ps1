@@ -6,7 +6,16 @@ Param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
-$script = $MyInvocation.InvocationName
+$script    = $MyInvocation.InvocationName
+$verbosity = 'WARNING'  # default level
+
+function log($Level, $Message) {
+    $loglevel = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
+
+    if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
+        Write-Output -InputObject "${Level}: $Message"
+    }
+}
 
 function Show-Help {
     Get-Help -Name $script
@@ -18,7 +27,3 @@ if ($Help) {
 }
 
 # MAIN CODE STARTS HERE #
-
-if (-not $Help) {
-    Show-Help
-}
