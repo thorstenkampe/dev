@@ -1,6 +1,6 @@
 ﻿#  - ident #
-function ident($x) {
-    $x
+function ident {
+    $args
 }
 
 #  - ConvertTo-Ordered #
@@ -63,6 +63,7 @@ function external_ip_address {
     }
 }
 
+# - log #
 function log($Level, $Message) {
     $loglevel = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
 
