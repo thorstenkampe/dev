@@ -15,60 +15,33 @@ fi
 # MAIN CODE STARTS HERE #
 
 function arc {
-    parse_opts cxs:t: "$@"
+    local source_ext target_ext name parent
+    source_ext=$(ext "$1")
+    target_ext=$(ext "$2")
+    name=$(basename "$1")
+    parent=$(dirname "$1")
 
-    local source target
-    source=${opts[s]}
-    target=${opts[t]}
+    if   [[ $source_ext == zip ]]; then
+        unzip -qd "$2" "$1"
 
-    if set_opt c; then
-        local target_ext name parent
-        target_ext=$(ext "$target")
-        name=$(basename "$source")
-        parent=$(dirname "$source")
+    elif [[ $source_ext == zst ]]; then
+        tar -xf "$1" -I zstd -C "$2"
 
-        case $target_ext in
+    elif [[ $target_ext == zip ]]; then
+        local target
+        target=$(readlink -m "$2")
 
-            (zst)
-                # current directory needs to be outside the directory archived
-                tar -cf "$target" -I zstd -C "$parent" "$name"
-                ;;
+        cd "$parent"
+        zip -qry "$target" "$name"
+        cd "$OLDPWD"
 
-            (zip)
-                target=$(readlink -m "$target")
-
-                cd "$parent"
-                zip -qry "$target" "$name"
-                cd "$OLDPWD"
-                ;;
-
-            (*)
-                log ERROR "unrecognized file extension '$target_ext'"
-                return 1
-        esac
-
-    elif set_opt x; then
-        local source_ext
-        source_ext=$(ext "$source")
-
-        case $source_ext in
-
-            (zst)
-                tar -xf "$source" -I zstd -C "$target"
-                ;;
-
-            (zip)
-                unzip -qd "$target" "$source"
-                ;;
-
-            (*)
-                log ERROR "unrecognized file extension '$source_ext'"
-                return 1
-        esac
+    elif [[ $target_ext == zst ]]; then
+        # current directory needs to be outside the directory archived
+        tar -cf "$2" -I zstd -C "$parent" "$name"
 
     else
-        log ERROR "either option 'c' (create) or 'x' (extract) must be given"
-        return 1
+        log ERROR "can't recognize source or target file extension"
+        exit 1
     fi
 }
 

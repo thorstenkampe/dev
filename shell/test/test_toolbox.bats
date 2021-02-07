@@ -32,25 +32,11 @@ function teardown {
 }
 
 #
-@test 'arc - extension' {
-    run arc -c -s toolbox.sh -t $testdir/toolbox.tar
-
-    assert_failure
-    assert_output "ERROR: unrecognized file extension 'tar'"
-}
-
-@test 'arc - option' {
-    run arc -s toolbox.sh -t $testdir/toolbox.tar
-
-    assert_failure
-    assert_output "ERROR: either option 'c' (create) or 'x' (extract) must be given"
-}
-
 @test 'arc - zip' {
     mkdir --parent $testdir
 
-    arc -c -s toolbox.sh -t $testdir/toolbox.zip
-    arc -x -s $testdir/toolbox.zip -t $testdir
+    arc toolbox.sh $testdir/toolbox.sh.zip
+    arc $testdir/toolbox.sh.zip $testdir
 
     cmp --quiet toolbox.sh $testdir/toolbox.sh
 }
@@ -58,10 +44,17 @@ function teardown {
 @test 'arc - zst' {
     mkdir --parent $testdir
 
-    arc -c -s toolbox.sh -t $testdir/toolbox.tar.zst
-    arc -x -s $testdir/toolbox.tar.zst -t $testdir
+    arc toolbox.sh $testdir/toolbox.sh.tar.zst
+    arc $testdir/toolbox.sh.tar.zst $testdir
 
     cmp --quiet toolbox.sh $testdir/toolbox.sh
+}
+
+@test 'arc - extension' {
+    run arc toolbox.sh $testdir/toolbox.tar
+
+    assert_failure
+    assert_output "ERROR: can't recognize source or target file extension"
 }
 
 #
