@@ -51,9 +51,13 @@ function public_ip_address {
 
 # - external_ip_address #
 function external_ip_address {
-    $interfaces = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration `
-                                  -Property DefaultIPGateway, IPAddress        `
-                                  -Filter 'IPEnabled = 1'
+    $Params = @{
+        ClassName = 'Win32_NetworkAdapterConfiguration'
+        Property  = @('DefaultIPGateway', 'IPAddress')
+        'Filter'  = 'IPEnabled = 1'
+    }
+
+    $interfaces = Get-CimInstance @Params
 
     foreach ($interface in $interfaces) {
         if ($interface.DefaultIPGateway) {
