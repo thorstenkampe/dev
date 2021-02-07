@@ -175,6 +175,6 @@ function test_arguments {
 }
 
 function timestamp {
+    # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
     date +'%F %T'
-    date +'%F-%H_%M_%S'
 }
