@@ -19,16 +19,18 @@ function arcc {
     target_ext=$(ext "$2")
     name=$(basename "$1")
     parent=$(dirname "$1")
-    target=$(readlink -m "$2")
 
     if [[ $target_ext == zip ]]; then
+        target=$(readlink -m "$2")
+
         cd "$parent"
         zip -qry "$target" "$name" "${@:3}"
-        cd "$OLDPWD"
+        # shellcheck disable=SC2103
+        cd -
 
     else
         # use archive suffix to determine compression program
-        tar -cf "$2" -a -C "$parent" "$name" "${@:3}"
+        tar -acf "$2" -C "$parent" "$name" "${@:3}"
 
     fi
 }
@@ -43,7 +45,7 @@ function arcx {
 
     else
         # use archive suffix to determine compression program
-        tar -xf "$1" -a -C "$2" "${@:3}"
+        tar -axf "$1" -C "$2" "${@:3}"
 
     fi
 }
