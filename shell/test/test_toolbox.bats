@@ -17,6 +17,21 @@ function teardown {
 }
 
 #
+@test 'setup - ps' {
+    run ps --pid $$ --format comm=
+
+    assert_output bash
+}
+
+@test 'setup - find' {
+    PATH=/cygdrive/c/WINDOWS/system32:/c/WINDOWS/system32:$PATH
+    source toolbox.sh
+    run which find
+
+    assert_output /usr/bin/find
+}
+
+#
 @test 'arc - extension' {
     run arc -c -s toolbox.sh -t $testdir/toolbox.tar
 

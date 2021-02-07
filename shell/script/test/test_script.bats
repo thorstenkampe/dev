@@ -12,21 +12,6 @@ load /usr/local/libexec/bats-file/load.bash
     assert_output 'Usage: script.sh [-h] [-l <logfile>]'
 }
 
-@test 'ps' {
-    source script.sh
-    run ps --pid $$ --format comm=
-
-    assert_output bash
-}
-
-@test 'find' {
-    PATH=/cygdrive/c/WINDOWS/system32:/c/WINDOWS/system32:$PATH
-    source script.sh
-    run which find
-
-    assert_output /usr/bin/find
-}
-
 @test 'send email' {
     [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
 
