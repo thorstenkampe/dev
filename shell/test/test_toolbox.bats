@@ -35,26 +35,19 @@ function teardown {
 @test 'arc - zip' {
     mkdir --parent $testdir
 
-    arc toolbox.sh $testdir/toolbox.sh.zip
-    arc $testdir/toolbox.sh.zip $testdir
+    arcc toolbox.sh $testdir/toolbox.sh.zip
+    arcx $testdir/toolbox.sh.zip $testdir
 
     cmp --quiet toolbox.sh $testdir/toolbox.sh
 }
 
-@test 'arc - zst' {
+@test 'arc - gzip' {
     mkdir --parent $testdir
 
-    arc toolbox.sh $testdir/toolbox.sh.tar.zst
-    arc $testdir/toolbox.sh.tar.zst $testdir
+    arcc toolbox.sh $testdir/toolbox.sh.tar.gz
+    arcx $testdir/toolbox.sh.tar.gz $testdir
 
     cmp --quiet toolbox.sh $testdir/toolbox.sh
-}
-
-@test 'arc - extension' {
-    run arc toolbox.sh $testdir/toolbox.tar
-
-    assert_failure
-    assert_output "ERROR: can't recognize source or target file extension"
 }
 
 #

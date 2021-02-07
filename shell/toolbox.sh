@@ -14,34 +14,37 @@ fi
 
 # MAIN CODE STARTS HERE #
 
-function arc {
-    local source_ext target_ext name parent
-    source_ext=$(ext "$1")
+function arcc {
+    local target_ext name parent target
     target_ext=$(ext "$2")
     name=$(basename "$1")
     parent=$(dirname "$1")
+    target=$(readlink -m "$2")
 
-    if   [[ $source_ext == zip ]]; then
-        unzip -qd "$2" "$1"
-
-    elif [[ $source_ext == zst ]]; then
-        tar -xf "$1" -I zstd -C "$2"
-
-    elif [[ $target_ext == zip ]]; then
-        local target
-        target=$(readlink -m "$2")
-
+    if [[ $target_ext == zip ]]; then
         cd "$parent"
-        zip -qry "$target" "$name"
+        zip -qry "$target" "$name" "${@:3}"
         cd "$OLDPWD"
 
-    elif [[ $target_ext == zst ]]; then
-        # current directory needs to be outside the directory archived
-        tar -cf "$2" -I zstd -C "$parent" "$name"
+    else
+        # use archive suffix to determine compression program
+        tar -cf "$2" -a -C "$parent" "$name" "${@:3}"
+
+    fi
+}
+
+function arcx {
+    local source_ext
+    source_ext=$(ext "$1")
+
+    if [[ $source_ext == zip ]]; then
+        # ${@:3}: files to extract from archive (no options)
+        unzip -qo "$1" -d "$2" "${@:3}"
 
     else
-        log ERROR "can't recognize source or target file extension"
-        exit 1
+        # use archive suffix to determine compression program
+        tar -xf "$1" -a -C "$2" "${@:3}"
+
     fi
 }
 
@@ -61,7 +64,7 @@ function is_file_older {
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
 function join_by {
     # join_by ';' "${array[@]}"
-    local rest=("${@:3}")
+    local rest=( "${@:3}" )
     printf '%s' "${2-}" "${rest[@]/#/$1}"
     echo
 }
@@ -96,7 +99,7 @@ function pprint {
     local key
 
     for key in "${!_assarr[@]}"; do
-        keyval+=("$key: ${_assarr[$key]:-''}")
+        keyval+=( "$key: ${_assarr[$key]:-''}" )
     done
 
     join_by ', ' "${keyval[@]}"
@@ -117,16 +120,16 @@ function showopts {
 
     while getopts ":$1" opt "${@:2}"; do
         if [[ $opt == '?' ]]; then
-            unknown_opts+=("-$OPTARG")
+            unknown_opts+=( "-$OPTARG" )
 
         elif [[ $opt == : ]]; then
-            arg_missing+=("-$OPTARG")
+            arg_missing+=( "-$OPTARG" )
 
         else
             if [[ -v OPTARG ]]; then
-                valid_opts+=("-$opt=$OPTARG")
+                valid_opts+=( "-$opt=$OPTARG" )
             else
-                valid_opts+=("-$opt")
+                valid_opts+=( "-$opt" )
             fi
         fi
     done
