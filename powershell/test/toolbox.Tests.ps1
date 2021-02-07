@@ -1,7 +1,4 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-Param()
-
-Import-Module -Name PesterMatchHashtable
+﻿Import-Module -Name PesterMatchHashtable
 
 BeforeAll {
     . $PSScriptRoot/../toolbox.ps1

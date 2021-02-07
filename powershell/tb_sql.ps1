@@ -1,8 +1,5 @@
 ﻿# SimplySQL - https://github.com/mithrandyr/simplysql
 
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-Param()
-
 . $PSScriptRoot/toolbox.ps1
 
 #  - open_conn #

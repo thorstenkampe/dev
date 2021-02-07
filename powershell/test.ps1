@@ -1,6 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-Param()
-
 . $PSScriptRoot/tb_sql.ps1
 
 # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_arrays
