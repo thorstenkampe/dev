@@ -51,13 +51,6 @@ function teardown {
 }
 
 #
-@test 'ext' {
-    run ext ./test.txt
-
-    assert_output txt
-}
-
-#
 @test 'is_file_older' {
     local tmp_file
     tmp_file=$(mktemp)

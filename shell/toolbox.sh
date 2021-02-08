@@ -14,17 +14,18 @@ fi
 
 # MAIN CODE STARTS HERE #
 
+function abspath {
+    readlink -m "$1"
+}
+
 function arcc {
-    local target_ext name parent target
-    target_ext=$(ext "$2")
+    local name parent
     name=$(basename "$1")
     parent=$(dirname "$1")
 
-    if [[ $target_ext == zip ]]; then
-        target=$(readlink -m "$2")
-
+    if [[ $(ext "$2") == zip ]]; then
         cd "$parent"
-        zip -qry "$target" "$name" "${@:3}"
+        zip -qry "$(abspath $2)" "$name" "${@:3}"
         # shellcheck disable=SC2103
         cd -
 
@@ -36,10 +37,7 @@ function arcc {
 }
 
 function arcx {
-    local source_ext
-    source_ext=$(ext "$1")
-
-    if [[ $source_ext == zip ]]; then
+    if [[ $(ext "$1") == zip ]]; then
         # ${@:3}: files to extract from archive (no options)
         unzip -qo "$1" -d "$2" "${@:3}"
 
