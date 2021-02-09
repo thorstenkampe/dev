@@ -32,7 +32,7 @@ function teardown {
 }
 
 #
-@test 'arc - zip' {
+@test 'arcc/x - zip' {
     mkdir --parent $testdir
 
     arcc toolbox.sh $testdir/toolbox.sh.zip
@@ -41,7 +41,7 @@ function teardown {
     cmp --quiet toolbox.sh $testdir/toolbox.sh
 }
 
-@test 'arc - gzip' {
+@test 'arcc/x - gzip' {
     mkdir --parent $testdir
 
     arcc toolbox.sh $testdir/toolbox.sh.tar.gz
@@ -201,4 +201,14 @@ function teardown {
 
     run test_arguments "$test" mssql oracleX
     assert_failure
+}
+
+#
+@test 'zipc/x' {
+    mkdir --parent $testdir
+
+    zipc toolbox.sh $testdir/toolbox.sh.zip
+    zipx $testdir/toolbox.sh.zip $testdir
+
+    cmp --quiet toolbox.sh $testdir/toolbox.sh
 }

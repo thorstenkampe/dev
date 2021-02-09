@@ -19,32 +19,27 @@ function abspath {
 }
 
 function arcc {
-    local name parent
-    name=$(basename "$1")
-    parent=$(dirname "$1")
+    local source name parent
 
     if [[ $(ext "$2") == zip ]]; then
-        cd "$parent"
-        zip -qry "$(abspath $2)" "$name" "${@:3}"
-        # shellcheck disable=SC2103
-        cd -
+        source=$(abspath "$1")
+
+        7za a -ssw "$2" "$source" "${@:3}"
 
     else
-        # use archive suffix to determine compression program
-        tar -acf "$2" -C "$parent" "$name" "${@:3}"
+        name=$(basename "$1")
+        parent=$(dirname "$1")
 
+        tar -caf "$2" -C "$parent" "$name" "${@:3}"
     fi
 }
 
 function arcx {
     if [[ $(ext "$1") == zip ]]; then
-        # ${@:3}: files to extract from archive (no options)
-        unzip -qo "$1" -d "$2" "${@:3}"
+        7za x "$1" -o"$2" '*' "${@:3}"
 
     else
-        # use archive suffix to determine compression program
-        tar -axf "$1" -C "$2" "${@:3}"
-
+        tar -xaf "$1" -C "$2" "${@:3}"
     fi
 }
 
@@ -180,4 +175,20 @@ function test_arguments {
 function timestamp {
     # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
     date +'%F %T'
+}
+
+function zipc {
+    local target name parent
+    target=$(abspath "$2")
+    name=$(basename "$1")
+    parent=$(dirname "$1")
+
+    cd "$parent"
+    zip -qry "$target" "$name" "${@:3}"
+    cd "$OLDPWD"
+}
+
+function zipx {
+    # ${@:3}: files to extract from archive (no options)
+    unzip -qo "$1" -d "$2" "${@:3}"
 }

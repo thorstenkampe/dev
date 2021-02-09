@@ -3,6 +3,37 @@ function ident {
     $args
 }
 
+# arcc #
+function arcc($Source, $Target) {
+    $target_ext = Split-Path -Path $Target -Extension
+
+    if ($target_ext -eq '.zip') {
+        $Source = [System.IO.Path]::GetFullPath($Source)
+        7z a -ssw $Target $Source @args
+    }
+    else {
+        $name   = Split-Path -Path $Source -Leaf
+        $parent = Split-Path -Path $Source -Parent
+        $Target = cygpath $Target
+
+        tar -caf $Target -C $parent $name @args
+    }
+}
+
+# arcx #
+function arcx($Source, $Target) {
+    $source_ext = Split-Path -Path $Source -Extension
+
+    if ($source_ext -eq '.zip') {
+        7z x $Source -o"$Target" * @args
+    }
+    else {
+        $Source = cygpath $Source
+        $Target = cygpath $Target
+        tar -xaf $Source -C $Target @args
+    }
+}
+
 #  - ConvertTo-Ordered #
 function ConvertTo-Ordered($Hash) {
     # Shallow copy of the original (see comment for dmap)
