@@ -156,7 +156,7 @@ function split_by {
     IFS=$1 read -ra split <<< "$2"
 }
 
-function test_arguments {
+function test_args {
     # test if all arguments satisfy test
     # `test_arguments '(( $arg >= 3 ))' 3 4`
     local arg
