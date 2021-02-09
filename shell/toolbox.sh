@@ -158,18 +158,14 @@ function split_by {
 
 function test_arguments {
     # test if all arguments satisfy test
-    # `test_arguments '(( arg >= 3 ))' 3 4`
-    if (( $# <= 1 )); then
-        return 1
-    else
-        local arg
-        # shellcheck disable=SC2034
-        for arg in "${@:2}"; do
-            if ! eval "$1"; then
-                return 1
-            fi
-        done
-    fi
+    # `test_arguments '(( $arg >= 3 ))' 3 4`
+    local arg
+    # shellcheck disable=SC2034
+    for arg in "${@:2}"; do
+        if ! eval "$1"; then
+            return 1
+        fi
+    done
 }
 
 function timestamp {

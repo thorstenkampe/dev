@@ -186,11 +186,9 @@ function teardown {
     # shellcheck disable=SC2016
     local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
 
-    run test_arguments
-    assert_failure
+    test_arguments
 
-    run test_arguments "$test"
-    assert_failure
+    test_arguments "$test"
 
     test_arguments "$test" mssql
 
