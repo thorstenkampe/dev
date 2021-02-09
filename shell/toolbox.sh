@@ -162,7 +162,8 @@ function test_arguments {
     local arg
     # shellcheck disable=SC2034
     for arg in "${@:2}"; do
-        if ! eval "$1"; then
+        if ! eval "$1" &> /dev/null; then
+            echo "$arg"
             return 1
         fi
     done

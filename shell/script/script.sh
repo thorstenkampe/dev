@@ -63,13 +63,14 @@ function send_mail {
                 "$@"
 }
 
-function test_arguments {
+function test_args {
     # test if all arguments satisfy test
-    # `test_arguments '(( $arg >= 3 ))' 3 4`
+    # `test_args '(( $arg >= 3 ))' 3 4`
     local arg
     # shellcheck disable=SC2034
     for arg in "${@:2}"; do
-        if ! eval "$1"; then
+        if ! eval "$1" &> /dev/null; then
+            echo "$arg"
             return 1
         fi
     done
@@ -88,8 +89,8 @@ fi
 deps=(mailsend-go)
 
 # shellcheck disable=SC2016
-if ! test_arguments 'which $arg &> /dev/null' "${deps[@]}"; then
-    log CRITICAL "cannot find at least one dependency (${deps[*]})"
+if ! dep=$(test_args 'which $arg' "${deps[@]}"); then
+    log CRITICAL "cannot find dependency \"$dep\""
     exit 1
 fi
 
