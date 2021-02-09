@@ -182,23 +182,27 @@ function teardown {
 }
 
 #
-@test 'test_arguments' {
+@test 'test_arguments - no arguments' {
     # shellcheck disable=SC2016
     local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
 
-    test_arguments
-
     test_arguments "$test"
+}
 
-    test_arguments "$test" mssql
+@test 'test_arguments - two true arguments' {
+    # shellcheck disable=SC2016
+    local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
 
     test_arguments "$test" mssql oracle
+}
 
-    run test_arguments "$test" mssqlX
-    assert_failure
+@test 'test_arguments - one true, one false arguments' {
+    # shellcheck disable=SC2016
+    local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
 
     run test_arguments "$test" mssql oracleX
     assert_failure
+    assert_output oracleX
 }
 
 #
