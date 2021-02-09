@@ -63,6 +63,18 @@ function send_mail {
                 "$@"
 }
 
+function test_arguments {
+    # test if all arguments satisfy test
+    # `test_arguments '(( $arg >= 3 ))' 3 4`
+    local arg
+    # shellcheck disable=SC2034
+    for arg in "${@:2}"; do
+        if ! eval "$1"; then
+            return 1
+        fi
+    done
+}
+
 if is_windows; then
     PATH=/usr/sbin:/usr/bin:$PATH
 
@@ -72,6 +84,14 @@ if is_windows; then
 fi
 
 # MAIN CODE STARTS HERE #
+
+deps=(mailsend-go)
+
+# shellcheck disable=SC2016
+if ! test_arguments 'which $arg &> /dev/null' "${deps[@]}"; then
+    log CRITICAL "cannot find at least one dependency (${deps[*]})"
+    exit 1
+fi
 
 function send_error_email {
     send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
