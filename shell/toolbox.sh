@@ -47,14 +47,6 @@ function ext {
     echo "${1##*.}"
 }
 
-function is_file_older {
-    # `$1`: file to check, `$2`: age in minutes
-    local path name
-    path=$(dirname "$1")
-    name=$(basename "$1")
-    [[ $(find "$path" -mmin +"$2" -name "$name") ]]
-}
-
 # * https://stackoverflow.com/a/35329275/5740232
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
 function join_by {
@@ -110,7 +102,10 @@ function showargs {
 
 function showopts {
     # example: `showopts a:bd: -a 1 -b -c -d`
+
+    local opt_type opt_types
     unset OPTIND
+    opt_types=(valid_opts unknown_opts arg_missing)
     declare -a valid_opts unknown_opts arg_missing
 
     while getopts ":$1" opt "${@:2}"; do
@@ -129,20 +124,14 @@ function showopts {
         fi
     done
 
-    if [[ ${valid_opts[*]} ]]; then
-        echo -n 'valid opts: '
-        join_by ', ' "${valid_opts[@]}"
-    fi
+    for opt_type in "${opt_types[@]}"; do
+        declare -n type=$opt_type
 
-    if [[ ${unknown_opts[*]} ]]; then
-        echo -n 'unknown opts: '
-        join_by ', ' "${unknown_opts[@]}"
-    fi
-
-    if [[ ${arg_missing[*]} ]]; then
-        echo -n 'arg missing: '
-        join_by ', ' "${arg_missing[@]}"
-    fi
+        if [[ ${type[*]} ]]; then
+            echo -n "${opt_type/_/ }: "
+            join_by ', ' "${type[@]}"
+        fi
+    done
 }
 
 function showpath {
@@ -167,6 +156,13 @@ function test_args {
             return 1
         fi
     done
+}
+
+function test_file {
+    local path name
+    path=$(dirname "$1")
+    name=$(basename "$1")
+    [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
 }
 
 function timestamp {

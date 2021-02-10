@@ -51,16 +51,6 @@ function teardown {
 }
 
 #
-@test 'is_file_older' {
-    local tmp_file
-    tmp_file=$(mktemp)
-    touch --date '1 hour ago' "$tmp_file"
-
-    is_file_older "$tmp_file" 60
-    rm "$tmp_file"
-}
-
-#
 @test 'join_by' {
     source test.sh
     run join_by ', ' "${array[@]}"
@@ -145,9 +135,7 @@ function teardown {
     parse_opts a:bc -a 1 -b arg1
 
     set_opt a
-
     set_opt b
-
     run set_opt c
     assert_failure
 }
@@ -203,6 +191,17 @@ function teardown {
     run test_args "$test" mssql oracleX
     assert_failure
     assert_output oracleX
+}
+
+#
+@test 'test_file' {
+    local tmp_file
+    tmp_file=$(mktemp)
+    touch --date '1 hour ago' "$tmp_file"
+
+    # test if file is older than sixty minutes
+    test_file "$tmp_file" -mmin +60
+    rm "$tmp_file"
 }
 
 #
