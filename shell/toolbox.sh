@@ -18,6 +18,30 @@ function abspath {
     readlink -m "$1"
 }
 
+function ext {
+    echo "${1##*.}"
+}
+
+function set_opt {
+    [[ -v opts[$1] ]]
+}
+
+function showargs {
+    printf '>%s<\n' "$@"
+}
+
+function split_by {
+    # e.g. `split_by ':' $PATH`
+    # shellcheck disable=SC2034
+    IFS=$1 read -ra split <<< "$2"
+}
+
+function timestamp {
+    # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
+    date +'%F %T'
+}
+
+#
 function arcc {
     local source name parent
 
@@ -41,10 +65,6 @@ function arcx {
     else
         tar -xaf "$1" -C "$2" "${@:3}"
     fi
-}
-
-function ext {
-    echo "${1##*.}"
 }
 
 # * https://stackoverflow.com/a/35329275/5740232
@@ -92,14 +112,6 @@ function pprint {
     join_by ', ' "${keyval[@]}"
 }
 
-function set_opt {
-    [[ -v opts[$1] ]]
-}
-
-function showargs {
-    printf '>%s<\n' "$@"
-}
-
 function showopts {
     # example: `showopts a:bd: -a 1 -b -c -d`
 
@@ -139,12 +151,6 @@ function showpath {
     showargs "${split[@]}"
 }
 
-function split_by {
-    # e.g. `split_by ':' $PATH`
-    # shellcheck disable=SC2034
-    IFS=$1 read -ra split <<< "$2"
-}
-
 function test_args {
     # test if all arguments satisfy test
     # `test_arguments '(( $arg >= 3 ))' 3 4`
@@ -159,15 +165,14 @@ function test_args {
 }
 
 function test_file {
+    # test if file (or folder) satisfies test
+    # `test_file file -mmin +60` (test if file is older than sixty minutes)
+
     local path name
     path=$(dirname "$1")
     name=$(basename "$1")
-    [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
-}
 
-function timestamp {
-    # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
-    date +'%F %T'
+    [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
 }
 
 function zipc {

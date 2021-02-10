@@ -194,7 +194,7 @@ function teardown {
 }
 
 #
-@test 'test_file' {
+@test 'test_file - older than' {
     local tmp_file
     tmp_file=$(mktemp)
     touch --date '1 hour ago' "$tmp_file"
@@ -202,6 +202,14 @@ function teardown {
     # test if file is older than sixty minutes
     test_file "$tmp_file" -mmin +60
     rm "$tmp_file"
+}
+
+@test 'test_file - not existing' {
+    local tmp_file
+    tmp_file=$(mktemp --dry-run)
+
+    run test_file "$tmp_file"
+    assert_failure
 }
 
 #
