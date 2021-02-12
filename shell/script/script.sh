@@ -64,14 +64,17 @@ function send_mail {
 }
 
 function test_args {
-    # test if all arguments satisfy test
-    # `test_args '(( $arg >= 3 ))' 3 4`
+    # split arguments into arrays that evaluate to true and to false
+    # `test_args '(( $arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
     local arg
-    # shellcheck disable=SC2034
+    true=()
+    false=()
+
     for arg in "${@:2}"; do
-        if ! eval "$1" &> /dev/null; then
-            echo "$arg"
-            return 1
+        if eval "$1" &> /dev/null; then
+            true+=( "$arg" )
+        else
+            false+=( "$arg" )
         fi
     done
 }
@@ -87,10 +90,11 @@ fi
 # MAIN CODE STARTS HERE #
 
 deps=(mailsend-go)
-
 # shellcheck disable=SC2016
-if ! dep=$(test_args 'which $arg' "${deps[@]}"); then
-    log CRITICAL "cannot find dependency \"$dep\""
+test_args 'which $arg' "${deps[@]}"
+
+if (( ${#false[@]} )); then
+    log CRITICAL "can't find dependencies: ${false[*]}"
     exit 1
 fi
 

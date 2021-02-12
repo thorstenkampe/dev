@@ -91,7 +91,6 @@ function teardown {
 @test 'parse_opts - option arguments' {
     parse_opts a:bc -a 1 -b arg1
 
-    # shellcheck disable=SC2154
     assert_equal "${opts[a]}" 1
     assert_equal "${opts[b]}" ''
 }
@@ -145,7 +144,7 @@ function teardown {
     source test.sh
     run showargs "${array[@]}"
 
-    assert_output --regexp '^>1<.>2<.>3<.>4<.>5<.>6<.>7<.>8<.>9<$'
+    assert_output --regexp '^»1«.»2«.»3«.»4«.»5«.»6«.»7«.»8«.»9«$'
 }
 
 #
@@ -159,7 +158,7 @@ function teardown {
 @test 'showpath' {
     PATH=/bin:/usr/bin:/usr/local/bin run showpath
 
-    assert_output --regexp '^>/bin<.>/usr/bin<.>/usr/local/bin<$'
+    assert_output --regexp '^»/bin«.»/usr/bin«.»/usr/local/bin«$'
 }
 
 #
@@ -173,24 +172,30 @@ function teardown {
 @test 'test_args - no arguments' {
     # shellcheck disable=SC2016
     local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
-
     test_args "$test"
+
+    assert_equal "${#true[@]}" 0
+    assert_equal "${#false[@]}" 0
 }
 
 @test 'test_args - two true arguments' {
     # shellcheck disable=SC2016
     local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
-
     test_args "$test" mssql oracle
+
+    assert_equal "${true[0]}" 'mssql'
+    assert_equal "${true[1]}" 'oracle'
+    assert_equal "${#false[@]}" 0
 }
 
-@test 'test_args - one true, one false arguments' {
+@test 'test_args - one true, two false arguments' {
     # shellcheck disable=SC2016
     local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
+    test_args "$test" mssql oracleX oracleY
 
-    run test_args "$test" mssql oracleX
-    assert_failure
-    assert_output oracleX
+    assert_equal "${true[0]}" 'mssql'
+    assert_equal "${false[0]}" 'oracleX'
+    assert_equal "${false[1]}" 'oracleY'
 }
 
 #
