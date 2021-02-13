@@ -26,6 +26,7 @@ function showargs {
 
 function splitby {
     # split string into array 'split', e.g. `splitby : $PATH`
+    # shellcheck disable=SC2034
     IFS=$1 read -ra split <<< "$2"
 }
 
@@ -132,11 +133,6 @@ function showopts {
             joinby ', ' "${type[@]}"
         fi
     done
-}
-
-function showpath {
-    splitby : "$PATH"
-    showargs "${split[@]}"
 }
 
 function test_args {

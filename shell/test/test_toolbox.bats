@@ -143,13 +143,6 @@ function teardown {
 }
 
 #
-@test 'showpath' {
-    PATH=/bin:/usr/bin:/usr/local/bin run showpath
-
-    assert_output --regexp '^»/bin«.»/usr/bin«.»/usr/local/bin«$'
-}
-
-#
 @test 'splitby' {
     splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
 
