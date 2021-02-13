@@ -37,9 +37,11 @@ function set_opt {
 }
 
 function log {
-    declare -A loglevel=( [CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50 )
+    declare -A loglevel
+    loglevel=( [CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50 )
+    verbosity=${verbosity-WARNING}
 
-    if (( loglevel[$1] <= loglevel[${verbosity-WARNING}] )); then
+    if (( loglevel[$1] <= loglevel[$verbosity] )); then
         echo -e "$1": "$2" >&2
     fi
 }
