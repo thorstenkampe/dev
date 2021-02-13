@@ -1,7 +1,21 @@
-# shellcheck disable=SC1091,SC2154
+# shellcheck disable=SC1091,SC2016,SC2154
 
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
+
+function is_windows {
+    [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
+}
+
+if is_windows; then
+    PATH=/usr/sbin:/usr/bin:$PATH
+
+    function ps {
+        procps "$@"
+    }
+fi
+
+# MAIN CODE STARTS HERE #
 
 load /usr/local/libexec/bats-assert/load.bash
 load /usr/local/libexec/bats-support/load.bash
@@ -17,55 +31,38 @@ function teardown {
 }
 
 #
-@test 'setup - ps' {
-    run ps --pid $$ --format comm=
+@test 'groupby - numbers' {
+    groupby 'expr $arg % 2' 1 2 3 4
 
-    assert_output bash
+    assert_equal "${groups[0]}" '2 4'
+    assert_equal "${groups[1]}" '1 3'
 }
 
-@test 'setup - find' {
-    PATH=/cygdrive/c/WINDOWS/system32:/c/WINDOWS/system32:$PATH
-    source toolbox.sh
-    run which find
+@test 'groupby - strings' {
+    groupby 'len "$arg"' '' a ab 'a b'
 
-    assert_output /usr/bin/find
-}
-
-#
-@test 'arcc/x - zip' {
-    mkdir --parent $testdir
-
-    arcc toolbox.sh $testdir/toolbox.sh.zip
-    arcx $testdir/toolbox.sh.zip $testdir
-
-    cmp --quiet toolbox.sh $testdir/toolbox.sh
-}
-
-@test 'arcc/x - gzip' {
-    mkdir --parent $testdir
-
-    arcc toolbox.sh $testdir/toolbox.sh.tar.gz
-    arcx $testdir/toolbox.sh.tar.gz $testdir
-
-    cmp --quiet toolbox.sh $testdir/toolbox.sh
+    assert_equal "${groups[0]}" "''"
+    assert_equal "${groups[1]}" a
+    assert_equal "${groups[2]}" ab
+    assert_equal "${groups[3]}" "a\ b"
 }
 
 #
-@test 'join_by' {
+@test 'joinby' {
     source test.sh
-    run join_by ', ' "${array[@]}"
+    run joinby ', ' "${array[@]}"
 
     assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
 }
 
-@test 'join_by - single element' {
-    run join_by ', ' '0 9'
+@test 'joinby - single element' {
+    run joinby ', ' '0 9'
 
     assert_output '0 9'
 }
 
-@test 'join_by - no element' {
-    run join_by ', '
+@test 'joinby - no element' {
+    run joinby ', '
 
     refute_output
 }
@@ -114,22 +111,6 @@ function teardown {
 }
 
 #
-@test 'pprint' {
-    source test.sh
-    run pprint assoc
-
-    assert_output '9: 9, h: 8, g: 7, f: 6, e: 5, d: 4, c: 3, b: 2, a: 1'
-}
-
-@test 'pprint - empty value' {
-    # shellcheck disable=SC2034
-    declare -gA myassoc=([a]='')
-    run pprint myassoc
-
-    assert_output "a: ''"
-}
-
-#
 @test 'set_opt' {
     parse_opts a:bc -a 1 -b arg1
 
@@ -162,16 +143,15 @@ function teardown {
 }
 
 #
-@test 'split_by' {
-    split_by ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
+@test 'splitby' {
+    splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
 
     assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
 }
 
 #
 @test 'test_args - no arguments' {
-    # shellcheck disable=SC2016
-    local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
+    test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     test_args "$test"
 
     assert_equal "${#true[@]}" 0
@@ -179,8 +159,7 @@ function teardown {
 }
 
 @test 'test_args - two true arguments' {
-    # shellcheck disable=SC2016
-    local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
+    test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     test_args "$test" mssql oracle
 
     assert_equal "${true[0]}" 'mssql'
@@ -189,8 +168,7 @@ function teardown {
 }
 
 @test 'test_args - one true, two false arguments' {
-    # shellcheck disable=SC2016
-    local test='[[ $arg =~ ^(mssql|oracle)$ ]]'
+    test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     test_args "$test" mssql oracleX oracleY
 
     assert_equal "${true[0]}" 'mssql'
@@ -200,7 +178,6 @@ function teardown {
 
 #
 @test 'test_file - older than' {
-    local tmp_file
     tmp_file=$(mktemp)
     touch --date '1 hour ago' "$tmp_file"
 
@@ -210,7 +187,6 @@ function teardown {
 }
 
 @test 'test_file - not existing' {
-    local tmp_file
     tmp_file=$(mktemp --dry-run)
 
     run test_file "$tmp_file"
@@ -218,6 +194,24 @@ function teardown {
 }
 
 #
+@test 'arcc/x - zip' {
+    mkdir --parent $testdir
+
+    arcc toolbox.sh $testdir/toolbox.sh.zip
+    arcx $testdir/toolbox.sh.zip $testdir
+
+    cmp --quiet toolbox.sh $testdir/toolbox.sh
+}
+
+@test 'arcc/x - gzip' {
+    mkdir --parent $testdir
+
+    arcc toolbox.sh $testdir/toolbox.sh.tar.gz
+    arcx $testdir/toolbox.sh.tar.gz $testdir
+
+    cmp --quiet toolbox.sh $testdir/toolbox.sh
+}
+
 @test 'zipc/x' {
     mkdir --parent $testdir
 
