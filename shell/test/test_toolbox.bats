@@ -19,6 +19,7 @@ fi
 
 load /usr/local/libexec/bats-assert/load.bash
 load /usr/local/libexec/bats-support/load.bash
+load /usr/local/libexec/bats-file/load.bash
 
 function setup {
     source toolbox.sh
@@ -45,6 +46,12 @@ function teardown {
     assert_equal "${groups[1]}" a
     assert_equal "${groups[2]}" ab
     assert_equal "${groups[3]}" "a\ b"
+}
+
+@test 'groupby - empty key' {
+    groupby 'type -t "$arg"' no_such_cmd
+
+    assert_equal "${groups[None]}" no_such_cmd
 }
 
 #
@@ -190,6 +197,7 @@ function teardown {
     tmp_file=$(mktemp --dry-run)
 
     run test_file "$tmp_file"
+    assert_file_not_exist "$tmp_file"
     assert_failure
 }
 
