@@ -15,7 +15,7 @@ load /usr/local/libexec/bats-file/load.bash
 @test 'send email' {
     [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
 
-    local email_address=noreply@thorstenkampe.de
+    email_address=noreply@thorstenkampe.de
     source script.sh
     msmtpd --port 60587 &
 
