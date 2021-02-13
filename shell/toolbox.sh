@@ -16,6 +16,14 @@ function len {
     echo ${#1}
 }
 
+function lowercase {
+    echo "${1,,}"
+}
+
+function nthline {
+    awk "NR == $1" "${2-}"
+}
+
 function set_opt {
     [[ -v opts[$1] ]]
 }
@@ -33,6 +41,10 @@ function splitby {
 function timestamp {
     # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
     date +'%F %T'
+}
+
+function uppercase {
+    echo "${1^^}"
 }
 
 function groupby {
