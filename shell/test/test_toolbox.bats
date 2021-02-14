@@ -3,18 +3,6 @@
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
 
-function is_windows {
-    [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
-}
-
-if is_windows; then
-    PATH=/usr/sbin:/usr/bin:$PATH
-
-    function ps {
-        procps "$@"
-    }
-fi
-
 # MAIN CODE STARTS HERE #
 
 load /usr/local/libexec/bats-assert/load.bash
@@ -22,6 +10,7 @@ load /usr/local/libexec/bats-support/load.bash
 load /usr/local/libexec/bats-file/load.bash
 
 function setup {
+    source test.sh
     source toolbox.sh
     export LANGUAGE=en_US
     testdir=tmp
@@ -31,7 +20,82 @@ function teardown {
     rm -rf "$testdir"
 }
 
-#
+##
+@test abspath {
+    run abspath .
+    assert_output "$PWD"
+}
+
+@test escape {
+    shopt -u failglob
+    run escape 'A!"\`$'
+    assert_output 'A\!\"\\\`\$'
+}
+
+@test ext {
+    run ext test.txt
+    assert_output txt
+}
+
+@test is_sourced {
+    is_sourced
+}
+
+@test len {
+    run len "$string"
+    assert_output 43
+}
+
+@test lowercase {
+    run lowercase "$string"
+    assert_output 'the quick brown fox jumps over the lazy dog'
+}
+
+@test name_wo_ext {
+    run name_wo_ext test.txt
+    assert_output test
+}
+
+@test nthline {
+    run nthline 6 test/test_toolbox.bats
+    assert_output '# MAIN CODE STARTS HERE #'
+}
+
+@test set_opt {
+    parse_opts a:bc -a 1 -b arg1
+
+    set_opt a
+    set_opt b
+    run set_opt c
+    assert_failure
+}
+
+@test showargs {
+    run showargs "${array[@]}"
+    assert_output --regexp '^»1«.»2«.»3«.»4«.»5«.»6«.»7«.»8«.»9«$'
+}
+
+@test splitby {
+    splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
+    assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
+}
+
+@test timestamp {
+    run timestamp
+    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
+}
+
+@test timestamp_file {
+    run timestamp_file
+    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}-){2}[0-9]{2}$'
+}
+
+@test uppercase {
+    run uppercase "$string"
+    assert_output 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG'
+}
+
+##
 @test 'groupby - numbers' {
     groupby 'expr $arg % 2' 1 2 3 4
 
@@ -50,40 +114,33 @@ function teardown {
 
 @test 'groupby - empty key' {
     groupby 'type -t "$arg"' no_such_cmd
-
     assert_equal "${groups[None]}" no_such_cmd
 }
 
 #
-@test 'joinby' {
-    source test.sh
+@test joinby {
     run joinby ', ' "${array[@]}"
-
     assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
 }
 
 @test 'joinby - single element' {
     run joinby ', ' '0 9'
-
     assert_output '0 9'
 }
 
 @test 'joinby - no element' {
     run joinby ', '
-
     refute_output
 }
 
 #
 @test 'log - info message' {
     run log INFO 'test message'
-
     refute_output
 }
 
 @test 'log - verbosity info message' {
     verbosity=INFO run log INFO 'test message'
-
     assert_output 'INFO: test message'
 }
 
@@ -118,35 +175,24 @@ function teardown {
 }
 
 #
-@test 'set_opt' {
-    parse_opts a:bc -a 1 -b arg1
+@test 'setupwin - find' {
+    setupwin
+    run which find
 
-    set_opt a
-    set_opt b
-    run set_opt c
-    assert_failure
+    assert_output /usr/bin/find
+}
+
+@test 'setupwin - ps' {
+    setupwin
+    run ps --pid $$ --format comm=
+
+    assert_output bash
 }
 
 #
-@test 'showargs' {
-    source test.sh
-    run showargs "${array[@]}"
-
-    assert_output --regexp '^»1«.»2«.»3«.»4«.»5«.»6«.»7«.»8«.»9«$'
-}
-
-#
-@test 'showopts' {
+@test showopts {
     run showopts a:bd: -a 1 -b -c -d
-
     assert_output --regexp '^valid opts: -a=1, -b.unknown opts: -c.arg missing: -d$'
-}
-
-#
-@test 'splitby' {
-    splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
-
-    assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
 }
 
 #

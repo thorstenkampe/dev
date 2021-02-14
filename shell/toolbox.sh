@@ -1,55 +1,89 @@
 # shellcheck disable=SC2164
 
+# relative path -> absolute path
 function abspath {
     readlink -m "$1"
 }
 
-function escape {
-    printf '%q' "$1"
+function curl {
+    command curl --silent --show-error --location --connect-timeout 6 "$@"
 }
 
+# escape characters in string (!, ', ", \, `, $)
+function escape {
+    printf %q "$1"
+}
+
+# (last) extension of file name
 function ext {
     echo "${1##*.}"
 }
 
+function is_sourced {
+    [[ ${BASH_SOURCE[0]} != "$0" ]]
+}
+
+function is_windows {
+    [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
+}
+
+# length of string
 function len {
     echo ${#1}
 }
 
+# string to lowercase
 function lowercase {
     echo "${1,,}"
 }
 
+# file name without last extension
+function name_wo_ext {
+    echo "${1%.*}"
+}
+
+# nth line of file (`nthline n file` or `... | nthline n`
 function nthline {
     awk "NR == $1" "${2-}"
 }
 
+# is option set?
 function set_opt {
     [[ -v opts[$1] ]]
 }
 
+# show arguments line by line surrounded by "»«"
 function showargs {
     printf '»%s«\n' "$@"
 }
 
+# split string into array 'split', e.g. `splitby : $PATH`
 function splitby {
-    # split string into array 'split', e.g. `splitby : $PATH`
     # shellcheck disable=SC2034
     IFS=$1 read -ra split <<< "$2"
 }
 
+# create timestamp "yyyy-mm-dd hh:mm:ss"
 function timestamp {
-    # replace colons for file name on Windows: `ts=$(timestamp); ${ts//:/-}`
     date +'%F %T'
 }
 
+# create timestamp suitable as filename on Windows
+function timestamp_file {
+    local timestamp
+    timestamp=$(timestamp)
+    echo "${timestamp//:/-}"
+}
+
+# string to uppercase
 function uppercase {
     echo "${1^^}"
 }
 
+##
+# `groupby 'type -t $arg' ls cd vi groupby` ->
+# groups=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
 function groupby {
-    # `groupby 'type -t $arg' ls cd vi groupby` ->
-    # groups=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
     local arg key value
     declare -Ag groups
     groups=()
@@ -67,10 +101,10 @@ function groupby {
 
 # * https://stackoverflow.com/a/35329275/5740232
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
+# * joinby ';' "${array[@]}"
 function joinby {
-    # joinby ';' "${array[@]}"
     local rest=( "${@:3}" )
-    printf '%s' "${2-}" "${rest[@]/#/$1}"
+    printf %s "${2-}" "${rest[@]/#/$1}"
     echo
 }
 
@@ -99,8 +133,8 @@ function parse_opts {
     done
 }
 
+# pretty print associative array by name (`pprint assoc`)
 function pprint {
-    # pretty print associative array by name (`pprint assoc`)
     declare -a keyval
     declare -n _assarr=$1
     local key value
@@ -113,9 +147,18 @@ function pprint {
     joinby ', ' "${keyval[@]}"
 }
 
-function showopts {
-    # example: `showopts a:bd: -a 1 -b -c -d`
+function setupwin {
+    if is_windows; then
+        PATH=/usr/sbin:/usr/bin:$PATH
 
+        function ps {
+            procps "$@"
+        }
+    fi
+}
+
+# example: `showopts a:bd: -a 1 -b -c -d`
+function showopts {
     local opt_type opt_types
     unset OPTIND
     opt_types=(valid_opts unknown_opts arg_missing)
@@ -147,10 +190,10 @@ function showopts {
     done
 }
 
+# * split arguments into arrays that evaluate to true and to false
+# * `test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
+# * same as above: `test_args 'expr $arg % 2' ...`
 function test_args {
-    # split arguments into arrays that evaluate to true and to false
-    # `test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
-    #  same as above: `test_args 'expr $arg % 2' ...`
     local arg
     true=()
     false=()
@@ -164,10 +207,9 @@ function test_args {
     done
 }
 
+# test whether file (or folder) satisfies test
+# `test_file file -mmin +60` (test if file is older than sixty minutes)
 function test_file {
-    # test whether file (or folder) satisfies test
-    # `test_file file -mmin +60` (test if file is older than sixty minutes)
-
     local path name
     path=$(dirname "$1")
     name=$(basename "$1")
