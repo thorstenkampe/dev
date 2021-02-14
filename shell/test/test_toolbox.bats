@@ -173,7 +173,6 @@ function teardown {
 
 #
 @test log_to_file {
-    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     setupwin
     run log_to_file "$testdir/test.log" true
 
@@ -213,7 +212,6 @@ function teardown {
 
 #
 @test send_email {
-    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
 
@@ -295,7 +293,6 @@ function teardown {
 
 #
 @test 'arcc/x - zip' {
-    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     arcc toolbox.sh $testdir/toolbox.sh.zip
     arcx $testdir/toolbox.sh.zip $testdir
 
