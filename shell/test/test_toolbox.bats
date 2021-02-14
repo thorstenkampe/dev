@@ -10,6 +10,7 @@ load /usr/local/libexec/bats-support/load.bash
 load /usr/local/libexec/bats-file/load.bash
 
 function setup {
+    shopt -ou nounset
     source test.sh
     source toolbox.sh
     export LANGUAGE=en_US
@@ -172,8 +173,7 @@ function teardown {
 
 #
 @test log_to_file {
-    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
-    shopt -ou nounset
+    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     setupwin
     run log_to_file "$testdir/test.log" true
 
@@ -213,7 +213,7 @@ function teardown {
 
 #
 @test send_email {
-    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
+    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
 
@@ -286,7 +286,6 @@ function teardown {
 }
 
 @test 'test_file - not existing' {
-    shopt -ou nounset
     tmp_file=$(mktemp --dry-run)
     run test_file "$tmp_file"
 
@@ -296,6 +295,7 @@ function teardown {
 
 #
 @test 'arcc/x - zip' {
+    [[ $OSTYPE == msys ]] && skip 'MSYS not supported'
     arcc toolbox.sh $testdir/toolbox.sh.zip
     arcx $testdir/toolbox.sh.zip $testdir
 
