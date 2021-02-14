@@ -84,14 +84,14 @@ function uppercase {
 # `groupby 'type -t $arg' ls cd vi groupby` ->
 # groups=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
 function groupby {
-    local arg key value
+    local arg key
     declare -Ag groups
     groups=()
 
     for arg in "${@:2}"; do
-        value=$(eval "$1" 2> /dev/null || true)
-        value=${value:-None}
-        groups[$value]+="$(escape "$arg") "
+        key=$(eval "$1" 2> /dev/null || true)
+        key=${key:-None}
+        groups[$key]+="$(escape "$arg") "
     done
 
     for key in "${!groups[@]}"; do

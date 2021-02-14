@@ -14,6 +14,7 @@ function setup {
     source toolbox.sh
     export LANGUAGE=en_US
     testdir=tmp
+    mkdir --parent $testdir
 }
 
 function teardown {
@@ -21,11 +22,6 @@ function teardown {
 }
 
 ##
-@test abspath {
-    run abspath .
-    assert_output "$PWD"
-}
-
 @test escape {
     shopt -u failglob
     run escape 'A!"\`$'
@@ -242,8 +238,6 @@ function teardown {
 
 #
 @test 'arcc/x - zip' {
-    mkdir --parent $testdir
-
     arcc toolbox.sh $testdir/toolbox.sh.zip
     arcx $testdir/toolbox.sh.zip $testdir
 
@@ -251,8 +245,6 @@ function teardown {
 }
 
 @test 'arcc/x - gzip' {
-    mkdir --parent $testdir
-
     arcc toolbox.sh $testdir/toolbox.sh.tar.gz
     arcx $testdir/toolbox.sh.tar.gz $testdir
 
@@ -260,8 +252,6 @@ function teardown {
 }
 
 @test 'zipc/x' {
-    mkdir --parent $testdir
-
     zipc toolbox.sh $testdir/toolbox.sh.zip
     zipx $testdir/toolbox.sh.zip $testdir
 
