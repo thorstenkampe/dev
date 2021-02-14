@@ -5,7 +5,9 @@ shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
 PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
+# shellcheck disable=SC2034
 _params=( "$@" )
+# shellcheck disable=SC2034
 scriptname=$(basename "$0")
 
 function is_sourced {
@@ -122,7 +124,7 @@ if set_opt h; then
 fi
 
 if set_opt l; then
-    log_to_file "${opts[l]}" "${BASH_SOURCE[0]}" "${_params[@]}"
+    log_to_file "${opts[l]}" "$0" "${_params[@]}"
 fi
 
 if set_opt d; then
