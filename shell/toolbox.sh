@@ -132,17 +132,6 @@ function log_to_file {
     fi
 }
 
-# https://github.com/muquit/mailsend-go
-function send_mail {
-    mailsend-go -smtp localhost              \
-                -port 25                     \
-                -fname "$(whoami)@$HOSTNAME" \
-                -from FROM                   \
-                auth -user USER              \
-                     -pass PASSWORD          \
-                "$@"
-}
-
 function parse_opts {
     unset opts OPTIND
     local opt

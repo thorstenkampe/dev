@@ -218,17 +218,6 @@ function teardown {
 }
 
 #
-@test send_email {
-    email_address=noreply@thorstenkampe.de
-    msmtpd --port 60587 &
-
-    run send_mail -port 60587 -from $email_address -to $email_address
-    assert_success
-
-    kill $!
-}
-
-#
 @test 'setupwin - find' {
     setupwin
     run which find
