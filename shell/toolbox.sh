@@ -125,7 +125,7 @@ function log {
 
 function log_to_file {
     local parent_process
-    parent_process=$(ps --pid $PPID --format comm=) || true
+    parent_process=$(ps --pid $PPID --format comm= || true)
 
     if [[ $parent_process != logsave ]]; then
         exec logsave -a "$1" "${@:2}"
