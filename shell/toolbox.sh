@@ -118,6 +118,26 @@ function log {
     fi
 }
 
+function log_to_file {
+    local parent_process
+    parent_process=$(ps --pid $PPID --format comm=) || true
+
+    if [[ $parent_process != logsave ]]; then
+        exec logsave -a "$1" "${@:2}"
+    fi
+}
+
+# https://github.com/muquit/mailsend-go
+function send_mail {
+    mailsend-go -smtp localhost              \
+                -port 25                     \
+                -fname "$(whoami)@$HOSTNAME" \
+                -from FROM                   \
+                auth -user USER              \
+                     -pass PASSWORD          \
+                "$@"
+}
+
 function parse_opts {
     unset opts OPTIND
     local opt

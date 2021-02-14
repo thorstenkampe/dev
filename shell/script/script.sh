@@ -7,7 +7,6 @@ PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
 _params=( "$@" )
 scriptname=$(basename "$0")
-USER=$(whoami)
 
 function is_sourced {
     [[ ${BASH_SOURCE[0]} != "$0" ]]
@@ -49,19 +48,20 @@ function log {
 function log_to_file {
     local parent_process
     parent_process=$(ps --pid $PPID --format comm=) || true
+
     if [[ $parent_process != logsave ]]; then
-        exec logsave -a "${opts[l]}" "${BASH_SOURCE[0]}" "${_params[@]}"
+        exec logsave -a "$1" "${@:2}"
     fi
 }
 
+# https://github.com/muquit/mailsend-go
 function send_mail {
-    # https://github.com/muquit/mailsend-go
-    mailsend-go -smtp localhost          \
-                -port 25                 \
-                -fname "$USER@$HOSTNAME" \
-                -from FROM               \
-                auth -user USER          \
-                     -pass PASSWORD      \
+    mailsend-go -smtp localhost              \
+                -port 25                     \
+                -fname "$(whoami)@$HOSTNAME" \
+                -from FROM                   \
+                auth -user USER              \
+                     -pass PASSWORD          \
                 "$@"
 }
 
@@ -81,13 +81,17 @@ function test_args {
     done
 }
 
-if is_windows; then
-    PATH=/usr/sbin:/usr/bin:$PATH
+function setupwin {
+    if is_windows; then
+        PATH=/usr/sbin:/usr/bin:$PATH
 
-    function ps {
-        procps "$@"
-    }
-fi
+        function ps {
+            procps "$@"
+        }
+    fi
+}
+
+setupwin
 
 # MAIN CODE STARTS HERE #
 
@@ -118,7 +122,7 @@ if set_opt h; then
 fi
 
 if set_opt l; then
-    log_to_file
+    log_to_file "${opts[l]}" "${BASH_SOURCE[0]}" "${_params[@]}"
 fi
 
 if set_opt d; then

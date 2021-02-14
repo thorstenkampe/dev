@@ -25,11 +25,15 @@ function teardown {
 @test escape {
     shopt -u failglob
     run escape 'A!"\`$'
+
+    assert_success
     assert_output 'A\!\"\\\`\$'
 }
 
 @test ext {
     run ext test.txt
+
+    assert_success
     assert_output txt
 }
 
@@ -39,21 +43,29 @@ function teardown {
 
 @test len {
     run len "$string"
+
+    assert_success
     assert_output 43
 }
 
 @test lowercase {
     run lowercase "$string"
+
+    assert_success
     assert_output 'the quick brown fox jumps over the lazy dog'
 }
 
 @test name_wo_ext {
     run name_wo_ext test.txt
+
+    assert_success
     assert_output test
 }
 
 @test nthline {
     run nthline 6 test/test_toolbox.bats
+
+    assert_success
     assert_output '# MAIN CODE STARTS HERE #'
 }
 
@@ -68,6 +80,8 @@ function teardown {
 
 @test showargs {
     run showargs "${array[@]}"
+
+    assert_success
     assert_output --regexp '^»1«.»2«.»3«.»4«.»5«.»6«.»7«.»8«.»9«$'
 }
 
@@ -78,16 +92,22 @@ function teardown {
 
 @test timestamp {
     run timestamp
+
+    assert_success
     assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
 }
 
 @test timestamp_file {
     run timestamp_file
+
+    assert_success
     assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}-){2}[0-9]{2}$'
 }
 
 @test uppercase {
     run uppercase "$string"
+
+    assert_success
     assert_output 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG'
 }
 
@@ -116,28 +136,49 @@ function teardown {
 #
 @test joinby {
     run joinby ', ' "${array[@]}"
+
+    assert_success
     assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
 }
 
 @test 'joinby - single element' {
     run joinby ', ' '0 9'
+
+    assert_success
     assert_output '0 9'
 }
 
 @test 'joinby - no element' {
     run joinby ', '
+
+    assert_success
     refute_output
 }
 
 #
 @test 'log - info message' {
     run log INFO 'test message'
+
+    assert_success
     refute_output
 }
 
 @test 'log - verbosity info message' {
     verbosity=INFO run log INFO 'test message'
+
+    assert_success
     assert_output 'INFO: test message'
+}
+
+#
+@test log_to_file {
+    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
+    shopt -ou nounset
+    setupwin
+    run log_to_file "$testdir/test.log" true
+
+    assert_success
+    assert_file_exist "$testdir/test.log"
 }
 
 #
@@ -171,10 +212,23 @@ function teardown {
 }
 
 #
+@test send_email {
+    [[ $OSTYPE == msys ]] && fail 'MSYS not supported'
+    email_address=noreply@thorstenkampe.de
+    msmtpd --port 60587 &
+
+    run send_mail -port 60587 -from $email_address -to $email_address
+    assert_success
+
+    kill $!
+}
+
+#
 @test 'setupwin - find' {
     setupwin
     run which find
 
+    assert_success
     assert_output /usr/bin/find
 }
 
@@ -182,12 +236,15 @@ function teardown {
     setupwin
     run ps --pid $$ --format comm=
 
+    assert_success
     assert_output bash
 }
 
 #
 @test showopts {
     run showopts a:bd: -a 1 -b -c -d
+
+    assert_success
     assert_output --regexp '^valid opts: -a=1, -b.unknown opts: -c.arg missing: -d$'
 }
 
@@ -229,11 +286,12 @@ function teardown {
 }
 
 @test 'test_file - not existing' {
+    shopt -ou nounset
     tmp_file=$(mktemp --dry-run)
-
     run test_file "$tmp_file"
-    assert_file_not_exist "$tmp_file"
+
     assert_failure
+    assert_file_not_exist "$tmp_file"
 }
 
 #
