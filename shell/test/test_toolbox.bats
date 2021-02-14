@@ -14,8 +14,7 @@ function setup {
     source test.sh
     source toolbox.sh
     export LANGUAGE=en_US
-    testdir=tmp
-    mkdir --parent $testdir
+    testdir=$(mktempdir .)
 }
 
 function teardown {
@@ -54,6 +53,14 @@ function teardown {
 
     assert_success
     assert_output 'the quick brown fox jumps over the lazy dog'
+}
+
+@test mktempdir {
+    run mktempdir .
+
+    assert_success
+    assert_dir_exist "$output"
+    rmdir "$output"
 }
 
 @test name_wo_ext {
@@ -293,22 +300,22 @@ function teardown {
 
 #
 @test 'arcc/x - zip' {
-    arcc toolbox.sh $testdir/toolbox.sh.zip
-    arcx $testdir/toolbox.sh.zip $testdir
+    arcc toolbox.sh "$testdir/toolbox.sh.zip"
+    arcx "$testdir/toolbox.sh.zip" "$testdir"
 
-    cmp --quiet toolbox.sh $testdir/toolbox.sh
+    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
 @test 'arcc/x - gzip' {
-    arcc toolbox.sh $testdir/toolbox.sh.tar.gz
-    arcx $testdir/toolbox.sh.tar.gz $testdir
+    arcc toolbox.sh "$testdir/toolbox.sh.tar.gz"
+    arcx "$testdir/toolbox.sh.tar.gz" "$testdir"
 
-    cmp --quiet toolbox.sh $testdir/toolbox.sh
+    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
 @test 'zipc/x' {
-    zipc toolbox.sh $testdir/toolbox.sh.zip
-    zipx $testdir/toolbox.sh.zip $testdir
+    zipc toolbox.sh "$testdir/toolbox.sh.zip"
+    zipx "$testdir/toolbox.sh.zip" "$testdir"
 
-    cmp --quiet toolbox.sh $testdir/toolbox.sh
+    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }

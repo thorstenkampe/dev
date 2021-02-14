@@ -37,6 +37,11 @@ function lowercase {
     echo "${1,,}"
 }
 
+# create tmp directory in specified location
+function mktempdir {
+    mktemp --directory --tmpdir="$1" tmp.XXX
+}
+
 # file name without last extension
 function name_wo_ext {
     echo "${1%.*}"
