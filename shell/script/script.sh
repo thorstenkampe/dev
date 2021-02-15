@@ -1,14 +1,19 @@
 #! /usr/bin/env bash
 
-shopt -os errexit errtrace nounset pipefail
-shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
+function init {
+    shopt -os errexit errtrace nounset pipefail
+    shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
-PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+    PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
-# shellcheck disable=SC2034
-_params=( "$@" )
-# shellcheck disable=SC2034
-scriptname=$(basename "$0")
+    if is_windows; then
+        PATH=/usr/sbin:/usr/bin:$PATH
+
+        function ps {
+            procps "$@"
+        }
+    fi
+}
 
 function is_sourced {
     [[ ${BASH_SOURCE[0]} != "$0" ]]
@@ -83,23 +88,17 @@ function test_args {
     done
 }
 
-function setupwin {
-    if is_windows; then
-        PATH=/usr/sbin:/usr/bin:$PATH
+init
 
-        function ps {
-            procps "$@"
-        }
-    fi
-}
-
-setupwin
+# shellcheck disable=SC2034
+_params=( "$@" )
+# shellcheck disable=SC2034
+scriptname=$(basename "$0")
 
 # MAIN CODE STARTS HERE #
 
-deps=(mailsend-go)
 # shellcheck disable=SC2016
-test_args 'which $arg' "${deps[@]}"
+test_args 'which $arg' mailsend-go
 
 if (( ${#false[@]} )); then
     log CRITICAL "can't find dependencies: ${false[*]}"

@@ -57,6 +57,11 @@ function set_opt {
     [[ -v opts[$1] ]]
 }
 
+function set_shopt {
+    set -o
+    shopt
+}
+
 # show arguments line by line surrounded by "»«"
 function showargs {
     printf '»%s«\n' "$@"
@@ -102,6 +107,21 @@ function groupby {
     for key in "${!groups[@]}"; do
         groups[$key]=${groups[$key]% }
     done
+}
+
+function init {
+    shopt -os errexit errtrace nounset pipefail
+    shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
+
+    PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
+
+    if is_windows; then
+        PATH=/usr/sbin:/usr/bin:$PATH
+
+        function ps {
+            procps "$@"
+        }
+    fi
 }
 
 # * https://stackoverflow.com/a/35329275/5740232
@@ -159,16 +179,6 @@ function pprint {
     done
 
     joinby ', ' "${keyval[@]}"
-}
-
-function setupwin {
-    if is_windows; then
-        PATH=/usr/sbin:/usr/bin:$PATH
-
-        function ps {
-            procps "$@"
-        }
-    fi
 }
 
 # example: `showopts a:bd: -a 1 -b -c -d`

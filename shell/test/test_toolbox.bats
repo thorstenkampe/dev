@@ -180,7 +180,7 @@ function teardown {
 
 #
 @test log_to_file {
-    setupwin
+    init
     run log_to_file "$testdir/test.log" true
 
     assert_success
@@ -218,16 +218,16 @@ function teardown {
 }
 
 #
-@test 'setupwin - find' {
-    setupwin
+@test 'init - find' {
+    init
     run which find
 
     assert_success
     assert_output /usr/bin/find
 }
 
-@test 'setupwin - ps' {
-    setupwin
+@test 'init - ps' {
+    init
     run ps --pid $$ --format comm=
 
     assert_success
