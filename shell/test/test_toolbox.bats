@@ -142,6 +142,23 @@ function teardown {
 }
 
 #
+@test 'init - find' {
+    init
+    run which find
+
+    assert_success
+    assert_output /usr/bin/find
+}
+
+@test 'init - ps' {
+    init
+    run ps --pid $$ --format comm=
+
+    assert_success
+    assert_output bash
+}
+
+#
 @test joinby {
     run joinby ', ' "${array[@]}"
 
@@ -215,23 +232,6 @@ function teardown {
 
 @test 'parse_opts - no option' {
     parse_opts a:bc
-}
-
-#
-@test 'init - find' {
-    init
-    run which find
-
-    assert_success
-    assert_output /usr/bin/find
-}
-
-@test 'init - ps' {
-    init
-    run ps --pid $$ --format comm=
-
-    assert_success
-    assert_output bash
 }
 
 #
