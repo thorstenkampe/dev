@@ -260,7 +260,7 @@ function arcc {
 
 function arcx {
     if [[ $(ext "$1") == zip ]]; then
-        7za x "$1" -o"$2" '*' "${@:3}"
+        7za x "$1" -o"$2" -y '*' "${@:3}"
 
     else
         tar -xaf "$1" -C "$2" "${@:3}"
