@@ -1,4 +1,4 @@
-# shellcheck disable=SC1091,SC2016,SC2154
+# shellcheck disable=SC2016,SC2154
 
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
