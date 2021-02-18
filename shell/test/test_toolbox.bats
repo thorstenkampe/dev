@@ -14,6 +14,7 @@ function setup {
     source test.sh
     source toolbox.sh
     export LANGUAGE=en_US
+    config=test/test_ini.ini
     testdir=$(mktempdir .)
 }
 
@@ -287,7 +288,7 @@ function teardown {
     assert_file_not_exist "$tmp_file"
 }
 
-#
+# archive #
 @test 'arcc/x - zip' {
     arcc toolbox.sh "$testdir/toolbox.sh.zip"
     arcx "$testdir/toolbox.sh.zip" "$testdir"
@@ -307,4 +308,32 @@ function teardown {
     zipx "$testdir/toolbox.sh.zip" "$testdir"
 
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
+}
+
+# ini #
+@test 'has_section - existing section' {
+    has_section $config connection
+}
+
+@test 'has_section - not existing section' {
+    run has_section $config no_connection
+    assert_failure
+}
+
+@test section_to_dict {
+    section_to_dict $config connection logging
+
+    assert_equal "${connection[user]}" test_user
+    assert_equal "${connection[password]}" test_password
+    assert_equal "${logging[file]}" test.log
+    assert_equal "${logging[level]}" debug
+}
+
+@test section_to_var {
+    section_to_var $config connection logging
+
+    assert_equal "$user" test_user
+    assert_equal "$password" test_password
+    assert_equal "$file" test.log
+    assert_equal "$level" debug
 }
