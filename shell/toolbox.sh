@@ -1,4 +1,4 @@
-# shellcheck disable=SC2164
+# shellcheck disable=SC2034,SC2164
 
 # relative path -> absolute path
 function abspath {
@@ -9,7 +9,7 @@ function curl {
     command curl --silent --show-error --location --connect-timeout 6 "$@"
 }
 
-# escape characters in string (!, ', ", \, `, $)
+# escape characters in string (!, ", $, ', *, \, `)
 function escape {
     printf %q "$1"
 }
@@ -69,7 +69,6 @@ function showargs {
 
 # split string into array 'split', e.g. `splitby : $PATH`
 function splitby {
-    # shellcheck disable=SC2034
     IFS=$1 read -ra split <<< "$2"
 }
 
@@ -91,6 +90,18 @@ function uppercase {
 }
 
 ##
+# * https://docs.github.com/en/rest/reference/rate-limit
+# * https://python.gotrained.com/search-github-api/
+# * https://blogs.infosupport.com/accessing-githubs-rest-api-with-curl/
+function github_api_conns {
+    echo -n 'anonymous: '
+    curl https://api.github.com/rate_limit | jq .resources.core.remaining
+
+    echo -n 'authenticated: '
+    curl --user "$GITHUB_PUBLIC_TOKEN:x-oauth-basic" https://api.github.com/rate_limit |
+        jq .resources.core.remaining
+}
+
 # `groupby 'type -t $arg' ls cd vi groupby` ->
 # groups=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
 function groupby {
@@ -99,7 +110,7 @@ function groupby {
     groups=()
 
     for arg in "${@:2}"; do
-        key=$(eval "$1" 2> /dev/null || true)
+        key=$(eval "$1" 2> /dev/null) || true
         key=${key:-None}
         groups[$key]+="$(escape "$arg") "
     done
@@ -145,7 +156,7 @@ function log {
 
 function log_to_file {
     local parent_process
-    parent_process=$(ps --pid $PPID --format comm= || true)
+    parent_process=$(ps --pid $PPID --format comm=) || true
 
     if [[ $parent_process != logsave ]]; then
         exec logsave -a "$1" "${@:2}"
@@ -281,4 +292,37 @@ function zipc {
 function zipx {
     # ${@:3}: files to extract from archive (no options)
     unzip -qo "$1" -d "$2" "${@:3}"
+}
+
+# ini #
+function has_section {
+    crudini --get "$1" "$2" &> /dev/null
+}
+
+function section_to_dict {
+    local section key keys
+
+    for section in "${@:2}"; do
+        # create array with same name as section name
+        declare -gA "$section"
+        declare -n dict="$section"
+        dict=()
+
+        if has_section "$1" "$section"; then
+            mapfile -t keys < <(crudini --get "$1" "$section")
+            for key in "${keys[@]}"; do
+                dict[$key]=$(crudini --get "$1" "$section" "$key")
+            done
+        fi
+    done
+}
+
+function section_to_var {
+    local section
+
+    for section in "${@:2}"; do
+        if has_section "$1" "$section"; then
+            eval "$(crudini --get --format sh "$1" "$section")"
+        fi
+    done
 }
