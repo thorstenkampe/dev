@@ -311,12 +311,21 @@ function teardown {
 }
 
 # ini #
-@test 'has_section - existing section' {
-    has_section $config connection
+@test 'has_ini - existing section' {
+    has_ini $config connection
 }
 
-@test 'has_section - not existing section' {
-    run has_section $config no_connection
+@test 'has_ini - not existing section' {
+    run has_ini $config no_connection
+    assert_failure
+}
+
+@test 'has_ini - existing key' {
+    has_ini $config connection user
+}
+
+@test 'has_ini - not existing key' {
+    run has_ini $config connection no_user
     assert_failure
 }
 
