@@ -161,8 +161,8 @@ function install_pkg {
             ;;
 
         (*)
-            cp --verbose --force "$1" "$2/$3"
-            chmod +x "$2/$3"
+            cp --verbose --force "$1" "$2"
+            chmod +x "$2"
 
     esac
 }
