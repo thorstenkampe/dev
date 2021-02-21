@@ -14,6 +14,11 @@ function escape {
     printf %q "$1"
 }
 
+# escape characters in string for JSON
+function escape_json {
+    echo "$1" | jq --raw-input @json
+}
+
 # (last) extension of file name
 function ext {
     echo "${1##*.}"
