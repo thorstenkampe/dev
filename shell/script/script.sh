@@ -128,6 +128,4 @@ fi
 
 if set_opt d; then
     verbosity=DEBUG
-else
-    verbosity=WARNING
 fi

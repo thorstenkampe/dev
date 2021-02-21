@@ -96,7 +96,7 @@ function teardown {
 
 @test splitby {
     splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
-    assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
+    assert_equal "${splitby[*]}" '1 2 3 4 5 6 7 8 9'
 }
 
 @test timestamp {

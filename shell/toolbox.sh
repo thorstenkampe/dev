@@ -67,9 +67,9 @@ function showargs {
     printf '»%s«\n' "$@"
 }
 
-# split string into array 'split', e.g. `splitby : $PATH`
+# split string into array 'splitby', e.g. `splitby : $PATH`
 function splitby {
-    IFS=$1 read -ra split <<< "$2"
+    IFS=$1 read -ra splitby <<< "$2"
 }
 
 # create timestamp "yyyy-mm-dd hh:mm:ss"
@@ -94,12 +94,14 @@ function uppercase {
 # * https://python.gotrained.com/search-github-api/
 # * https://blogs.infosupport.com/accessing-githubs-rest-api-with-curl/
 function github_api_conns {
+    local api_url
+    api_url=https://api.github.com/rate_limit
+
     echo -n 'anonymous: '
-    curl https://api.github.com/rate_limit | jq .resources.core.remaining
+    curl $api_url | jq .resources.core.remaining
 
     echo -n 'authenticated: '
-    curl --user "$GITHUB_PUBLIC_TOKEN:x-oauth-basic" https://api.github.com/rate_limit |
-        jq .resources.core.remaining
+    curl --user "$GITHUB_PUBLIC_TOKEN:x-oauth-basic" $api_url | jq .resources.core.remaining
 }
 
 # `groupby 'type -t $arg' ls cd vi groupby` ->
@@ -171,7 +173,8 @@ function install_pkg {
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
 # * joinby ';' "${array[@]}"
 function joinby {
-    local rest=( "${@:3}" )
+    local rest
+    rest=( "${@:3}" )
     printf %s "${2-}" "${rest[@]/#/$1}"
     echo
 }
@@ -226,7 +229,7 @@ function pprint {
 
 # example: `showopts a:bd: -a 1 -b -c -d`
 function showopts {
-    local opt_type opt_types
+    local opt opt_type opt_types
     unset OPTIND
     opt_types=(valid_opts unknown_opts arg_missing)
     declare -a valid_opts unknown_opts arg_missing
@@ -250,7 +253,7 @@ function showopts {
     for opt_type in "${opt_types[@]}"; do
         declare -n type=$opt_type
 
-        if [[ ${type[*]} ]]; then
+        if (( ${#type[@]} )); then
             echo -n "${opt_type/_/ }: "
             joinby ', ' "${type[@]}"
         fi
