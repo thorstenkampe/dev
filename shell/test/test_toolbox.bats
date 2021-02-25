@@ -329,6 +329,15 @@ function teardown {
     assert_failure
 }
 
+@test section_to_array {
+    section_to_array $config connection logging
+
+    assert_equal "${connection[0]}" test_user
+    assert_equal "${connection[1]}" test_password
+    assert_equal "${logging[0]}" test.log
+    assert_equal "${logging[1]}" debug
+}
+
 @test section_to_dict {
     section_to_dict $config connection logging
 

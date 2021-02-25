@@ -6,7 +6,7 @@ function abspath {
 }
 
 function curl {
-    command curl --silent --show-error --location --connect-timeout 6 "$@"
+    command curl --silent --show-error --location --connect-timeout 8 "$@"
 }
 
 # escape characters in string (!, ", $, ', *, \, `)
@@ -339,11 +339,30 @@ function has_ini {
     crudini --get "$@" &> /dev/null
 }
 
-function section_to_dict {
+function section_to_array {
+    # arrays are ordered
     local section key keys
 
     for section in "${@:2}"; do
         # create array with same name as section name
+        declare -n array="$section"
+        array=()
+
+        if has_ini "$1" "$section"; then
+            mapfile -t keys < <(crudini --get "$1" "$section")
+            for key in "${keys[@]}"; do
+                array+=("$(crudini --get "$1" "$section" "$key")")
+            done
+        fi
+    done
+}
+
+function section_to_dict {
+    # associative arrays are unordered
+    local section key keys
+
+    for section in "${@:2}"; do
+        # create associative array with same name as section name
         declare -gA "$section"
         declare -n dict="$section"
         dict=()
@@ -365,4 +384,26 @@ function section_to_var {
             eval "$(crudini --get --format sh "$1" "$section")"
         fi
     done
+}
+
+# redis #
+function has_redis {
+    redis-cli ping &> /dev/null
+}
+
+function cache_exists {
+    [[ $(redis-cli exists "$1") =~ 1 ]]
+}
+
+function cache_get {
+    redis-cli get "$1"
+}
+
+# $1: key, $2: value, $3: expiration in seconds
+function cache_set {
+    if [[ -v 3 ]]; then
+        redis-cli set "$1" "$2" ex "$3" > /dev/null
+    else
+        redis-cli set "$1" "$2" > /dev/null
+    fi
 }
