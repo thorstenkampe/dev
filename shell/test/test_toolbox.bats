@@ -124,22 +124,22 @@ function teardown {
 @test 'groupby - numbers' {
     groupby 'expr $arg % 2' 1 2 3 4
 
-    assert_equal "${groups[0]}" '2 4'
-    assert_equal "${groups[1]}" '1 3'
+    assert_equal "${groupby[0]}" '2 4'
+    assert_equal "${groupby[1]}" '1 3'
 }
 
 @test 'groupby - strings' {
     groupby 'len "$arg"' '' a ab 'a b'
 
-    assert_equal "${groups[0]}" "''"
-    assert_equal "${groups[1]}" a
-    assert_equal "${groups[2]}" ab
-    assert_equal "${groups[3]}" "a\ b"
+    assert_equal "${groupby[0]}" "''"
+    assert_equal "${groupby[1]}" a
+    assert_equal "${groupby[2]}" ab
+    assert_equal "${groupby[3]}" "a\ b"
 }
 
 @test 'groupby - empty key' {
     groupby 'type -t "$arg"' no_such_cmd
-    assert_equal "${groups[None]}" no_such_cmd
+    assert_equal "${groupby[None]}" no_such_cmd
 }
 
 #

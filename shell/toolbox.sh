@@ -110,20 +110,20 @@ function github_api_conns {
 }
 
 # `groupby 'type -t $arg' ls cd vi groupby` ->
-# groups=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
+# groupby=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
 function groupby {
     local arg key
-    declare -Ag groups
-    groups=()
+    declare -Ag groupby
+    groupby=()
 
     for arg in "${@:2}"; do
         key=$(eval "$1" 2> /dev/null) || true
         key=${key:-None}
-        groups[$key]+="$(escape "$arg") "
+        groupby[$key]+="$(escape "$arg") "
     done
 
-    for key in "${!groups[@]}"; do
-        groups[$key]=${groups[$key]% }
+    for key in "${!groupby[@]}"; do
+        groupby[$key]=${groupby[$key]% }
     done
 }
 
@@ -186,7 +186,7 @@ function joinby {
 
 function log {
     declare -A loglevel
-    loglevel=( [CRITICAL]=10 [ERROR]=20 [WARNING]=30 [INFO]=40 [DEBUG]=50 )
+    loglevel=( [ERROR]=10 [WARNING]=20 [INFO]=30 [DEBUG]=40 )
     verbosity=${verbosity-WARNING}
 
     if (( loglevel[$1] <= loglevel[$verbosity] )); then
