@@ -67,11 +67,6 @@ function set_shopt {
     shopt
 }
 
-# show arguments line by line surrounded by "»«"
-function showargs {
-    printf '»%s«\n' "$@"
-}
-
 # split string into array 'splitby', e.g. `splitby : $PATH`
 function splitby {
     IFS=$1 read -ra splitby <<< "$2"

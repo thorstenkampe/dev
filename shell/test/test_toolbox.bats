@@ -87,13 +87,6 @@ function teardown {
     assert_failure
 }
 
-@test showargs {
-    run showargs "${array[@]}"
-
-    assert_success
-    assert_output --regexp '^»1«.»2«.»3«.»4«.»5«.»6«.»7«.»8«.»9«$'
-}
-
 @test splitby {
     splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${splitby[*]}" '1 2 3 4 5 6 7 8 9'
