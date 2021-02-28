@@ -54,7 +54,7 @@ function name_wo_ext {
 
 # nth line of file (`nthline n file` or `... | nthline n`
 function nthline {
-    awk "NR == $1" "${2-}"
+    awk "NR == $1 {print; exit}" "${2-}"
 }
 
 # is option set?
@@ -230,39 +230,6 @@ function pprint {
     done
 
     joinby ', ' "${keyval[@]}"
-}
-
-# example: `showopts a:bd: -a 1 -b -c -d`
-function showopts {
-    local opt opt_type opt_types
-    unset OPTIND
-    opt_types=(valid_opts unknown_opts arg_missing)
-    declare -a valid_opts unknown_opts arg_missing
-
-    while getopts ":$1" opt "${@:2}"; do
-        if [[ $opt == '?' ]]; then
-            unknown_opts+=( "-$OPTARG" )
-
-        elif [[ $opt == : ]]; then
-            arg_missing+=( "-$OPTARG" )
-
-        else
-            if [[ -v OPTARG ]]; then
-                valid_opts+=( "-$opt=$OPTARG" )
-            else
-                valid_opts+=( "-$opt" )
-            fi
-        fi
-    done
-
-    for opt_type in "${opt_types[@]}"; do
-        declare -n type=$opt_type
-
-        if (( ${#type[@]} )); then
-            echo -n "${opt_type/_/ }: "
-            joinby ', ' "${type[@]}"
-        fi
-    done
 }
 
 # * split arguments into arrays that evaluate to true and to false

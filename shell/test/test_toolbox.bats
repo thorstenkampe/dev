@@ -236,14 +236,6 @@ function teardown {
 }
 
 #
-@test showopts {
-    run showopts a:bd: -a 1 -b -c -d
-
-    assert_success
-    assert_output --regexp '^valid opts: -a=1, -b.unknown opts: -c.arg missing: -d$'
-}
-
-#
 @test 'test_args - no arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     test_args "$test"
