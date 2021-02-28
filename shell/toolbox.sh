@@ -62,11 +62,6 @@ function set_opt {
     [[ -v opts[$1] ]]
 }
 
-function set_shopt {
-    set -o
-    shopt
-}
-
 # split string into array 'splitby', e.g. `splitby : $PATH`
 function splitby {
     IFS=$1 read -ra splitby <<< "$2"
@@ -211,20 +206,6 @@ function parse_opts {
             opts[$opt]=${OPTARG-}
         fi
     done
-}
-
-# pretty print associative array by name (`pprint assoc`)
-function pprint {
-    declare -a keyval
-    declare -n _assarr=$1
-    local key value
-
-    for key in "${!_assarr[@]}"; do
-        value=${_assarr[$key]}
-        keyval+=( "$key: ${value:-''}" )
-    done
-
-    joinby ', ' "${keyval[@]}"
 }
 
 # * split arguments into arrays that evaluate to true and to false
