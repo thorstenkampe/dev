@@ -190,7 +190,7 @@ function log {
     verbosity=${verbosity-WARNING}
 
     if (( loglevel[$1] <= loglevel[$verbosity] )); then
-        echo -e "$1": "$2" >&2
+        echo -e "$1": "${@:2}" >&2
     fi
 }
 
