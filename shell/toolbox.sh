@@ -328,25 +328,3 @@ function section_to_var {
         fi
     done
 }
-
-# redis #
-function has_redis {
-    redis-cli ping &> /dev/null
-}
-
-function cache_exists {
-    [[ $(redis-cli exists "$1") =~ 1 ]]
-}
-
-function cache_get {
-    redis-cli get "$1"
-}
-
-# $1: key, $2: value, $3: expiration in seconds
-function cache_set {
-    if [[ -v 3 ]]; then
-        redis-cli set "$1" "$2" ex "$3" > /dev/null
-    else
-        redis-cli set "$1" "$2" > /dev/null
-    fi
-}
