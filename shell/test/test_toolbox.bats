@@ -78,6 +78,13 @@ function teardown {
     assert_output '# MAIN CODE STARTS HERE #'
 }
 
+@test rmcntrl {
+    run rmcntrl $'3\r\n\r\n'
+
+    assert_success
+    assert_output 3
+}
+
 @test set_opt {
     parse_opts a:bc -a 1 -b arg1
 
@@ -226,6 +233,17 @@ function teardown {
 
 @test 'parse_opts - no option' {
     parse_opts a:bc
+}
+
+#
+@test rmcntrl_array {
+    array=(1 $'2\r' $'3\r\n' $'4\r\n\r\n')
+    rmcntrl_array array
+
+    assert_equal "${array[0]}" 1
+    assert_equal "${array[1]}" 2
+    assert_equal "${array[2]}" 3
+    assert_equal "${array[3]}" 4
 }
 
 #

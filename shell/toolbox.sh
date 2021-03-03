@@ -1,4 +1,6 @@
-# shellcheck disable=SC2034,SC2164
+# shellcheck disable=SC2034,SC2064,SC2164
+
+shopt -s extglob
 
 # relative path -> absolute path
 function abspath {
@@ -57,9 +59,20 @@ function nthline {
     awk "NR == $1 {print; exit}" "${2-}"
 }
 
+# get rid of Windows line endings (https://superuser.com/a/1215968)
+function rmcntrl {
+    echo "${1%%*([[:cntrl:]])}"
+}
+
 # is option set?
 function set_opt {
     [[ -v opts[$1] ]]
+}
+
+function set_shopt {
+    { set -o
+      shopt
+    } | grep "$1"
 }
 
 # split string into array 'splitby', e.g. `splitby : $PATH`
@@ -208,6 +221,16 @@ function parse_opts {
     done
 }
 
+# https://stackoverflow.com/questions/12744031/how-to-change-values-of-bash-array-elements-without-loop
+function rmcntrl_array {
+    local name
+
+    for name in "$@"; do
+        declare -n _array=$name
+        _array=( "${_array[@]%%*([[:cntrl:]])}" )
+    done
+}
+
 # * split arguments into arrays that evaluate to true and to false
 # * `test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
 # * same as above: `test_args 'expr $arg % 2' ...`
@@ -288,7 +311,7 @@ function section_to_array {
 
     for section in "${@:2}"; do
         # create array with same name as section name
-        declare -n array="$section"
+        declare -n array=$section
         array=()
 
         if has_ini "$1" "$section"; then
@@ -307,7 +330,7 @@ function section_to_dict {
     for section in "${@:2}"; do
         # create associative array with same name as section name
         declare -gA "$section"
-        declare -n dict="$section"
+        declare -n dict=$section
         dict=()
 
         if has_ini "$1" "$section"; then
