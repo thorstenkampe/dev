@@ -33,6 +33,8 @@ table  = [
     ('4a', '4b', '4c', 4.0, 4)
 ]
 
+redis  = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
+
 config = ConfigParser()
 config['section'] = {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False', 'none': 'None', 'str': 'text'}
 
