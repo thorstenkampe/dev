@@ -258,6 +258,27 @@ function test_file {
     [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
 }
 
+function vartype {
+    type=$(declare -p "$1")
+
+    case "$type" in
+        (declare\ -a*)
+            echo array
+            ;;
+
+        (declare\ -A*)
+            echo 'associative array'
+            ;;
+
+        (declare\ -i*)
+            echo integer
+            ;;
+
+        (*)
+            echo string
+    esac
+}
+
 # archive #
 function arcc {
     local source name parent
