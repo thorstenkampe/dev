@@ -59,11 +59,6 @@ function nthline {
     awk "NR == $1 {print; exit}" "${2-}"
 }
 
-# get rid of Windows line endings (https://superuser.com/a/1215968)
-function rmcntrl {
-    echo "${1%%*([[:cntrl:]])}"
-}
-
 # is option set?
 function set_opt {
     [[ -v opts[$1] ]]
@@ -218,16 +213,6 @@ function parse_opts {
         else
             opts[$opt]=${OPTARG-}
         fi
-    done
-}
-
-# https://stackoverflow.com/questions/12744031/how-to-change-values-of-bash-array-elements-without-loop
-function rmcntrl_array {
-    local name
-
-    for name in "$@"; do
-        declare -n _array=$name
-        _array=( "${_array[@]%%*([[:cntrl:]])}" )
     done
 }
 
