@@ -99,13 +99,6 @@ function teardown {
     assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
 }
 
-@test timestamp_file {
-    run timestamp_file
-
-    assert_success
-    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}-){2}[0-9]{2}$'
-}
-
 @test uppercase {
     run uppercase "$string"
 
