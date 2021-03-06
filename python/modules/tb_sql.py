@@ -64,6 +64,6 @@ def engine(dsn):
         if urlp.username == 'sys':
             query_params['mode'] = 'sysdba'
 
-    dsn += '?' + ';'.join(f'{key}={value}' for key, value in query_params.items())
+    dsn += '?' + '&'.join(f'{key}={value}' for key, value in query_params.items())
 
     return sa.create_engine(dsn, **my_engine_params)
