@@ -132,7 +132,7 @@ function init {
     PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
     if is_windows; then
-        PATH=/usr/sbin:/usr/bin:$PATH
+        PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
 
         function ps {
             procps "$@"
