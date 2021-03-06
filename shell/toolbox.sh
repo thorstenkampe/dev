@@ -80,33 +80,12 @@ function timestamp {
     date +'%F %T'
 }
 
-# create timestamp suitable as filename on Windows
-function timestamp_file {
-    local timestamp
-    timestamp=$(timestamp)
-    echo "${timestamp//:/-}"
-}
-
 # string to uppercase
 function uppercase {
     echo "${1^^}"
 }
 
 ##
-# * https://docs.github.com/en/rest/reference/rate-limit
-# * https://python.gotrained.com/search-github-api/
-# * https://blogs.infosupport.com/accessing-githubs-rest-api-with-curl/
-function github_api_conns {
-    local api_url
-    api_url=https://api.github.com/rate_limit
-
-    echo -n 'anonymous: '
-    curl $api_url | jq .resources.core.remaining
-
-    echo -n 'authenticated: '
-    curl --user "$GITHUB_PUBLIC_TOKEN:x-oauth-basic" $api_url | jq .resources.core.remaining
-}
-
 # `groupby 'type -t $arg' ls cd vi groupby` ->
 # groupby=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
 function groupby {
@@ -115,7 +94,7 @@ function groupby {
     groupby=()
 
     for arg in "${@:2}"; do
-        key=$(eval "$1" 2> /dev/null) || true
+        key=$(eval "$1") 2> /dev/null || true
         key=${key:-None}
         groupby[$key]+="$(escape "$arg") "
     done
