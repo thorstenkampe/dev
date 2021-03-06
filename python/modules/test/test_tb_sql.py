@@ -1,3 +1,4 @@
+# pytest
 # pylint: disable = too-few-public-methods
 from tb_sql import *  # NOSONAR
 
@@ -10,11 +11,11 @@ class Test_islocaldb:  # NOSONAR
 
 class Test_engine:  # NOSONAR
     def test_mslocal(self):
-        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?driver=ODBC+Driver+17+for+SQL+Server;Encrypt=no;TrustServerCertificate=yes)'
+        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?driver=ODBC+Driver+17+for+SQL+Server&Encrypt=no&TrustServerCertificate=yes)'
         assert str(engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
 
     def test_mslinux(self):
-        result = 'Engine(mssql://?driver=ODBC+Driver+17+for+SQL+Server;Encrypt=yes;TrustServerCertificate=yes)'
+        result = 'Engine(mssql://?driver=ODBC+Driver+17+for+SQL+Server&Encrypt=yes&TrustServerCertificate=yes)'
         assert str(engine('mssql://')) == result
 
     def test_mylocal(self):
