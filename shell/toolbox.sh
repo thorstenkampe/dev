@@ -1,6 +1,4 @@
-# shellcheck disable=SC2034,SC2064,SC2164
-
-shopt -s extglob
+# shellcheck disable=SC2034,SC2164
 
 # relative path -> absolute path
 function abspath {
@@ -56,7 +54,7 @@ function name_wo_ext {
 
 # nth line of file (`nthline n file` or `... | nthline n`
 function nthline {
-    awk "NR == $1 {print; exit}" "${2-}"
+    awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
 # is option set?
@@ -261,11 +259,14 @@ function arcc {
 }
 
 function arcx {
+    local dest
+    dest=${2-.}  # destination defaults to `.` (current directory)
+
     if [[ $(ext "$1") == zip ]]; then
-        7za x "$1" -o"$2" -y '*' "${@:3}"
+        7za x "$1" -o"$dest" -y '*' "${@:3}"
 
     else
-        tar -xaf "$1" -C "$2" "${@:3}"
+        tar -xaf "$1" -C "$dest" "${@:3}"
     fi
 }
 
@@ -282,7 +283,7 @@ function zipc {
 
 function zipx {
     # ${@:3}: files to extract from archive (no options)
-    unzip -qo "$1" -d "$2" "${@:3}"
+    unzip -qo "$1" -d "${2-.}" "${@:3}"
 }
 
 # ini #
