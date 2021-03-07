@@ -153,8 +153,7 @@ function install_pkg {
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
 # * joinby ';' "${array[@]}"
 function joinby {
-    local rest
-    rest=( "${@:3}" )
+    local rest=( "${@:3}" )
     printf %s "${2-}" "${rest[@]/#/$1}"
     echo
 }
@@ -221,9 +220,7 @@ function test_file {
 }
 
 function vartype {
-    type=$(declare -p "$1")
-
-    case "$type" in
+    case $(declare -p "$1") in
         (declare\ -a*)
             echo array
             ;;
@@ -243,19 +240,17 @@ function vartype {
 
 # archive #
 function arcc {
-    local source name parent dest
-    source=$(abspath "$1")
+    local name parent
     name=$(basename "$1")
     parent=$(dirname "$1")
-    dest=$(abspath "$2")
 
     if [[ $(ext "$2") == zip ]]; then
         # use 7zip if available - otherwise zip
         if which 7za &> /dev/null; then
-            7za a -ssw "$2" "$source" "${@:3}"
+            7za a -ssw "$2" "$(abspath "$1")" "${@:3}"
         else
             cd "$parent"
-            zip -qry "$dest" "$name" "${@:3}"
+            zip -qry "$(abspath "$2")" "$name" "${@:3}"
             cd "$OLDPWD"
         fi
     else
@@ -264,8 +259,7 @@ function arcc {
 }
 
 function arcx {
-    local dest
-    dest=${2-.}  # destination defaults to `.` (current directory)
+    local dest=${2-.}  # destination defaults to `.` (current directory)
 
     if [[ $(ext "$1") == zip ]]; then
         # use 7zip if available - otherwise unzip
