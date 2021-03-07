@@ -243,17 +243,22 @@ function vartype {
 
 # archive #
 function arcc {
-    local source name parent
+    local source name parent dest
+    source=$(abspath "$1")
+    name=$(basename "$1")
+    parent=$(dirname "$1")
+    dest=$(abspath "$2")
 
     if [[ $(ext "$2") == zip ]]; then
-        source=$(abspath "$1")
-
-        7za a -ssw "$2" "$source" "${@:3}"
-
+        # use 7zip if available - otherwise zip
+        if which 7za &> /dev/null; then
+            7za a -ssw "$2" "$source" "${@:3}"
+        else
+            cd "$parent"
+            zip -qry "$dest" "$name" "${@:3}"
+            cd "$OLDPWD"
+        fi
     else
-        name=$(basename "$1")
-        parent=$(dirname "$1")
-
         tar -caf "$2" -C "$parent" "$name" "${@:3}"
     fi
 }
@@ -263,27 +268,16 @@ function arcx {
     dest=${2-.}  # destination defaults to `.` (current directory)
 
     if [[ $(ext "$1") == zip ]]; then
-        7za x "$1" -o"$dest" -y '*' "${@:3}"
-
+        # use 7zip if available - otherwise unzip
+        if which 7za &> /dev/null; then
+            7za x "$1" -o"$dest" -y '*' "${@:3}"
+        else
+            # ${@:3}: files to extract from archive (no options)
+            unzip -qo "$1" -d "$dest" "${@:3}"
+        fi
     else
         tar -xaf "$1" -C "$dest" "${@:3}"
     fi
-}
-
-function zipc {
-    local target name parent
-    target=$(abspath "$2")
-    name=$(basename "$1")
-    parent=$(dirname "$1")
-
-    cd "$parent"
-    zip -qry "$target" "$name" "${@:3}"
-    cd "$OLDPWD"
-}
-
-function zipx {
-    # ${@:3}: files to extract from archive (no options)
-    unzip -qo "$1" -d "${2-.}" "${@:3}"
 }
 
 # ini #
