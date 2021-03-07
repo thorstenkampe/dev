@@ -69,7 +69,7 @@ function external_ip_address {
 
 # - log #
 function log($Level, $Message) {
-    $loglevel = @{CRITICAL = 50; ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
+    $loglevel = @{ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
 
     if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
         Write-Output -InputObject "${Level}: $Message"
