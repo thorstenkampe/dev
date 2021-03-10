@@ -298,13 +298,6 @@ function teardown {
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
-@test 'zipc/x' {
-    zipc toolbox.sh "$testdir/toolbox.sh.zip"
-    zipx "$testdir/toolbox.sh.zip" "$testdir"
-
-    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
-}
-
 # ini #
 @test 'has_ini - existing section' {
     has_ini $config connection

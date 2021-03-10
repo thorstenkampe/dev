@@ -244,17 +244,6 @@ function arcx {
     fi
 }
 
-function zipc {
-    cd "$(dirname "$1")"
-    zip -qry "$(abspath "$2")" "$(basename "$1")" "${@:3}"
-    cd "$OLDPWD"
-}
-
-function zipx {
-    # ${@:3}: files to extract from archive (no options)
-    unzip -qo "$1" -d "${2-.}" "${@:3}"
-}
-
 # ini #
 function has_ini {
     crudini --get "$@" &> /dev/null
