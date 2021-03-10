@@ -84,24 +84,6 @@ function uppercase {
 }
 
 ##
-# `groupby 'type -t $arg' ls cd vi groupby` ->
-# groupby=([file]="ls" [function]="groupby" [alias]="vi" [builtin]="cd")
-function groupby {
-    local arg key
-    declare -Ag groupby
-    groupby=()
-
-    for arg in "${@:2}"; do
-        key=$(eval "$1") 2> /dev/null || true
-        key=${key:-None}
-        groupby[$key]+="$(escape "$arg") "
-    done
-
-    for key in "${!groupby[@]}"; do
-        groupby[$key]=${groupby[$key]% }
-    done
-}
-
 function init {
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
