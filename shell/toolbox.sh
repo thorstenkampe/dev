@@ -84,6 +84,50 @@ function uppercase {
 }
 
 ##
+function amap {
+    local key arg
+    declare -n _array=$2
+
+    for key in "${!_array[@]}"; do
+        arg=${_array[$key]}
+        _array[$key]=$(eval "$1")
+    done
+}
+
+function arc {
+    local first_ext dest
+
+    parse_opts cx "$@"
+    shift $(( OPTIND - 1 ))
+
+    # shellcheck disable=SC2016
+    test_args 'set_opt $arg' c x
+
+    if (( ${#true[@]} != 1 )); then
+        log ERROR 'either option "c" (compress) or "x" (extract) must be given'
+        return 1
+    fi
+
+    if set_opt c; then
+        first_ext=$(ext "$(name_wo_ext "$2")")
+
+        if [[ $first_ext == tar ]]; then
+            tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
+        else
+            7za a -ssw "$2" "$(abspath "$1")" "${@:3}"
+        fi
+    else
+        first_ext=$(ext "$(name_wo_ext "$1")")
+        dest=${2-.}  # destination defaults to `.` (current directory)
+
+        if [[ $first_ext == tar ]]; then
+            tar -xaf "$1" -C "$dest" "${@:3}"
+        else
+            7za x "$1" -o"$dest" -y '*' "${@:3}"
+        fi
+    fi
+}
+
 function init {
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
@@ -111,17 +155,17 @@ function install_pkg {
             ;;
 
         (gz)
-            arcx "$1" "$2"            \
-                 --keep-newer-files   \
-                 --no-same-owner      \
-                 --strip-components 1 \
-                 --verbose            \
-                 --wildcards          \
-                 "$3"
+            arc -x "$1" "$2"            \
+                   --keep-newer-files   \
+                   --no-same-owner      \
+                   --strip-components 1 \
+                   --verbose            \
+                   --wildcards          \
+                   "$3"
             ;;
 
         (zip)
-            arcx "$1" "$2"
+            arc -x "$1" "$2"
             ;;
 
         (*)
@@ -218,30 +262,6 @@ function vartype {
         (*)
             echo string
     esac
-}
-
-# archive #
-function arcc {
-    local first_ext
-    first_ext=$(ext "$(name_wo_ext "$2")")
-
-    if [[ $first_ext == tar ]]; then
-        tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
-    else
-        7za a -ssw "$2" "$(abspath "$1")" "${@:3}"
-    fi
-}
-
-function arcx {
-    local first_ext dest
-    first_ext=$(ext "$(name_wo_ext "$1")")
-    dest=${2-.}  # destination defaults to `.` (current directory)
-
-    if [[ $first_ext == tar ]]; then
-        tar -xaf "$1" -C "$dest" "${@:3}"
-    else
-        7za x "$1" -o"$dest" -y '*' "${@:3}"
-    fi
 }
 
 # ini #

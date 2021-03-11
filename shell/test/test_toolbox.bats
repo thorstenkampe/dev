@@ -114,6 +114,21 @@ function teardown {
 }
 
 ##
+@test 'arc - zip' {
+    arc -c toolbox.sh "$testdir/toolbox.sh.zip"
+    arc -x "$testdir/toolbox.sh.zip" "$testdir"
+
+    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
+}
+
+@test 'arc - gzip' {
+    arc -c toolbox.sh "$testdir/toolbox.sh.tar.gz"
+    arc -x "$testdir/toolbox.sh.tar.gz" "$testdir"
+
+    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
+}
+
+#
 @test 'init - find' {
     init
     run which find
@@ -281,21 +296,6 @@ function teardown {
 
     assert_success
     assert_output 'associative array'
-}
-
-# archive #
-@test 'arcc/x - zip' {
-    arcc toolbox.sh "$testdir/toolbox.sh.zip"
-    arcx "$testdir/toolbox.sh.zip" "$testdir"
-
-    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
-}
-
-@test 'arcc/x - gzip' {
-    arcc toolbox.sh "$testdir/toolbox.sh.tar.gz"
-    arcx "$testdir/toolbox.sh.tar.gz" "$testdir"
-
-    cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
 # ini #
