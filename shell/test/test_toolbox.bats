@@ -85,6 +85,13 @@ function teardown {
     refute_output
 }
 
+@test second_ext {
+    run second_ext test.tar.gz
+
+    assert_success
+    assert_output tar
+}
+
 @test set_opt {
     parse_opts a:bc -a 1 -b arg1
 

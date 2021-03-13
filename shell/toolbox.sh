@@ -57,6 +57,10 @@ function nthline {
     awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
+function second_ext {
+    ext "$(name_wo_ext "$1")"
+}
+
 # is option set?
 function set_opt {
     [[ -v opts[$1] ]]
@@ -95,7 +99,7 @@ function amap {
 }
 
 function arc {
-    local first_ext dest
+    local dest
 
     parse_opts cx "$@"
     shift $(( OPTIND - 1 ))
@@ -109,18 +113,15 @@ function arc {
     fi
 
     if set_opt c; then
-        first_ext=$(ext "$(name_wo_ext "$2")")
-
-        if [[ $first_ext == tar ]]; then
+        if [[ $(second_ext "$2") == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
             7za a -ssw "$2" "$(abspath "$1")" "${@:3}"
         fi
     else
-        first_ext=$(ext "$(name_wo_ext "$1")")
         dest=${2-.}  # destination defaults to `.` (current directory)
 
-        if [[ $first_ext == tar ]]; then
+        if [[ $(second_ext "$1") == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
         else
             7za x "$1" -o"$dest" -y '*' "${@:3}"
