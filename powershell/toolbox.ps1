@@ -43,30 +43,6 @@ function groupby($object, $keyfunc='ident') {
     $object.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
 }
 
-# - public_ip_address #
-function public_ip_address {
-    $public_url = 'http://v4.ipv6-test.com/api/myip.php'
-    (Invoke-WebRequest -Uri $public_url).Content
-}
-
-# - external_ip_address #
-function external_ip_address {
-    $Params = @{
-        ClassName = 'Win32_NetworkAdapterConfiguration'
-        Property  = @('DefaultIPGateway', 'IPAddress')
-        'Filter'  = 'IPEnabled = 1'
-    }
-
-    $interfaces = Get-CimInstance @Params
-
-    foreach ($interface in $interfaces) {
-        if ($interface.DefaultIPGateway) {
-            $interface.IPAddress[0]
-            break
-        }
-    }
-}
-
 # - log #
 function log($Level, $Message) {
     $loglevel = @{ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
@@ -74,4 +50,34 @@ function log($Level, $Message) {
     if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
         Write-Output -InputObject "${Level}: $Message"
     }
+}
+
+# - choice #
+function choice($Prompt, $Answers) {
+    do {
+        $selection = Read-Host -Prompt $prompt
+        if ($selection -in $answers) {
+            break
+        }
+    }
+    until ($false)
+
+    $selection
+}
+
+# - exec #
+# * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
+# * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
+# * `exec -Cmd {false}`
+function exec($Cmd) {
+    & $cmd
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command terminated with exit code $LastExitCode"
+    }
+}
+
+# - is_elevated #
+# https://ss64.com/ps/syntax-elevate.html
+function is_elevated {
+    ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
