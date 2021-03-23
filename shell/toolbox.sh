@@ -124,7 +124,7 @@ function arc {
         if [[ $(second_ext "$1") == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
         else
-            7za x "$1" -o"$dest" -y '*' "${@:3}"
+            7za x "$1" -o"$dest" -y "${@:3}"
         fi
     fi
 }
