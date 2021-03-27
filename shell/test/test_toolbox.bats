@@ -327,19 +327,19 @@ function teardown {
 @test section_to_array {
     section_to_array $config connection logging
 
-    assert_equal "${connection[0]}" test_user
-    assert_equal "${connection[1]}" test_password
-    assert_equal "${logging[0]}" test.log
-    assert_equal "${logging[1]}" debug
-}
-
-@test section_to_dict {
-    section_to_dict $config connection logging
-
     assert_equal "${connection[user]}" test_user
     assert_equal "${connection[password]}" test_password
     assert_equal "${logging[file]}" test.log
     assert_equal "${logging[level]}" debug
+}
+
+@test 'section_to_array - ordered' {
+    section_to_array -o $config connection logging
+
+    assert_equal "${connection[0]}" test_user
+    assert_equal "${connection[1]}" test_password
+    assert_equal "${logging[0]}" test.log
+    assert_equal "${logging[1]}" debug
 }
 
 @test section_to_var {

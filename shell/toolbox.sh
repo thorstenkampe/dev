@@ -271,10 +271,17 @@ function has_ini {
 }
 
 function section_to_array {
-    # arrays are ordered
-    local section key keys
+    # -o: store values in section order in ordinary array (omitting keys)
+    local section key keys value
+
+    parse_opts o "$@"
+    shift $(( OPTIND - 1 ))
 
     for section in "${@:2}"; do
+        unset "$section"
+        if ! set_opt o; then
+            declare -gA "$section"
+        fi
         # create array with same name as section name
         declare -n array=$section
         array=()
@@ -282,26 +289,12 @@ function section_to_array {
         if has_ini "$1" "$section"; then
             mapfile -t keys < <(crudini --get "$1" "$section")
             for key in "${keys[@]}"; do
-                array+=("$(crudini --get "$1" "$section" "$key")")
-            done
-        fi
-    done
-}
-
-function section_to_dict {
-    # associative arrays are unordered
-    local section key keys
-
-    for section in "${@:2}"; do
-        # create associative array with same name as section name
-        declare -gA "$section"
-        declare -n dict=$section
-        dict=()
-
-        if has_ini "$1" "$section"; then
-            mapfile -t keys < <(crudini --get "$1" "$section")
-            for key in "${keys[@]}"; do
-                dict[$key]=$(crudini --get "$1" "$section" "$key")
+                value=$(crudini --get "$1" "$section" "$key")
+                if set_opt o; then
+                    array+=("$value")
+                else
+                    array[$key]=$value
+                fi
             done
         fi
     done
