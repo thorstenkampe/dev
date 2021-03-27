@@ -291,7 +291,7 @@ function section_to_array {
             for key in "${keys[@]}"; do
                 value=$(crudini --get "$1" "$section" "$key")
                 if set_opt o; then
-                    array+=("$value")
+                    array+=( "$value" )
                 else
                     array[$key]=$value
                 fi
