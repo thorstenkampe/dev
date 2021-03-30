@@ -266,7 +266,7 @@ function vartype {
 }
 
 # ini #
-function has_ini {
+function has_section {
     crudini --get "$@" &> /dev/null
 }
 
@@ -286,7 +286,7 @@ function section_to_array {
         declare -n array=$section
         array=()
 
-        if has_ini "$1" "$section"; then
+        if has_section "$1" "$section"; then
             mapfile -t keys < <(crudini --get "$1" "$section")
             for key in "${keys[@]}"; do
                 value=$(crudini --get "$1" "$section" "$key")
@@ -304,7 +304,7 @@ function section_to_var {
     local section
 
     for section in "${@:2}"; do
-        if has_ini "$1" "$section"; then
+        if has_section "$1" "$section"; then
             eval "$(crudini --get --format sh "$1" "$section")"
         fi
     done
