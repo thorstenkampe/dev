@@ -1,4 +1,4 @@
-# shellcheck disable=SC2034,SC2164
+# shellcheck disable=SC2016,SC2034,SC2164
 
 # relative path -> absolute path
 function abspath {
@@ -127,6 +127,35 @@ function arc {
             7za x "$1" -o"$dest" -y "${@:3}"
         fi
     fi
+}
+
+# `choice 'Continue? [Y|n]: ' y n ''`
+function choice {
+    local answer true
+    true=()
+
+    until (( ${#true[@]} )); do
+        read -erp "$1" answer
+        test_args '[[ $arg == $answer ]]' "${@:2}"
+    done
+
+    echo "$answer"
+}
+
+# `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
+function select_from {
+    local PS3 answer true
+    PS3=$1
+
+    select answer in "${@:2}"; do
+        test_args '[[ $arg == $answer ]]' "${@:2}"
+        if (( ${#true[@]} )); then
+            echo "$answer"
+            break
+        else
+            echo 'Selection out of range - please try again' 1>&2
+        fi
+    done
 }
 
 function init {
