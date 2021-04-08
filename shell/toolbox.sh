@@ -338,3 +338,36 @@ function section_to_var {
         fi
     done
 }
+
+# progress #
+# `spinner 'sleep 10'`
+# taken from https://stackoverflow.com/a/12498305/5740232
+function spinner {
+    local spin i
+    # shellcheck disable=SC1003
+    spin=('-' '\' '|' '/')
+    i=0
+
+    eval "$@" &
+
+    # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
+    while [[ -d /proc/$! ]]; do
+        echo -en "\r[${spin[(i += 1) % 4]}]"
+        sleep 0.1
+    done
+
+    echo
+    wait $!
+}
+
+# `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
+function progressbar {
+    parse_opts s: "$@"
+    shift $(( OPTIND - 1 ))
+
+    if set_opt s; then
+        pv --size "${opts[s]}" --interval 0.1 --width 80 --line-mode --format "%p (%bof ${opts[s]})  %e" > /dev/null
+    else
+        pv --interval 0.1 --width 80 --format "%p %b" > /dev/null
+    fi
+}
