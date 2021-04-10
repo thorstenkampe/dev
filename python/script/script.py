@@ -11,8 +11,8 @@ logger.addHandler(handler)
 @click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
     cls                = click_help_colors.HelpColorsCommand,
-    help_headers_color = 'cyan',
-    help_options_color = 'bright_white'
+    help_headers_color = 'cyan',         # NOSONAR
+    help_options_color = 'bright_white'  # NOSONAR
 )
 
 # MAIN CODE STARTS HERE #
