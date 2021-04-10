@@ -368,6 +368,6 @@ function progressbar {
     if set_opt s; then
         pv --size "${opts[s]}" --interval 0.1 --width 80 --line-mode --format "%p (%bof ${opts[s]})  %e" > /dev/null
     else
-        pv --interval 0.1 --width 80 --format "%p %b" > /dev/null
+        pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
     fi
 }
