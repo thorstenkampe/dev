@@ -1,5 +1,5 @@
 import importlib.metadata, pathlib, re, socket, urllib
-import outdated, pycompat
+import outdated, pycompat, rich.console, tqdm
 import tb_sql
 if pycompat.system.is_windows:
     import pythoncom, pywintypes, win32com.client
@@ -100,3 +100,23 @@ def host_reachable(url):
     else:
         sock.close()
         return True
+
+# progress #  NOSONAR
+# `def func(): time.sleep(10)`
+# `progress(func=func)`
+def progress(func):
+    console = rich.console.Console()
+    with console.status(status='', spinner='bouncingBall', spinner_style='bold cyan',
+                        speed=0.4):
+        func()
+
+# `progressbar(iter_=range(50), func=lambda x: time.sleep(0.1))`
+def progressbar(iter_, func):
+    fmt  = '[{bar}]{percentage:3.0f}% ({n_fmt}/{total_fmt})  time left: {remaining}'
+    pbar = tqdm.tqdm(iterable=iter_, ncols=80, bar_format=fmt, leave=False)
+
+    for item in pbar:
+        func(item)
+
+    pbar.close()
+
