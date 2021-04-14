@@ -38,10 +38,6 @@ function teardown {
     assert_output txt
 }
 
-@test is_sourced {
-    is_sourced
-}
-
 @test len {
     run len "$string"
 
@@ -226,6 +222,17 @@ function teardown {
 
 @test 'parse_opts - no option' {
     parse_opts a:bc
+}
+
+#
+@test send_mail {
+    email_address=noreply@thorstenkampe.de
+    msmtpd --port 60587 &
+
+    run send_mail -port 60587 -from $email_address -to $email_address
+    assert_success
+
+    kill $!
 }
 
 #

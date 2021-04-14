@@ -24,10 +24,6 @@ function ext {
     echo "${1##*.}"
 }
 
-function is_sourced {
-    [[ ${BASH_SOURCE[0]} != "$0" ]]
-}
-
 function is_windows {
     [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
 }
@@ -246,6 +242,17 @@ function parse_opts {
             opts[$opt]=${OPTARG-}
         fi
     done
+}
+
+# https://github.com/muquit/mailsend-go
+function send_mail {
+    mailsend-go -smtp localhost              \
+                -port 25                     \
+                -fname "$(whoami)@$HOSTNAME" \
+                -from FROM                   \
+                auth -user USER              \
+                     -pass PASSWORD          \
+                "$@"
 }
 
 # * split arguments into arrays that evaluate to true and to false
