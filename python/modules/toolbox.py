@@ -119,4 +119,3 @@ def progressbar(iter_, func):
         func(item)
 
     pbar.close()
-
