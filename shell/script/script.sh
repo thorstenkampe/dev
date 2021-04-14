@@ -9,9 +9,7 @@ function is_sourced {
     [[ ${BASH_SOURCE[0]} != "$0" ]]
 }
 
-# shellcheck disable=SC2034
 _params=( "$@" )
-# shellcheck disable=SC2034
 scriptname=$(basename "$0")
 
 # MAIN CODE STARTS HERE #
@@ -24,14 +22,15 @@ if (( ${#false[@]} )); then
     exit 1
 fi
 
-function send_error_email {
-    send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+function error_handler {
+    log ERROR "command \"$1\" in line $2${3:+ (function $3)}" || true
+    #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
 # stop if script is sourced (i.e. for testing via BATS)
 is_sourced && return
 
-#trap send_error_email ERR
+trap 'error_handler "$BASH_COMMAND" $LINENO ${FUNCNAME-}' err
 
 parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
