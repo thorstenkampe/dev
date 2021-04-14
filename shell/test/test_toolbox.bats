@@ -185,6 +185,13 @@ function teardown {
     assert_output 'INFO: test message'
 }
 
+@test 'log - date' {
+    run log -d ERROR 'test message'
+
+    assert_success
+    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2} ERROR: test message$'
+}
+
 #
 @test log_to_file {
     init

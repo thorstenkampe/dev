@@ -211,12 +211,21 @@ function joinby {
 }
 
 function log {
+    parse_opts d "$@"
+    shift $(( OPTIND - 1 ))
+
+    local prefix
     declare -A loglevel
     loglevel=( [ERROR]=10 [WARNING]=20 [INFO]=30 [DEBUG]=40 )
-    verbosity=${verbosity-WARNING}
 
-    if (( loglevel[$1] <= loglevel[$verbosity] )); then
-        echo -e "$1": "${@:2}" >&2
+    if set_opt d; then
+        prefix="$(timestamp) $1"
+    else
+        prefix=$1
+    fi
+
+    if (( loglevel[$1] <= loglevel[${verbosity-WARNING}] )); then
+        echo -e "$prefix": "${@:2}" >&2
     fi
 }
 
