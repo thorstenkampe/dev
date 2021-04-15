@@ -4,11 +4,6 @@
 source "$(dirname "$0")/toolbox.sh"
 init
 
-# doesn't work when put into `toolbox.sh`
-function is_sourced {
-    [[ ${BASH_SOURCE[0]} != "$0" ]]
-}
-
 _params=( "$@" )
 scriptname=$(basename "$0")
 
@@ -18,7 +13,7 @@ scriptname=$(basename "$0")
 test_args 'which $arg' mailsend-go
 
 if (( ${#false[@]} )); then
-    log CRITICAL "can't find dependencies: ${false[*]}"
+    log ERROR "can't find dependencies: ${false[*]}"
     exit 1
 fi
 
@@ -28,7 +23,7 @@ function error_handler {
 }
 
 # stop if script is sourced (i.e. for testing via BATS)
-is_sourced && return
+[[ ${BASH_SOURCE[0]} != "$0" ]] && return
 
 trap 'error_handler "$BASH_COMMAND" $LINENO ${FUNCNAME-}' err
 
