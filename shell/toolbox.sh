@@ -224,7 +224,7 @@ function log {
         prefix=$1
     fi
 
-    if (( loglevel[$1] <= loglevel[${verbosity-WARNING}] )); then
+    if (( ${loglevel[$1]} <= ${loglevel[${verbosity-WARNING}]} )); then
         echo -e "$prefix": "${@:2}" >&2
     fi
 }
