@@ -254,13 +254,10 @@ function parse_opts {
 }
 
 # https://github.com/muquit/mailsend-go
+# required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
 function send_mail {
-    mailsend-go -smtp localhost              \
-                -port 25                     \
-                -fname "$(whoami)@$HOSTNAME" \
-                -from FROM                   \
-                auth -user USER              \
-                     -pass PASSWORD          \
+    mailsend-go -smtp localhost -port 25    \
+                -from "$(whoami)@$HOSTNAME" \
                 "$@"
 }
 
