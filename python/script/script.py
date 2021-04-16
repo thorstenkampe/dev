@@ -1,12 +1,10 @@
-import click, click_help_colors, colorlog
+import sys
+import click, click_help_colors, rich.traceback
+from loguru import logger
 
-# logging
-logger  = colorlog.getLogger()
-handler = colorlog.StreamHandler()
-
-fmt = '%(log_color)s%(levelname)s%(reset)s: %(message)s'
-handler.setFormatter(colorlog.ColoredFormatter(fmt=fmt, reset=False))
-logger.addHandler(handler)
+rich.traceback.install(width=80, extra_lines=1)
+logfmt = '<level>{level}</>: {message}'
+logger.configure(handlers=[dict(sink=sys.stderr, format=logfmt, level='WARNING')])
 
 @click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
