@@ -1,8 +1,9 @@
 import sys
-import click, click_help_colors, rich.traceback
+import click, click_help_colors
 from loguru import logger
+from rich import traceback
 
-rich.traceback.install(width=80, extra_lines=1)
+traceback.install(width=80, extra_lines=1)
 logfmt = '<level>{level}</>: {message}'
 logger.configure(handlers=[dict(sink=sys.stderr, format=logfmt, level='WARNING')])
 
