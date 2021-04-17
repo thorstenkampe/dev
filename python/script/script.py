@@ -3,9 +3,14 @@ import click, click_help_colors
 from loguru import logger
 from rich import traceback
 
+logfmt     = '<level>{level}</>: {message}'
+logdatefmt = '[{time:YYYY-MM-DD HH:mm:ss}] ' + logfmt
 traceback.install(width=80, extra_lines=1)
-logfmt = '<level>{level}</>: {message}'
-logger.configure(handlers=[dict(sink=sys.stderr, format=logfmt, level='WARNING')])
+
+def configure_logging(fmt=logfmt, level='WARNING'):
+    logger.configure(handlers=[dict(sink=sys.stderr, format=fmt, level=level)])
+
+configure_logging()
 
 @click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
