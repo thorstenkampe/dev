@@ -1,12 +1,17 @@
 import importlib.metadata, pathlib, re, socket, urllib
-import outdated, pycompat, rich.console, tqdm
+import outdated, pycompat, qprompt, tqdm
 import tb_sql
 if pycompat.system.is_windows:
     import pythoncom, pywintypes, win32com.client
     pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
+from rich            import console
 
+def stringify(iter_):
+    return [str(item) for item in iter_]
+
+#
 def file_version(file):
     if pycompat.system.is_windows:
         # * http://timgolden.me.uk/python/win32_how_do_i/get_dll_version.html
@@ -101,16 +106,16 @@ def host_reachable(url):
         sock.close()
         return True
 
-# progress #  NOSONAR
+# input/output #  NOSONAR
 # `def func(): time.sleep(10)`
-# `progress(func=func)`
+# `progress(func)`
 def progress(func):
-    console = rich.console.Console()
-    with console.status(status='', spinner='bouncingBall', spinner_style='bold cyan',
-                        speed=0.4):
+    con = console.Console()
+    with con.status(status='', spinner='bouncingBall', spinner_style='royal_blue1',
+                    speed=0.4):
         func()
 
-# `progressbar(iter_=range(50), func=lambda x: time.sleep(0.1))`
+# `progressbar(range(50), lambda x: time.sleep(0.1))`
 def progressbar(iter_, func):
     fmt  = '[{bar}]{percentage:3.0f}% ({n_fmt}/{total_fmt})  time left: {remaining}'
     pbar = tqdm.tqdm(iterable=iter_, ncols=80, bar_format=fmt, leave=False)
@@ -119,3 +124,9 @@ def progressbar(iter_, func):
         func(item)
 
     pbar.close()
+
+# `selections = ['MSSQL', 'MySQL', 'Oracle', 'PostgreSQL', 'SQLite']`
+# `select(selections, 'Select database [1-5]')`
+def select(selections, title):
+    menu = qprompt.enum_menu(strs=selections, header=title, msg='')
+    return int(menu.show()) - 1
