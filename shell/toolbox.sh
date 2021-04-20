@@ -213,6 +213,7 @@ function joinby {
 function log {
     declare -A loglevel colorcode
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
+
     if [[ -t 2 ]]; then
         # color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
         colorcode=( [error]='\e[1;31m' [warn]='\e[1;33m' [info]='\e[1;37m' [debug]='\e[1;34m' [reset]='\e[m' )

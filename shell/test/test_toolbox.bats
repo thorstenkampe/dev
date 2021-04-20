@@ -46,7 +46,7 @@ function teardown {
 }
 
 @test lowercase {
-    run lowercase "$string"
+    run lower "$string"
 
     assert_success
     assert_output 'the quick brown fox jumps over the lazy dog'
@@ -110,7 +110,7 @@ function teardown {
 }
 
 @test uppercase {
-    run uppercase "$string"
+    run upper "$string"
 
     assert_success
     assert_output 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG'
@@ -172,24 +172,10 @@ function teardown {
 
 #
 @test 'log - info message' {
-    run log INFO 'test message'
+    run log info 'test message'
 
     assert_success
     refute_output
-}
-
-@test 'log - verbosity info message' {
-    verbosity=INFO run log INFO 'test message'
-
-    assert_success
-    assert_output 'INFO: test message'
-}
-
-@test 'log - date' {
-    run log -d ERROR 'test message'
-
-    assert_success
-    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2} ERROR: test message$'
 }
 
 #
