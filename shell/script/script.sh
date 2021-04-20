@@ -13,12 +13,12 @@ scriptname=$(basename "$0")
 test_args 'which $arg' mailsend-go
 
 if (( ${#false[@]} )); then
-    log ERROR "can't find dependencies: ${false[*]}"
+    log error "can't find dependencies: ${false[*]}"
     exit 1
 fi
 
 function error_handler {
-    log ERROR "command \"$1\" in line $2${3:+ (function $3)}" || true
+    log error "command \"$1\" in line $2${3:+ (function $3)}" || true
     #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
@@ -41,5 +41,5 @@ fi
 
 if set_opt d; then
     # shellcheck disable=SC2034
-    verbosity=DEBUG
+    verbosity=debug
 fi

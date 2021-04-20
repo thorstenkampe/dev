@@ -3,11 +3,15 @@ import click, click_help_colors
 from loguru import logger
 from rich import traceback
 
-logfmt     = '<level>{level}</>: {message}'
-logdatefmt = '[{time:YYYY-MM-DD HH:mm:ss}] ' + logfmt
 traceback.install(width=80, extra_lines=1)
 
-def configure_logging(fmt=logfmt, level='WARNING'):
+def formatter(record):
+    level_labels = {'SUCCESS': 'SUCC', 'WARNING': 'WARN', 'CRITICAL': 'CRIT'}
+    level_name   = record['level'].name
+    level        = level_labels.get(level_name, level_name)
+    return f'<level>[{level} {{time:YYYY-MM-DD HH:mm:ss}}]</> {{message}}\n'
+
+def configure_logging(fmt=formatter, level='WARNING'):
     logger.configure(handlers=[dict(sink=sys.stderr, format=fmt, level=level)])
 
 configure_logging()

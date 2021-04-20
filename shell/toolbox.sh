@@ -34,7 +34,7 @@ function len {
 }
 
 # string to lowercase
-function lowercase {
+function lower {
     echo "${1,,}"
 }
 
@@ -79,7 +79,7 @@ function timestamp {
 }
 
 # string to uppercase
-function uppercase {
+function upper {
     echo "${1^^}"
 }
 
@@ -104,7 +104,7 @@ function arc {
     test_args 'set_opt $arg' c x
 
     if (( ${#true[@]} != 1 )); then
-        log ERROR 'either option "c" (compress) or "x" (extract) must be given'
+        log error 'either option "c" (compress) or "x" (extract) must be given'
         return 1
     fi
 
@@ -211,21 +211,17 @@ function joinby {
 }
 
 function log {
-    parse_opts d "$@"
-    shift $(( OPTIND - 1 ))
-
-    local prefix
-    declare -A loglevel
-    loglevel=( [ERROR]=10 [WARNING]=20 [INFO]=30 [DEBUG]=40 )
-
-    if set_opt d; then
-        prefix="$(timestamp) $1"
+    declare -A loglevel colorcode
+    loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
+    if [[ -t 2 ]]; then
+        # color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+        colorcode=( [error]='\e[1;31m' [warn]='\e[1;33m' [info]='\e[1;37m' [debug]='\e[1;34m' [reset]='\e[m' )
     else
-        prefix=$1
+        colorcode=( [error]='' [warn]='' [info]='' [debug]='' [reset]='' )
     fi
 
-    if (( ${loglevel[$1]} <= ${loglevel[${verbosity-WARNING}]} )); then
-        echo -e "$prefix": "${@:2}" >&2
+    if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
+        echo -e "${colorcode[$1]}[$(upper "$1") $(timestamp)]${colorcode[reset]}" "${@:2}" >&2
     fi
 }
 
