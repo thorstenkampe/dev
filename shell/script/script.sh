@@ -31,7 +31,11 @@ parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
 if set_opt h; then
-    echo "Usage: $scriptname [-h] [-l <logfile>]"
+    echo "Usage: $scriptname [-l <logfile>]"
+    echo
+    echo "-l <logfile> - log to file"
+    echo "-h           - show help"
+    echo "-d           - show debug and trace messages"
     exit
 fi
 
@@ -39,7 +43,7 @@ if set_opt l; then
     log_to_file "${opts[l]}" "$0" "${_params[@]}"
 fi
 
-if set_opt d; then
-    # shellcheck disable=SC2034
-    verbosity=debug
+if set_opt d && ! shopt -oq xtrace; then
+    export verbosity=debug
+    exec bash -x "$0" "$@"
 fi

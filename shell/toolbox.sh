@@ -1,5 +1,13 @@
 # shellcheck disable=SC2016,SC2034,SC2164
 
+# color codes: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+declare -A colorcode
+if [[ -t 2 ]]; then
+    colorcode=( [error]='\e[1;31m' [warn]='\e[1;33m' [info]='\e[1;37m' [debug]='\e[1;34m' [trace]='\e[1;36m' [reset]='\e[m' )
+else
+    colorcode=( [error]='' [warn]='' [info]='' [debug]='' [trace]='' [reset]='' )
+fi
+
 # relative path -> absolute path
 function abspath {
     readlink -m "$1"
@@ -100,7 +108,6 @@ function arc {
     parse_opts cx "$@"
     shift $(( OPTIND - 1 ))
 
-    # shellcheck disable=SC2016
     test_args 'set_opt $arg' c x
 
     if (( ${#true[@]} != 1 )); then
@@ -155,10 +162,12 @@ function select_from {
 }
 
 function init {
+    local ps4
+    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
+    export PS4="${colorcode[trace]}$ps4${colorcode[reset]} "
+
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
-
-    PS4='+$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}[$LINENO]: '
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -211,19 +220,12 @@ function joinby {
 }
 
 function log {
-    declare -A loglevel colorcode
+    declare -A loglevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
         return 1
-    fi
-
-    if [[ -t 2 ]]; then
-        # color codes: http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-        colorcode=( [error]='\e[1;31m' [warn]='\e[1;33m' [info]='\e[1;37m' [debug]='\e[1;34m' [reset]='\e[m' )
-    else
-        colorcode=( [error]='' [warn]='' [info]='' [debug]='' [reset]='' )
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
