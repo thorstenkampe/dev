@@ -40,10 +40,12 @@ if set_opt h; then
 fi
 
 if set_opt l; then
-    log_to_file "${opts[l]}" "$0" "${_params[@]}"
+    log_to_file "${opts[l]}" bash "$0" "${_params[@]}"
 fi
 
-if set_opt d && ! shopt -oq xtrace; then
+if set_opt d; then
     export verbosity=debug
-    exec bash -x "$0" "$@"
+    if ! shopt -oq xtrace; then
+        exec bash -x "$0" "${_params[@]}"
+    fi
 fi
