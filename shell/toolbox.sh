@@ -2,16 +2,11 @@
 
 # * https://github.com/ppo/bash-colors
 # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-declare -A color
-color=(
-    # foreground
+declare -A c
+# foreground color
+c=(
     [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m' [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m'
     [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m' [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
-
-    # background
-    [bk]='\e[0;40m' [br]='\e[0;41m' [bg]='\e[0;42m' [by]='\e[0;43m' [bb]='\e[0;44m' [bm]='\e[0;45m' [bc]='\e[0;46m' [bw]='\e[0;47m'
-    [bK]='\e[1;40m' [bR]='\e[1;41m' [bG]='\e[1;42m' [bY]='\e[1;43m' [bB]='\e[1;44m' [bM]='\e[1;45m' [bC]='\e[1;46m' [bW]='\e[1;47m'
-
     [0]='\e[m'
 )
 
@@ -21,7 +16,7 @@ function abspath {
 }
 
 function cecho {
-    echo -e "${color[$1]}$2${color[0]}"
+    echo -e "${c[$1]}$2${c[0]}"
 }
 
 function curl {
@@ -150,7 +145,7 @@ function init {
     declare -A colorlevel
 
     if [[ -t 2 ]]; then
-        colorlevel=( [trace]=${color[C]} [0]=${color[0]} )
+        colorlevel=( [trace]=${c[C]} [0]=${c[0]} )
     else
         colorlevel=( [trace]='' [0]='' )
     fi
@@ -216,7 +211,7 @@ function log {
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     if [[ -t 2 ]]; then
-        colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} [0]=${color[0]} )
+        colorlevel=( [error]=${c[R]} [warn]=${c[Y]} [info]=${c[W]} [debug]=${c[B]} [0]=${c[0]} )
     else
         colorlevel=( [error]='' [warn]='' [info]='' [debug]='' [0]='' )
     fi
