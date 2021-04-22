@@ -1,12 +1,19 @@
 # shellcheck disable=SC2016,SC2034,SC2164
 
-# color codes: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-declare -A colorcode
-if [[ -t 2 ]]; then
-    colorcode=( [error]='\e[1;31m' [warn]='\e[1;33m' [info]='\e[1;37m' [debug]='\e[1;34m' [trace]='\e[1;36m' [reset]='\e[m' )
-else
-    colorcode=( [error]='' [warn]='' [info]='' [debug]='' [trace]='' [reset]='' )
-fi
+# * https://github.com/ppo/bash-colors
+# * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+declare -A color
+color=(
+    # foreground
+    [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m' [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m'
+    [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m' [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
+
+    # background
+    [bk]='\e[0;40m' [br]='\e[0;41m' [bg]='\e[0;42m' [by]='\e[0;43m' [bb]='\e[0;44m' [bm]='\e[0;45m' [bc]='\e[0;46m' [bw]='\e[0;47m'
+    [bK]='\e[1;40m' [bR]='\e[1;41m' [bG]='\e[1;42m' [bY]='\e[1;43m' [bB]='\e[1;44m' [bM]='\e[1;45m' [bC]='\e[1;46m' [bW]='\e[1;47m'
+
+    [0]='\e[m'
+)
 
 # relative path -> absolute path
 function abspath {
@@ -132,39 +139,18 @@ function arc {
     fi
 }
 
-# `choice 'Continue? [Y|n]: ' y n ''`
-function choice {
-    local answer true
-    true=()
-
-    until (( ${#true[@]} )); do
-        read -erp "$1" answer
-        test_args '[[ $arg == $answer ]]' "${@:2}"
-    done
-
-    echo "$answer"
-}
-
-# `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
-function select_from {
-    local PS3 answer true
-    PS3=$1
-
-    select answer in "${@:2}"; do
-        test_args '[[ $arg == $answer ]]' "${@:2}"
-        if (( ${#true[@]} )); then
-            echo "$answer"
-            break
-        else
-            echo 'Selection out of range - please try again' 1>&2
-        fi
-    done
-}
-
 function init {
     local ps4
+    declare -A colorlevel
+
+    if [[ -t 2 ]]; then
+        colorlevel=( [trace]=${color[C]} [0]=${color[0]} )
+    else
+        colorlevel=( [trace]='' [0]='' )
+    fi
+
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
-    export PS4="${colorcode[trace]}$ps4${colorcode[reset]} "
+    export PS4="${colorlevel[trace]}$ps4${colorlevel[0]} "
 
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
@@ -220,8 +206,14 @@ function joinby {
 }
 
 function log {
-    declare -A loglevel
+    declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
+
+    if [[ -t 2 ]]; then
+        colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} [0]=${color[0]} )
+    else
+        colorlevel=( [error]='' [warn]='' [info]='' [debug]='' [0]='' )
+    fi
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
@@ -229,7 +221,7 @@ function log {
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
-        echo -e "${colorcode[$1]}[$(upper "$1") $(timestamp)]${colorcode[reset]}" "${@:2}" >&2
+        echo -e "${colorlevel[$1]}[$(upper "$1") $(timestamp)]${colorlevel[0]}" "${@:2}" >&2
     fi
 }
 
@@ -356,9 +348,38 @@ function section_to_var {
     done
 }
 
-# progress #
+# input/output #
+# `choice 'Continue? [Y|n]: ' y n ''`
+function choice {
+    local answer true
+    true=()
+
+    until (( ${#true[@]} )); do
+        read -erp "$1" answer
+        test_args '[[ $arg == $answer ]]' "${@:2}"
+    done
+
+    echo "$answer"
+}
+
+# `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
+function select_from {
+    local PS3 answer true
+    PS3=$1
+
+    select answer in "${@:2}"; do
+        test_args '[[ $arg == $answer ]]' "${@:2}"
+        if (( ${#true[@]} )); then
+            echo "$answer"
+            break
+        else
+            echo 'Selection out of range - please try again' 1>&2
+        fi
+    done
+}
+
 # `spinner 'sleep 10'`
-# taken from https://stackoverflow.com/a/12498305/5740232
+# source: https://stackoverflow.com/a/12498305/5740232
 function spinner {
     local spin i
     # shellcheck disable=SC1003
@@ -387,4 +408,8 @@ function progressbar {
     else
         pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
     fi
+}
+
+function cecho {
+    echo -e "${color[$1]}$2${color[0]}"
 }
