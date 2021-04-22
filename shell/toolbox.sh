@@ -6,9 +6,13 @@ declare -A color
 # foreground color
 # create color alias with `declare -n c=color`
 color=(
-    # reset    # black        red            green          yellow         blue           magenta        cyan           white
-    [0]='\e[m' [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m' [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m'
-               [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m' [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
+    # black        red            green          yellow         blue
+    [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m'
+    [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m'
+
+    # magenta      cyan           white          reset
+    [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
+    [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
 )
 
 # relative path -> absolute path
@@ -212,7 +216,10 @@ function log {
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     if [[ -t 2 ]]; then
-        colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} [0]=${color[0]} )
+        colorlevel=(
+            [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]}
+            [0]=${color[0]}
+        )
     else
         colorlevel=( [error]='' [warn]='' [info]='' [debug]='' [0]='' )
     fi
