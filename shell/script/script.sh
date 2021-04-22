@@ -33,9 +33,10 @@ shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 if set_opt h; then
     echo "Usage: $scriptname [-l <logfile>]"
     echo
-    echo "-l <logfile> - log to file"
-    echo "-h           - show help"
-    echo "-d           - show debug and trace messages"
+    echo Options:
+    echo '  -l <logfile>  Log to file'
+    echo '  -h            Show help'
+    echo '  -d            Show debug and trace messages'
     exit
 fi
 
