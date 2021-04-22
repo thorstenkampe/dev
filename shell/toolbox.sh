@@ -20,6 +20,10 @@ function abspath {
     readlink -m "$1"
 }
 
+function cecho {
+    echo -e "${color[$1]}$2${color[0]}"
+}
+
 function curl {
     command curl --silent --show-error --location --connect-timeout 8 "$@"
 }
@@ -37,6 +41,10 @@ function escape_json {
 # (last) extension of file name
 function ext {
     echo "${1##*.}"
+}
+
+function has_section {
+    crudini --get "$@" &> /dev/null
 }
 
 function is_windows {
@@ -78,9 +86,7 @@ function set_opt {
 }
 
 function set_shopt {
-    { set -o
-      shopt
-    } | grep "$1"
+    { set -o; shopt ;} | grep "$1"
 }
 
 # split string into array 'splitby', e.g. `splitby : $PATH`
@@ -304,10 +310,6 @@ function vartype {
 }
 
 # ini #
-function has_section {
-    crudini --get "$@" &> /dev/null
-}
-
 function section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
@@ -408,8 +410,4 @@ function progressbar {
     else
         pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
     fi
-}
-
-function cecho {
-    echo -e "${color[$1]}$2${color[0]}"
 }

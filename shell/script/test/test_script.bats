@@ -9,5 +9,9 @@ load /usr/local/libexec/bats-support/load.bash
     run ./script.sh -h
 
     assert_success
-    assert_output 'Usage: script.sh [-h] [-l <logfile>]'
+    assert_line --index 0 'Usage: script.sh [-l <logfile>]'
+    assert_line --index 1 Options:
+    assert_line --index 2 '  -l <logfile>  Log to file'
+    assert_line --index 3 '  -h            Show help'
+    assert_line --index 4 '  -d            Show debug and trace messages'
 }
