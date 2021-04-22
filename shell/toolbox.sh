@@ -6,13 +6,13 @@ declare -A color
 # foreground color
 # create color alias with `declare -n c=color`
 color=(
-    # black        red            green          yellow         blue
-    [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m'
-    [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m'
+    # black        red            green          yellow         blue           # magenta
+    [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m' [m]='\e[0;35m'
+    [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m' [M]='\e[1;35m'
 
-    # magenta      cyan           white          reset
-    [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
-    [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
+    # cyan         white          reset
+    [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
+    [C]='\e[1;36m' [W]='\e[1;37m'
 )
 
 # relative path -> absolute path
