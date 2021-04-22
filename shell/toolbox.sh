@@ -20,6 +20,7 @@ function abspath {
     readlink -m "$1"
 }
 
+# uses color
 function cecho {
     echo -e "${color[$1]}$2${color[0]}"
 }
@@ -76,6 +77,7 @@ function nthline {
     awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
+# uses name_wo_ext
 function second_ext {
     ext "$(name_wo_ext "$1")"
 }
@@ -115,6 +117,7 @@ function amap {
     done
 }
 
+# uses abspath, log, parse_opts, second_ext, set_opt, test_args
 function arc {
     local dest
 
@@ -145,7 +148,11 @@ function arc {
     fi
 }
 
+# uses color
 function init {
+    shopt -os errexit errtrace nounset pipefail
+    shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
+
     local ps4
     declare -A colorlevel
 
@@ -158,9 +165,6 @@ function init {
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
     export PS4="${colorlevel[trace]}$ps4${colorlevel[0]} "
 
-    shopt -os errexit errtrace nounset pipefail
-    shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
-
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
 
@@ -170,6 +174,7 @@ function init {
     fi
 }
 
+# uses arc
 function install_pkg {
     case $(ext "$1") in
         (deb)
@@ -211,6 +216,7 @@ function joinby {
     echo
 }
 
+# uses color, upper, timestamp
 function log {
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
@@ -313,6 +319,7 @@ function vartype {
 }
 
 # ini #
+# uses has_section, parse_opts, set_opt
 function section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
@@ -343,6 +350,7 @@ function section_to_array {
     done
 }
 
+# uses has_section
 function section_to_var {
     local section
 
@@ -355,6 +363,7 @@ function section_to_var {
 
 # input/output #
 # `choice 'Continue? [Y|n]: ' y n ''`
+# uses test_args
 function choice {
     local answer true
     true=()
@@ -368,6 +377,7 @@ function choice {
 }
 
 # `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
+# uses test_args
 function select_from {
     local PS3 answer true
     PS3=$1
@@ -404,6 +414,7 @@ function spinner {
 }
 
 # `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
+# uses parse_opts, set_opt
 function progressbar {
     parse_opts s: "$@"
     shift $(( OPTIND - 1 ))
