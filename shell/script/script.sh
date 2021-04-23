@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# uses init, log, log_to_file, parse_opts, send_mail, set_opt, test_args
+# uses: init, log, log_to_file, parse_opts, send_mail, set_opt, test_args
 
 # shellcheck disable=SC2154
 source "$(dirname "$0")/toolbox.sh"
