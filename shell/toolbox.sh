@@ -5,12 +5,6 @@ function abspath {
     readlink -m "$1"
 }
 
-# uses: color
-function cecho {
-    color
-    echo -e "${color[$1]}$2${color[0]}"
-}
-
 function curl {
     command curl --silent --show-error --location --connect-timeout 8 "$@"
 }
@@ -143,7 +137,7 @@ function init {
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
     color
-    export PS4="${color[C]}$ps4${color[0]} "
+    export PS4="${color[s]}${color[c]}$ps4${color[0]} "
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -202,7 +196,10 @@ function log {
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     color
-    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
+    colorlevel=(
+        [error]=${color[s]}${color[r]} [warn]=${color[s]}${color[y]} [info]=${color[s]}${color[w]}
+        [debug]=${color[s]}${color[b]}
+    )
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
@@ -336,6 +333,17 @@ function section_to_var {
 }
 
 # input/output #
+# uses: color
+function cecho {
+    local i
+    color
+
+    for (( i = 0; i < ${#1}; i++ )); do
+        echo -en "${color[${1:$i:1}]}"
+    done
+    echo -e "$2${color[0]}"
+}
+
 # `choice 'Continue? [Y|n]: ' y n ''`
 # uses: test_args
 function choice {
@@ -354,16 +362,15 @@ function color {
     # * https://github.com/ppo/bash-colors
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     declare -gA color
-    # foreground color
     # create color alias with `declare -n c=color`
     color=(
-        # black        red            green          yellow         blue
-        [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m'
-        [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m'
+        # black      red          green        yellow       blue         magenta
+        [k]='\e[30m' [r]='\e[31m' [g]='\e[32m' [y]='\e[33m' [b]='\e[34m' [m]='\e[35m'  # foreground
+        [K]='\e[40m' [R]='\e[41m' [G]='\e[42m' [Y]='\e[43m' [B]='\e[44m' [M]='\e[45m'  # background
 
-        # magenta      cyan           white          reset
-        [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
-        [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
+        # cyan       white        bold        reset
+        [c]='\e[36m' [w]='\e[37m' [s]='\e[1m' [0]='\e[m'                               # foreground
+        [C]='\e[46m' [W]='\e[47m'                                                      # background
     )
 
     if [[ ! (-t 1 && -t 2) ]]; then
