@@ -15,12 +15,18 @@ color=(
     [C]='\e[1;36m' [W]='\e[1;37m'
 )
 
+if [[ ! (-t 1 && -t 2) ]]; then
+    for _ in "${!color[@]}"; do
+        color[$_]=
+    done
+fi
+
 # relative path -> absolute path
 function abspath {
     readlink -m "$1"
 }
 
-# uses color
+# uses: color
 function cecho {
     echo -e "${color[$1]}$2${color[0]}"
 }
@@ -77,7 +83,7 @@ function nthline {
     awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
-# uses name_wo_ext
+# uses: name_wo_ext
 function second_ext {
     ext "$(name_wo_ext "$1")"
 }
@@ -117,7 +123,7 @@ function amap {
     done
 }
 
-# uses abspath, log, parse_opts, second_ext, set_opt, test_args
+# uses: abspath, log, parse_opts, second_ext, set_opt, test_args
 function arc {
     local dest
 
@@ -148,22 +154,15 @@ function arc {
     fi
 }
 
-# uses color
+# uses: color
 function init {
+    local ps4
+
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
-    local ps4
-    declare -A colorlevel
-
-    if [[ -t 2 ]]; then
-        colorlevel=( [trace]=${color[C]} [0]=${color[0]} )
-    else
-        colorlevel=( [trace]='' [0]='' )
-    fi
-
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
-    export PS4="${colorlevel[trace]}$ps4${colorlevel[0]} "
+    export PS4="${color[C]}$ps4${color[0]} "
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -174,7 +173,7 @@ function init {
     fi
 }
 
-# uses arc
+# uses: arc
 function install_pkg {
     case $(ext "$1") in
         (deb)
@@ -216,19 +215,12 @@ function joinby {
     echo
 }
 
-# uses color, upper, timestamp
+# uses: color, upper, timestamp
 function log {
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
-    if [[ -t 2 ]]; then
-        colorlevel=(
-            [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]}
-            [0]=${color[0]}
-        )
-    else
-        colorlevel=( [error]='' [warn]='' [info]='' [debug]='' [0]='' )
-    fi
+    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
@@ -236,7 +228,7 @@ function log {
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
-        echo -e "${colorlevel[$1]}[$(upper "$1") $(timestamp)]${colorlevel[0]}" "${@:2}" >&2
+        echo -e "${colorlevel[$1]}[$(upper "$1") $(timestamp)]${color[0]}" "${@:2}" >&2
     fi
 }
 
@@ -319,7 +311,7 @@ function vartype {
 }
 
 # ini #
-# uses has_section, parse_opts, set_opt
+# uses: has_section, parse_opts, set_opt
 function section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
@@ -350,7 +342,7 @@ function section_to_array {
     done
 }
 
-# uses has_section
+# uses: has_section
 function section_to_var {
     local section
 
@@ -363,7 +355,7 @@ function section_to_var {
 
 # input/output #
 # `choice 'Continue? [Y|n]: ' y n ''`
-# uses test_args
+# uses: test_args
 function choice {
     local answer true
     true=()
@@ -377,7 +369,7 @@ function choice {
 }
 
 # `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
-# uses test_args
+# uses: test_args
 function select_from {
     local PS3 answer true
     PS3=$1
@@ -414,7 +406,7 @@ function spinner {
 }
 
 # `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
-# uses parse_opts, set_opt
+# uses: parse_opts, set_opt
 function progressbar {
     parse_opts s: "$@"
     shift $(( OPTIND - 1 ))
