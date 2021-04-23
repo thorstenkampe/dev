@@ -361,6 +361,7 @@ function choice {
 function color {
     # * https://github.com/ppo/bash-colors
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    local col
     declare -gA color
     # create color alias with `declare -n c=color`
     color=(
@@ -374,8 +375,8 @@ function color {
     )
 
     if [[ ! (-t 1 && -t 2) ]]; then
-        for _ in "${!color[@]}"; do
-            color[$_]=
+        for col in "${!color[@]}"; do
+            color[$col]=''
         done
     fi
 }
