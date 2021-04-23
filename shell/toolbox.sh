@@ -1,26 +1,5 @@
 # shellcheck disable=SC2016,SC2034,SC2164
 
-# * https://github.com/ppo/bash-colors
-# * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-declare -A color
-# foreground color
-# create color alias with `declare -n c=color`
-color=(
-    # black        red            green          yellow         blue           # magenta
-    [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m' [m]='\e[0;35m'
-    [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m' [M]='\e[1;35m'
-
-    # cyan         white          reset
-    [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
-    [C]='\e[1;36m' [W]='\e[1;37m'
-)
-
-if [[ ! (-t 1 && -t 2) ]]; then
-    for _ in "${!color[@]}"; do
-        color[$_]=
-    done
-fi
-
 # relative path -> absolute path
 function abspath {
     readlink -m "$1"
@@ -28,6 +7,7 @@ function abspath {
 
 # uses: color
 function cecho {
+    color
     echo -e "${color[$1]}$2${color[0]}"
 }
 
@@ -162,6 +142,7 @@ function init {
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
+    color
     export PS4="${color[C]}$ps4${color[0]} "
 
     if is_windows; then
@@ -220,6 +201,7 @@ function log {
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
+    color
     colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
 
     if [[ ! -v loglevel[$1] ]]; then
@@ -368,6 +350,42 @@ function choice {
     echo "$answer"
 }
 
+function color {
+    # * https://github.com/ppo/bash-colors
+    # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    declare -gA color
+    # foreground color
+    # create color alias with `declare -n c=color`
+    color=(
+        # black        red            green          yellow         blue
+        [k]='\e[0;30m' [r]='\e[0;31m' [g]='\e[0;32m' [y]='\e[0;33m' [b]='\e[0;34m'
+        [K]='\e[1;30m' [R]='\e[1;31m' [G]='\e[1;32m' [Y]='\e[1;33m' [B]='\e[1;34m'
+
+        # magenta      cyan           white          reset
+        [m]='\e[0;35m' [c]='\e[0;36m' [w]='\e[0;37m' [0]='\e[m'
+        [M]='\e[1;35m' [C]='\e[1;36m' [W]='\e[1;37m'
+    )
+
+    if [[ ! (-t 1 && -t 2) ]]; then
+        for _ in "${!color[@]}"; do
+            color[$_]=
+        done
+    fi
+}
+
+# `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
+# uses: parse_opts, set_opt
+function progressbar {
+    parse_opts s: "$@"
+    shift $(( OPTIND - 1 ))
+
+    if set_opt s; then
+        pv --size "${opts[s]}" --interval 0.1 --width 80 --line-mode --format "%p (%bof ${opts[s]})  %e" > /dev/null
+    else
+        pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
+    fi
+}
+
 # `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
 # uses: test_args
 function select_from {
@@ -403,17 +421,4 @@ function spinner {
 
     echo
     wait $!
-}
-
-# `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
-# uses: parse_opts, set_opt
-function progressbar {
-    parse_opts s: "$@"
-    shift $(( OPTIND - 1 ))
-
-    if set_opt s; then
-        pv --size "${opts[s]}" --interval 0.1 --width 80 --line-mode --format "%p (%bof ${opts[s]})  %e" > /dev/null
-    else
-        pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
-    fi
 }
