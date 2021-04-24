@@ -373,8 +373,8 @@ function color {
         [w]='\e[37m' [bw]='\e[97m' [W]='\e[47m' [bW]='\e[107m'  # white
 
         # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
         # n: negative, h: hidden, t: strikethrough, 0: reset
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
         [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
     )
 
