@@ -330,17 +330,6 @@ function section_to_var {
 }
 
 # input/output #
-# uses: color
-function cecho {
-    local col
-    color
-
-    for col in $1; do
-        echo -en "${color[$col]}"
-    done
-    echo -en "$2${color[0]}"
-}
-
 # `choice 'Continue? [Y|n]: ' y n ''`
 # uses: test_args
 function choice {
