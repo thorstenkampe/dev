@@ -12,8 +12,9 @@ def databases(engine):
         'postgresql': 'select datname from pg_database'
     }
 
-    result = engine.execute(query[engine.name])
-    return [db[0] for db in result]
+    with engine.connect() as conn:
+        result = conn.execute(sa.text(query[engine.name]))
+        return [db[0] for db in result]
 
 def tables(engine, schema=None):
     return sa.inspect(engine).get_table_names(schema)
@@ -35,7 +36,7 @@ def engine(dsn):
 
     engine_params = {
         # only necessary for interactive use (e.g. IPython) to prevent open sessions
-        'default': {'poolclass': sa.pool.NullPool},
+        'default': {'poolclass': sa.pool.NullPool, 'future': True},
 
         # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#max-identifier-lengths
         'oracle': {'exclude_tablespaces': None, 'max_identifier_length': 30}
