@@ -137,7 +137,7 @@ function init {
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
     color
-    export PS4="${color[C]}$ps4${color[0]} "
+    export PS4="${color[bc]}$ps4${color[0]} "
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -196,7 +196,7 @@ function log {
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     color
-    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
+    colorlevel=( [error]=${color[br]} [warn]=${color[by]} [info]=${color[bw]} [debug]=${color[bb]} )
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
@@ -362,26 +362,21 @@ function color {
     declare -gA color
     # create color alias with `declare -n c=color`
     color=(
-        # FOREGROUND
+        # lowercase: foreground, uppercase: background, b<x>: bright color x
         # black        red            green          yellow         blue
-        [k]='\e[30m'   [r]='\e[31m'   [g]='\e[32m'   [y]='\e[33m'   [b]='\e[34m'    # normal
-        [K]='\e[90m'   [R]='\e[91m'   [G]='\e[92m'   [Y]='\e[93m'   [B]='\e[94m'    # bright
+        [k]='\e[30m'   [r]='\e[31m'   [g]='\e[32m'   [y]='\e[33m'   [b]='\e[34m'
+        [bk]='\e[90m'  [br]='\e[91m'  [bg]='\e[92m'  [by]='\e[93m'  [bb]='\e[94m'
+        [K]='\e[40m'   [R]='\e[41m'   [G]='\e[42m'   [Y]='\e[43m'   [B]='\e[44m'
+        [bK]='\e[100m' [bR]='\e[101m' [bG]='\e[102m' [bY]='\e[103m' [bB]='\e[104m'
 
         # magenta      cyan           white
-        [m]='\e[35m'   [c]='\e[36m'   [w]='\e[37m'                                  # normal
-        [M]='\e[95m'   [C]='\e[96m'   [W]='\e[97m'                                  # bright
+        [m]='\e[35m'   [c]='\e[36m'   [w]='\e[37m'
+        [bm]='\e[95m'  [bc]='\e[96m'  [bw]='\e[97m'
+        [M]='\e[45m'   [C]='\e[46m'   [W]='\e[47m'
+        [bM]='\e[105m' [bC]='\e[106m' [bW]='\e[107m'
 
-        # BACKGROUND
-        # black        red            green          yellow         blue
-        [bk]='\e[40m'  [br]='\e[41m'  [bg]='\e[42m'  [by]='\e[43m'  [bb]='\e[44m'   # normal
-        [bK]='\e[100m' [bR]='\e[101m' [bG]='\e[102m' [bY]='\e[103m' [bB]='\e[104m'  # bright
-
-        # magenta      cyan           white
-        [bm]='\e[45m'  [bc]='\e[46m'  [bw]='\e[47m'                                 # normal
-        [bM]='\e[105m' [bC]='\e[106m' [bW]='\e[107m'                                # bright
-
-        # bold      dim         italic      underline   double underline blink
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m'     [f]='\e[5m'
+        # bold      dim         italic        underline   double-underline blink
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m'   [u]='\e[4m' [U]='\e[21m'     [f]='\e[5m'
 
         # negative  hidden      strikethrough reset
         [n]='\e[7m' [h]='\e[8m' [t]='\e[9m'   [0]='\e[m'
