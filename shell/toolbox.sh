@@ -362,24 +362,20 @@ function color {
     declare -gA color
     # create color alias with `declare -n c=color`
     color=(
-        # lowercase: foreground, uppercase: background, b<x>: bright color x
-        # black        red            green          yellow         blue
-        [k]='\e[30m'   [r]='\e[31m'   [g]='\e[32m'   [y]='\e[33m'   [b]='\e[34m'
-        [bk]='\e[90m'  [br]='\e[91m'  [bg]='\e[92m'  [by]='\e[93m'  [bb]='\e[94m'
-        [K]='\e[40m'   [R]='\e[41m'   [G]='\e[42m'   [Y]='\e[43m'   [B]='\e[44m'
-        [bK]='\e[100m' [bR]='\e[101m' [bG]='\e[102m' [bY]='\e[103m' [bB]='\e[104m'
+        # foreground bright        background   bright
+        [k]='\e[30m' [bk]='\e[90m' [K]='\e[40m' [bK]='\e[100m'  # black
+        [r]='\e[31m' [br]='\e[91m' [R]='\e[41m' [bR]='\e[101m'  # red
+        [g]='\e[32m' [bg]='\e[92m' [G]='\e[42m' [bG]='\e[102m'  # green
+        [y]='\e[33m' [by]='\e[93m' [Y]='\e[43m' [bY]='\e[103m'  # yellow
+        [b]='\e[34m' [bb]='\e[94m' [B]='\e[44m' [bB]='\e[104m'  # blue
+        [m]='\e[35m' [bm]='\e[95m' [M]='\e[45m' [bM]='\e[105m'  # magenta
+        [c]='\e[36m' [bc]='\e[96m' [C]='\e[46m' [bC]='\e[106m'  # cyan
+        [w]='\e[37m' [bw]='\e[97m' [W]='\e[47m' [bW]='\e[107m'  # white
 
-        # magenta      cyan           white
-        [m]='\e[35m'   [c]='\e[36m'   [w]='\e[37m'
-        [bm]='\e[95m'  [bc]='\e[96m'  [bw]='\e[97m'
-        [M]='\e[45m'   [C]='\e[46m'   [W]='\e[47m'
-        [bM]='\e[105m' [bC]='\e[106m' [bW]='\e[107m'
-
-        # bold      dim         italic        underline   double-underline blink
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m'   [u]='\e[4m' [U]='\e[21m'     [f]='\e[5m'
-
-        # negative  hidden      strikethrough reset
-        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m'   [0]='\e[m'
+        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
+        # n: negative, h: hidden, t: strikethrough, 0: reset
+        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
     )
 
     if [[ ! (-t 1 && -t 2) ]]; then
