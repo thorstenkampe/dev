@@ -137,7 +137,7 @@ function init {
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
     color
-    export PS4="${color[s]}${color[c]}$ps4${color[0]} "
+    export PS4="${color[C]}$ps4${color[0]} "
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -196,10 +196,7 @@ function log {
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     color
-    colorlevel=(
-        [error]=${color[s]}${color[r]} [warn]=${color[s]}${color[y]} [info]=${color[s]}${color[w]}
-        [debug]=${color[s]}${color[b]}
-    )
+    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
 
     if [[ ! -v loglevel[$1] ]]; then
         echo "ERROR: log level \"$1\" not defined"
@@ -335,13 +332,13 @@ function section_to_var {
 # input/output #
 # uses: color
 function cecho {
-    local i
+    local col
     color
 
-    for (( i = 0; i < ${#1}; i++ )); do
-        echo -en "${color[${1:$i:1}]}"
+    for col in $1; do
+        echo -en "${color[$col]}"
     done
-    echo -e "$2${color[0]}"
+    echo -en "$2${color[0]}"
 }
 
 # `choice 'Continue? [Y|n]: ' y n ''`
@@ -365,13 +362,29 @@ function color {
     declare -gA color
     # create color alias with `declare -n c=color`
     color=(
-        # black      red          green        yellow       blue         magenta
-        [k]='\e[30m' [r]='\e[31m' [g]='\e[32m' [y]='\e[33m' [b]='\e[34m' [m]='\e[35m'  # foreground
-        [K]='\e[40m' [R]='\e[41m' [G]='\e[42m' [Y]='\e[43m' [B]='\e[44m' [M]='\e[45m'  # background
+        # FOREGROUND
+        # black        red            green          yellow         blue
+        [k]='\e[30m'   [r]='\e[31m'   [g]='\e[32m'   [y]='\e[33m'   [b]='\e[34m'    # normal
+        [K]='\e[90m'   [R]='\e[91m'   [G]='\e[92m'   [Y]='\e[93m'   [B]='\e[94m'    # bright
 
-        # cyan       white        bold        reset
-        [c]='\e[36m' [w]='\e[37m' [s]='\e[1m' [0]='\e[m'                               # foreground
-        [C]='\e[46m' [W]='\e[47m'                                                      # background
+        # magenta      cyan           white
+        [m]='\e[35m'   [c]='\e[36m'   [w]='\e[37m'                                  # normal
+        [M]='\e[95m'   [C]='\e[96m'   [W]='\e[97m'                                  # bright
+
+        # BACKGROUND
+        # black        red            green          yellow         blue
+        [bk]='\e[40m'  [br]='\e[41m'  [bg]='\e[42m'  [by]='\e[43m'  [bb]='\e[44m'   # normal
+        [bK]='\e[100m' [bR]='\e[101m' [bG]='\e[102m' [bY]='\e[103m' [bB]='\e[104m'  # bright
+
+        # magenta      cyan           white
+        [bm]='\e[45m'  [bc]='\e[46m'  [bw]='\e[47m'                                 # normal
+        [bM]='\e[105m' [bC]='\e[106m' [bW]='\e[107m'                                # bright
+
+        # bold      dim         italic      underline   double underline blink
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m'     [f]='\e[5m'
+
+        # negative  hidden      strikethrough reset
+        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m'   [0]='\e[m'
     )
 
     if [[ ! (-t 1 && -t 2) ]]; then
