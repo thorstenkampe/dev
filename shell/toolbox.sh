@@ -1,20 +1,11 @@
 # shellcheck disable=SC2016,SC2034,SC2164
 
-# relative path -> absolute path
-
-# string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
-
-function abspath {
-    readlink -m "$1"
-}
+## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
+## absolute path: `readlink -m`
+## escape characters (!, ", $, ', *, \, `): `printf %q`
 
 function curl {
     command curl --silent --show-error --location --connect-timeout 8 "$@"
-}
-
-# escape characters in string (!, ", $, ', *, \, `)
-function escape {
-    printf %q "$1"
 }
 
 # escape characters in string for JSON
@@ -89,7 +80,7 @@ function amap {
     done
 }
 
-# uses: abspath, log, parse_opts, second_ext, set_opt, test_args
+# uses: log, parse_opts, second_ext, set_opt, test_args
 function arc {
     local dest
 
@@ -107,7 +98,7 @@ function arc {
         if [[ $(second_ext "$2") == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
-            7za a -ssw "$2" "$(abspath "$1")" "${@:3}"
+            7za a -ssw "$2" "$(readlink -m "$1")" "${@:3}"
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
@@ -153,12 +144,9 @@ function install_pkg {
             ;;
 
         (gz)
-            arc -x "$1" "$2"            \
-                   --keep-newer-files   \
-                   --no-same-owner      \
-                   --strip-components 1 \
-                   --verbose            \
-                   --wildcards          \
+            arc -x "$1" "$2"                                                         \
+                   --keep-newer-files --no-same-owner --strip-components 1 --verbose \
+                   --wildcards                                                       \
                    "$3"
             ;;
 

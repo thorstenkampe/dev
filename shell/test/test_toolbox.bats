@@ -23,14 +23,6 @@ function teardown {
 }
 
 ##
-@test escape {
-    shopt -u failglob
-    run escape 'A!"\`$'
-
-    assert_success
-    assert_output 'A\!\"\\\`\$'
-}
-
 @test ext {
     run ext test.txt
 
