@@ -325,8 +325,7 @@ function cecho {
     for (( i = 0; i < ${#1}; i++ )); do
         char=${1:$i:1}
         if [[ $char == _ ]]; then
-            (( i ++ ))
-            char+=${1:$i:1}
+            char+=${1:$(( ++i )):1}
         fi
         echo -en "${color[$char]}"
     done
