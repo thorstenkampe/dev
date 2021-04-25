@@ -1,6 +1,9 @@
 # shellcheck disable=SC2016,SC2034,SC2164
 
 # relative path -> absolute path
+
+# string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
+
 function abspath {
     readlink -m "$1"
 }
@@ -28,18 +31,12 @@ function has_section {
     crudini --get "$@" &> /dev/null
 }
 
+function is_tty {
+    [[ -t 1 && -t 2 ]]
+}
+
 function is_windows {
     [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
-}
-
-# length of string
-function len {
-    echo ${#1}
-}
-
-# string to lowercase
-function lower {
-    echo "${1,,}"
 }
 
 # create tmp directory in specified location
@@ -79,11 +76,6 @@ function splitby {
 # create timestamp "yyyy-mm-dd hh:mm:ss"
 function timestamp {
     date +'%F %T'
-}
-
-# string to uppercase
-function upper {
-    echo "${1^^}"
 }
 
 ##
@@ -135,9 +127,9 @@ function init {
     shopt -os errexit errtrace nounset pipefail
     shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
 
-    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:$FUNCNAME}:$LINENO]'
+    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
     color
-    export PS4="${color[bc]}$ps4${color[0]} "
+    export PS4="${color[C]}$ps4${color[0]} "
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -190,21 +182,28 @@ function joinby {
     echo
 }
 
-# uses: color, upper, timestamp
+# uses: color, is_tty, timestamp
 function log {
+    local timestamp
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
 
     color
-    colorlevel=( [error]=${color[br]} [warn]=${color[by]} [info]=${color[bw]} [debug]=${color[bb]} )
+    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
 
     if [[ ! -v loglevel[$1] ]]; then
-        echo "ERROR: log level \"$1\" not defined"
+        log error "log level \"$1\" not defined"
         return 1
     fi
 
+    if is_tty; then
+        timestamp=''
+    else
+        timestamp=" $(timestamp)"
+    fi
+
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
-        echo -e "${colorlevel[$1]}[$(upper "$1") $(timestamp)]${color[0]}" "${@:2}" >&2
+        echo -e "${colorlevel[$1]}[${1^^}$timestamp]${color[0]}" "${@:2}" >&2
     fi
 }
 
@@ -330,6 +329,22 @@ function section_to_var {
 }
 
 # input/output #
+# uses: color
+function cecho {
+    local i char
+    color
+
+    for (( i = 0; i < ${#1}; i++ )); do
+        char=${1:$i:1}
+        if [[ $char == _ ]]; then
+            (( i ++ ))
+            char+=${1:$i:1}
+        fi
+        echo -en "${color[$char]}"
+    done
+    echo -en "$2${color[0]}"
+}
+
 # `choice 'Continue? [Y|n]: ' y n ''`
 # uses: test_args
 function choice {
@@ -344,6 +359,7 @@ function choice {
     echo "$answer"
 }
 
+# uses is_tty
 function color {
     # * https://github.com/ppo/bash-colors
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
@@ -351,15 +367,15 @@ function color {
     declare -gA color
     # create color alias with `declare -n c=color`
     color=(
-        # foreground bright        background   bright
-        [k]='\e[30m' [bk]='\e[90m' [K]='\e[40m' [bK]='\e[100m'  # black
-        [r]='\e[31m' [br]='\e[91m' [R]='\e[41m' [bR]='\e[101m'  # red
-        [g]='\e[32m' [bg]='\e[92m' [G]='\e[42m' [bG]='\e[102m'  # green
-        [y]='\e[33m' [by]='\e[93m' [Y]='\e[43m' [bY]='\e[103m'  # yellow
-        [b]='\e[34m' [bb]='\e[94m' [B]='\e[44m' [bB]='\e[104m'  # blue
-        [m]='\e[35m' [bm]='\e[95m' [M]='\e[45m' [bM]='\e[105m'  # magenta
-        [c]='\e[36m' [bc]='\e[96m' [C]='\e[46m' [bC]='\e[106m'  # cyan
-        [w]='\e[37m' [bw]='\e[97m' [W]='\e[47m' [bW]='\e[107m'  # white
+        # foreground bright       background    bright
+        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
+        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
+        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
+        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
+        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
+        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
+        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
+        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
 
         # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
         # n: negative, h: hidden, t: strikethrough, 0: reset
@@ -367,7 +383,7 @@ function color {
         [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
     )
 
-    if [[ ! (-t 1 && -t 2) ]]; then
+    if ! is_tty; then
         for col in "${!color[@]}"; do
             color[$col]=''
         done

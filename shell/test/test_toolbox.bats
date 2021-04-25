@@ -38,18 +38,11 @@ function teardown {
     assert_output txt
 }
 
-@test len {
-    run len "$string"
+@test is_tty {
+    run is_tty
 
-    assert_success
-    assert_output 43
-}
-
-@test lowercase {
-    run lower "$string"
-
-    assert_success
-    assert_output 'the quick brown fox jumps over the lazy dog'
+    assert_failure
+    refute_output
 }
 
 @test mktempdir {
@@ -107,13 +100,6 @@ function teardown {
 
     assert_success
     assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
-}
-
-@test uppercase {
-    run upper "$string"
-
-    assert_success
-    assert_output 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG'
 }
 
 ##
