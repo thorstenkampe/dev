@@ -354,27 +354,31 @@ function color {
     local col
     declare -gA color
     # create color alias with `declare -n c=color`
-    color=(
-        # foreground bright       background    bright
-        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
-        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
-        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
-        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
-        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
-        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
-        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
-        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
+    if is_tty; then
+        color=(
+            # foreground bright       background    bright
+            [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
+            [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
+            [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
+            [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
+            [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
+            [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
+            [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
+            [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
 
-        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
-        # n: negative, h: hidden, t: strikethrough, 0: reset
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
-        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
-    )
-
-    if ! is_tty; then
-        for col in "${!color[@]}"; do
-            color[$col]=''
-        done
+            # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
+            # n: negative, h: hidden, t: strikethrough, 0: reset
+            [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
+            [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
+        )
+    else
+        color=(
+            [k]='' [K]='' [_k]='' [_K]='' [r]='' [R]='' [_r]='' [_R]=''
+            [g]='' [G]='' [_g]='' [_G]='' [y]='' [Y]='' [_y]='' [_Y]=''
+            [b]='' [B]='' [_b]='' [_B]='' [m]='' [M]='' [_m]='' [_M]=''
+            [c]='' [C]='' [_c]='' [_C]='' [w]='' [W]='' [_w]='' [_W]=''
+            [s]='' [d]='' [i]='' [u]='' [U]='' [f]='' [n]='' [h]='' [t]='' [0]=''
+        )
     fi
 }
 
