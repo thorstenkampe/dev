@@ -9,7 +9,7 @@ from pandas          import DataFrame, Series
 from rich            import console
 
 def stringify(iter_):
-    return [str(item) for item in iter_]
+    return [f'{item:.1f}' if type(item) == float else str(item) for item in iter_]
 
 #
 def file_version(file):
@@ -107,16 +107,12 @@ def host_reachable(url):
         return True
 
 # input/output #  NOSONAR
-# `def func(): time.sleep(10)`
-# `progress(func)`
-def progress(func):
-    con = console.Console()
-    with con.status(status='', spinner='bouncingBall', spinner_style='royal_blue1',
-                    speed=0.4):
-        func()
+def progress(iter_, func):
+    '''
+    >>> def func(x): time.sleep(0.1)
+    >>> progress(range(50), func)
+    '''
 
-# `progressbar(range(50), lambda x: time.sleep(0.1))`
-def progressbar(iter_, func):
     fmt  = '[{bar}]{percentage:3.0f}% ({n_fmt}/{total_fmt})  time left: {remaining}'
     pbar = tqdm.tqdm(iterable=iter_, ncols=80, bar_format=fmt, leave=False)
 
@@ -125,8 +121,22 @@ def progressbar(iter_, func):
 
     pbar.close()
 
-# `selections = ['MSSQL', 'MySQL', 'Oracle', 'PostgreSQL', 'SQLite']`
-# `select(selections, 'Select database [1-5]')`
 def select(selections, title):
+    '''
+    >>> selections = ['MSSQL', 'MySQL', 'Oracle', 'PostgreSQL', 'SQLite']
+    >>> select(selections, 'Select database [1-5]')
+    '''
+
     menu = qprompt.enum_menu(strs=selections, header=title, msg='')
     return int(menu.show()) - 1
+
+def spinner(func):
+    '''
+    >>> def func(): time.sleep(10)
+    >>> spinner(func)
+    '''
+
+    con = console.Console()
+    with con.status(status='', spinner='bouncingBall', spinner_style='royal_blue1',
+                    speed=0.4):
+        func()

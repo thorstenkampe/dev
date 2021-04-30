@@ -8,11 +8,6 @@ function curl {
     command curl --silent --show-error --location --connect-timeout 8 "$@"
 }
 
-# escape characters in string for JSON
-function escape_json {
-    echo "$1" | jq --raw-input @json
-}
-
 # (last) extension of file name
 function ext {
     echo "${1##*.}"
@@ -45,7 +40,7 @@ function nthline {
     awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
-# uses: name_wo_ext
+# uses: ext, name_wo_ext
 function second_ext {
     ext "$(name_wo_ext "$1")"
 }
@@ -381,17 +376,20 @@ function color {
     fi
 }
 
-# `for item in $(seq 50); do sleep 0.1; echo; done | progressbar -s 50`
+# `for item in $(seq 50); do sleep 0.1; echo; done | progress -s 50`
 # uses: parse_opts, set_opt
-function progressbar {
+function progress {
+    local pv_opts
     parse_opts s: "$@"
     shift $(( OPTIND - 1 ))
 
+    pv_opts=( --interval 0.1 --width 80 --line-mode --format )
     if set_opt s; then
-        pv --size "${opts[s]}" --interval 0.1 --width 80 --line-mode --format "%p (%bof ${opts[s]})  %e" > /dev/null
+        pv_opts+=( "%p (%bof ${opts[s]})  %e" --size "${opts[s]}" )
     else
-        pv --interval 0.1 --width 80 --line-mode --format '%p items processed: %b' > /dev/null
+        pv_opts+=( '%p items processed: %b' )
     fi
+    pv "${pv_opts[@]}" > /dev/null
 }
 
 # `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
@@ -419,14 +417,18 @@ function spinner {
     spin=('-' '\' '|' '/')
     i=0
 
-    eval "$@" &
+    if is_tty; then
+        eval "$@" &
 
-    # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
-    while [[ -d /proc/$! ]]; do
-        echo -en "\r[${spin[(i += 1) % 4]}]"
-        sleep 0.1
-    done
+        # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
+        while [[ -d /proc/$! ]]; do
+            echo -en "\r[${spin[(i += 1) % 4]}]" 1>&2
+            sleep 0.1
+        done
 
-    echo
-    wait $!
+        echo
+        wait $!
+    else
+        eval "$@"
+    fi
 }
