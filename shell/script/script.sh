@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# uses: init, log, log_to_file, parse_opts, send_mail, set_opt, test_args
-
 # shellcheck disable=SC2154
 source "$(dirname "$0")/toolbox.sh"
 init
@@ -23,9 +21,6 @@ function error_handler {
     log error "command \"$1\" in line $2${3:+ (function $3)}" || true
     #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
-
-# stop if script is sourced (i.e. for testing via BATS)
-[[ ${BASH_SOURCE[0]} != "$0" ]] && return
 
 trap 'error_handler "$BASH_COMMAND" $LINENO ${FUNCNAME-}' err
 
