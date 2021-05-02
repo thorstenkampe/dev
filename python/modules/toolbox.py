@@ -8,8 +8,11 @@ from collections.abc import MappingView
 from pandas          import DataFrame, Series
 from rich            import console
 
-def stringify(iter_):
-    return [f'{item:.1f}' if type(item) == float else str(item) for item in iter_]
+def stringify(obj):
+    if type(obj) == float:
+        return f'{obj:.1f}'
+    else:
+        return str(obj)
 
 #
 def file_version(file):
