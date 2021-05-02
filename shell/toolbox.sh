@@ -40,7 +40,6 @@ function nthline {
     awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
-# uses: ext, name_wo_ext
 function second_ext {
     ext "$(name_wo_ext "$1")"
 }
@@ -75,7 +74,6 @@ function amap {
     done
 }
 
-# uses: log, parse_opts, second_ext, set_opt, test_args
 function arc {
     local dest
 
@@ -106,7 +104,6 @@ function arc {
     fi
 }
 
-# uses: color
 function init {
     local ps4
 
@@ -126,7 +123,6 @@ function init {
     fi
 }
 
-# uses: arc
 function install_pkg {
     case $(ext "$1") in
         (deb)
@@ -165,7 +161,6 @@ function joinby {
     echo
 }
 
-# uses: color, is_tty, timestamp
 function log {
     local timestamp
     declare -A loglevel colorlevel
@@ -269,7 +264,6 @@ function vartype {
 }
 
 # ini #
-# uses: has_section, parse_opts, set_opt
 function section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
@@ -300,7 +294,6 @@ function section_to_array {
     done
 }
 
-# uses: has_section
 function section_to_var {
     local section
 
@@ -312,7 +305,6 @@ function section_to_var {
 }
 
 # input/output #
-# uses: color
 function cecho {
     local i char
     color
@@ -328,7 +320,6 @@ function cecho {
 }
 
 # `choice 'Continue? [Y|n]: ' y n ''`
-# uses: test_args
 function choice {
     local answer true
     true=()
@@ -341,7 +332,6 @@ function choice {
     echo "$answer"
 }
 
-# uses is_tty
 function color {
     # * https://github.com/ppo/bash-colors
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
@@ -377,7 +367,6 @@ function color {
 }
 
 # `for item in $(seq 50); do sleep 0.1; echo; done | progress -s 50`
-# uses: parse_opts, set_opt
 function progress {
     local pv_opts
     parse_opts s: "$@"
@@ -393,7 +382,6 @@ function progress {
 }
 
 # `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
-# uses: test_args
 function select_from {
     local PS3 answer true
     PS3=$1
