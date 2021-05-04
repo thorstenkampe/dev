@@ -335,7 +335,6 @@ function choice {
 function color {
     # * https://github.com/ppo/bash-colors
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    local col
     declare -gA color
     # create color alias with `declare -n c=color`
     if is_tty; then
