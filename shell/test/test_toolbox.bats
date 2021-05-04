@@ -52,20 +52,6 @@ function teardown {
     assert_output test
 }
 
-@test 'nthline - line exists' {
-    run nthline 6 test/test_toolbox.bats
-
-    assert_success
-    assert_output '# MAIN CODE STARTS HERE #'
-}
-
-@test 'nthline - line not exists' {
-    run nthline 0 test/test_toolbox.bats
-
-    assert_failure
-    refute_output
-}
-
 @test second_ext {
     run second_ext test.tar.gz
 
