@@ -124,35 +124,6 @@ function init {
     fi
 }
 
-function install_pkg {
-    case $(ext "$1") in
-        (deb)
-            dpkg --install --refuse-downgrade --skip-same-version "$1"
-            ;;
-
-        (rpm)
-            # https://serverfault.com/questions/880398/yum-install-local-rpm-throws-error-if-up-to-date
-            yum install --assumeyes "$1" || true
-            ;;
-
-        (gz)
-            arc -x "$1" "$2"                                                         \
-                   --keep-newer-files --no-same-owner --strip-components 1 --verbose \
-                   --wildcards                                                       \
-                   "$3"
-            ;;
-
-        (zip)
-            arc -x "$1" "$2"
-            ;;
-
-        (*)
-            cp --verbose --force "$1" "$2"
-            chmod +x "$2"
-
-    esac
-}
-
 # * https://stackoverflow.com/a/35329275/5740232
 # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
 # * joinby ';' "${array[@]}"
