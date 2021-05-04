@@ -1,4 +1,4 @@
-# shellcheck disable=SC2016,SC2034,SC2164
+# shellcheck disable=SC2016
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
 ## absolute path: `readlink -m`
@@ -55,6 +55,7 @@ function set_shopt {
 
 # split string into array 'splitby', e.g. `splitby : $PATH`
 function splitby {
+    # shellcheck disable=SC2034
     IFS=$1 read -ra splitby <<< "$2"
 }
 
