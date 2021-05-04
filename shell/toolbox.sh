@@ -4,10 +4,6 @@
 ## absolute path: `readlink -m`
 ## escape characters (!, ", $, ', *, \, `): `printf %q`
 
-function curl {
-    command curl --silent --show-error --location --connect-timeout 8 "$@"
-}
-
 # (last) extension of file name
 function ext {
     echo "${1##*.}"
@@ -33,11 +29,6 @@ function mktempdir {
 # file name without last extension
 function name_wo_ext {
     echo "${1%.*}"
-}
-
-# nth line of file (`nthline n file` or `... | nthline n`
-function nthline {
-    awk "BEGIN {rc = 1} NR == $1 {print; rc = 0; exit} END {exit rc}" "${2-}"
 }
 
 function second_ext {
