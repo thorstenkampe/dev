@@ -245,25 +245,6 @@ function test_file {
     [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
 }
 
-function vartype {
-    case $(declare -p "$1") in
-        (declare\ -a*)
-            echo array
-            ;;
-
-        (declare\ -A*)
-            echo 'associative array'
-            ;;
-
-        (declare\ -i*)
-            echo integer
-            ;;
-
-        (*)
-            echo string
-    esac
-}
-
 # ini #
 function section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)

@@ -251,38 +251,6 @@ function teardown {
     assert_file_not_exist "$tmp_file"
 }
 
-#
-@test 'vartype - string' {
-    run vartype string
-
-    assert_success
-    assert_output string
-}
-
-@test 'vartype - integer' {
-    declare -i int
-    # shellcheck disable=SC2034
-    int=2
-    run vartype int
-
-    assert_success
-    assert_output integer
-}
-
-@test 'vartype - array' {
-    run vartype array
-
-    assert_success
-    assert_output array
-}
-
-@test 'vartype - associative array' {
-    run vartype assoc
-
-    assert_success
-    assert_output 'associative array'
-}
-
 # ini #
 @test 'has_section - existing section' {
     has_section $config connection
