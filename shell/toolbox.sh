@@ -56,6 +56,7 @@ function timestamp {
 }
 
 ##
+# `amap 'expr $arg + 2' array`
 function amap {
     local key arg
     declare -n _array=$2
