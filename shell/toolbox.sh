@@ -1,13 +1,9 @@
 # shellcheck disable=SC2016
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
+## file name without extension: `${file%.*}`; file extension: `${file##*.}`
 ## absolute path: `readlink -m`
 ## escape characters (!, ", $, ', *, \, `): `printf %q`
-
-# (last) extension of file name
-function ext {
-    echo "${1##*.}"
-}
 
 function has_section {
     crudini --get "$@" &> /dev/null
@@ -21,32 +17,13 @@ function is_windows {
     [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
 }
 
-# create tmp directory in specified location
-function mktempdir {
-    mktemp --directory --tmpdir="$1" tmp.XXX
-}
-
-# file name without last extension
-function name_wo_ext {
-    echo "${1%.*}"
-}
-
-function second_ext {
-    ext "$(name_wo_ext "$1")"
-}
-
 # is option set?
 function set_opt {
     [[ -v opts[$1] ]]
 }
 
-function set_shopt {
-    { set -o; shopt ;} | grep "$1"
-}
-
-# split string into array 'splitby', e.g. `splitby : $PATH`
+# split string into array 'splitby', e.g. `splitby : "$PATH"`
 function splitby {
-    # shellcheck disable=SC2034
     IFS=$1 read -ra splitby <<< "$2"
 }
 
@@ -68,7 +45,7 @@ function amap {
 }
 
 function arc {
-    local dest
+    local dest false true splitby
 
     parse_opts cx "$@"
     shift $(( OPTIND - 1 ))
@@ -81,15 +58,18 @@ function arc {
     fi
 
     if set_opt c; then
-        if [[ $(second_ext "$2") == tar ]]; then
+        splitby . "$2"
+
+        if [[ ${splitby[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
             7za a -ssw "$2" "$(readlink -m "$1")" "${@:3}"
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
+        splitby . "$1"
 
-        if [[ $(second_ext "$1") == tar ]]; then
+        if [[ ${splitby[-2]} == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
         else
             7za x "$1" -o"$dest" -y "${@:3}"
@@ -265,16 +245,35 @@ function cecho {
 }
 
 # `choice 'Continue? [Y|n]: ' y n ''`
+# `choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
 function choice {
-    local answer true
-    true=()
+    local PS3 answer false true
 
-    until (( ${#true[@]} )); do
-        read -erp "$1" answer
-        test_args '[[ $arg == $answer ]]' "${@:2}"
-    done
+    parse_opts m "$@"
+    shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-    echo "$answer"
+    if set_opt m; then
+        PS3=$1
+
+        select answer in "${@:2}"; do
+            test_args '[[ $arg == $answer ]]' "${@:2}"
+            if (( ${#true[@]} )); then
+                echo "$answer"
+                break
+            else
+                echo 'Selection out of range - please try again' 1>&2
+            fi
+        done
+    else
+        true=()
+
+        until (( ${#true[@]} )); do
+            read -erp "$1" answer
+            test_args '[[ $arg == $answer ]]' "${@:2}"
+        done
+
+        echo "$answer"
+    fi
 }
 
 function color {
@@ -323,22 +322,6 @@ function progress {
         pv_opts+=( '%p items processed: %b' )
     fi
     pv "${pv_opts[@]}" > /dev/null
-}
-
-# `select_from $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
-function select_from {
-    local PS3 answer true
-    PS3=$1
-
-    select answer in "${@:2}"; do
-        test_args '[[ $arg == $answer ]]' "${@:2}"
-        if (( ${#true[@]} )); then
-            echo "$answer"
-            break
-        else
-            echo 'Selection out of range - please try again' 1>&2
-        fi
-    done
 }
 
 # `spinner 'sleep 10'`

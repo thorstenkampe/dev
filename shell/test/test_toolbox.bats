@@ -15,7 +15,7 @@ function setup {
     source toolbox.sh
     export LANGUAGE=en_US
     config=test/test_ini.ini
-    testdir=$(mktempdir .)
+    testdir=$(mktemp --directory)
 }
 
 function teardown {
@@ -23,40 +23,11 @@ function teardown {
 }
 
 ##
-@test ext {
-    run ext test.txt
-
-    assert_success
-    assert_output txt
-}
-
 @test is_tty {
     run is_tty
 
     assert_failure
     refute_output
-}
-
-@test mktempdir {
-    run mktempdir .
-
-    assert_success
-    assert_dir_exist "$output"
-    rmdir "$output"
-}
-
-@test name_wo_ext {
-    run name_wo_ext test.txt
-
-    assert_success
-    assert_output test
-}
-
-@test second_ext {
-    run second_ext test.tar.gz
-
-    assert_success
-    assert_output tar
 }
 
 @test set_opt {
