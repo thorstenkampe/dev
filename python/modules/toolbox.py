@@ -112,6 +112,7 @@ def host_reachable(url):
 # input/output #  NOSONAR
 def progress(iter_, func):
     '''
+    >>> import time
     >>> def func(x): time.sleep(0.1)
     >>> progress(range(50), func)
     '''
@@ -135,6 +136,7 @@ def select(selections, title):
 
 def spinner(func):
     '''
+    >>> import time
     >>> def func(): time.sleep(10)
     >>> spinner(func)
     '''
