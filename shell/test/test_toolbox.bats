@@ -23,6 +23,24 @@ function teardown {
 }
 
 ##
+@test 'has_section - existing section' {
+    has_section $config connection
+}
+
+@test 'has_section - not existing section' {
+    run has_section $config no_connection
+    assert_failure
+}
+
+@test 'has_section - existing key' {
+    has_section $config connection user
+}
+
+@test 'has_section - not existing key' {
+    run has_section $config connection no_user
+    assert_failure
+}
+
 @test is_tty {
     run is_tty
 
@@ -52,6 +70,12 @@ function teardown {
 }
 
 ##
+@test amap {
+    amap 'expr $arg + 2' array
+    assert_equal "${array[*]}" '3 4 5 6 7 8 9 10 11'
+}
+
+#
 @test 'arc - zip' {
     arc -c toolbox.sh "$testdir/toolbox.sh.zip"
     arc -x "$testdir/toolbox.sh.zip" "$testdir"
@@ -64,6 +88,17 @@ function teardown {
     arc -x "$testdir/toolbox.sh.tar.gz" "$testdir"
 
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
+}
+
+#
+@test contains {
+    contains 2 1 2 3
+}
+
+@test 'contains - not' {
+    run contains 22 1 2 3
+
+    assert_failure
 }
 
 #
@@ -209,24 +244,6 @@ function teardown {
 }
 
 # ini #
-@test 'has_section - existing section' {
-    has_section $config connection
-}
-
-@test 'has_section - not existing section' {
-    run has_section $config no_connection
-    assert_failure
-}
-
-@test 'has_section - existing key' {
-    has_section $config connection user
-}
-
-@test 'has_section - not existing key' {
-    run has_section $config connection no_user
-    assert_failure
-}
-
 @test section_to_array {
     section_to_array $config connection logging
 
