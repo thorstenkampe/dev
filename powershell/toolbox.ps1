@@ -45,10 +45,10 @@ function groupby($object, $keyfunc='ident') {
 
 # - log #
 function log($Level, $Message) {
-    $loglevel = @{ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
+    $loglevel = @{error = 40; warn = 30; info = 20; debug = 10}
 
     if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
-        Write-Output -InputObject "${Level}: $Message"
+        Write-Output -InputObject "[$($Level.ToUpper())] $Message"
     }
 }
 

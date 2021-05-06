@@ -3,27 +3,17 @@ Param(
     [Switch] $Help
 )
 
+. $PSScriptRoot\toolbox.ps1
+
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
 $script    = $MyInvocation.InvocationName
 $verbosity = 'WARNING'  # default level
 
-function log($Level, $Message) {
-    $loglevel = @{ERROR = 40; WARNING = 30; INFO = 20; DEBUG = 10}
-
-    if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
-        Write-Output -InputObject "${Level}: $Message"
-    }
-}
-
-function Show-Help {
+if ($Help) {
     Get-Help -Name $script
     exit
-}
-
-if ($Help) {
-    Show-Help
 }
 
 # MAIN CODE STARTS HERE #
