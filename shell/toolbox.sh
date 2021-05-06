@@ -77,6 +77,18 @@ function arc {
     fi
 }
 
+# `contains 2 1 2 3 -> true`
+function contains {
+    local elem
+
+    for elem in "${@:2}"; do
+        if [[ $elem == "$1" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 function init {
     local ps4
 
@@ -247,7 +259,7 @@ function cecho {
 # `choice 'Continue? [Y|n]: ' y n ''`
 # `choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
 function choice {
-    local PS3 answer false true
+    local PS3 answer
 
     parse_opts m "$@"
     shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
@@ -256,24 +268,23 @@ function choice {
         PS3=$1
 
         select answer in "${@:2}"; do
-            test_args '[[ $arg == $answer ]]' "${@:2}"
-            if (( ${#true[@]} )); then
-                echo "$answer"
+            if contains "$answer" "${@:2}"; then
                 break
             else
-                echo 'Selection out of range - please try again' 1>&2
+                echo 'Selection out of range - please try again' >&2
             fi
         done
     else
-        true=()
-
-        until (( ${#true[@]} )); do
+        while true; do
             read -erp "$1" answer
-            test_args '[[ $arg == $answer ]]' "${@:2}"
+            if contains "$answer" "${@:2}"; then
+                break
+            else
+                echo -e '\nInvalid answer - please try again' >&2
+            fi
         done
-
-        echo "$answer"
     fi
+    echo "$answer"
 }
 
 function color {
