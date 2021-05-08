@@ -14,7 +14,7 @@ function is_tty {
 }
 
 function is_windows {
-    [[ $OSTYPE =~ ^(cygwin|msys)$ ]]
+    contains "$OSTYPE" cygwin msys
 }
 
 # is option set?
