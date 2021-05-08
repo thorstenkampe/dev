@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # shellcheck disable=SC2154
-source "$(dirname "$0")/toolbox.sh"
+source "$(/usr/bin/dirname "$0")/toolbox.sh"
 init
 
 _params=( "$@" )
@@ -13,16 +13,15 @@ scriptname=$(basename "$0")
 test_args 'which $arg' mailsend-go
 
 if (( ${#false[@]} )); then
-    log error "can't find dependencies: ${false[*]}"
-    exit 1
+    log warn "can't find dependencies: ${false[*]}"
 fi
 
 function error_handler {
-    log error "command \"$1\" in line $2${3:+ (function $3)}" || true
+    log error "command \"$1\" in $2" || true
     #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
-trap 'error_handler "$BASH_COMMAND" $LINENO ${FUNCNAME-}' err
+trap 'error_handler "$BASH_COMMAND" "$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO"' err
 
 parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
