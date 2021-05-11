@@ -118,17 +118,14 @@ function joinby {
 }
 
 function log {
-    local timestamp
+    local curlevel level timestamp
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
+    level=${loglevel[$1]}
+    curlevel=${loglevel[${verbosity-warn}]}
 
     color
     colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
-
-    if [[ ! -v loglevel[$1] ]]; then
-        log error "log level \"$1\" not defined"
-        return 1
-    fi
 
     if is_tty; then
         timestamp=''
@@ -136,7 +133,7 @@ function log {
         timestamp=" $(timestamp)"
     fi
 
-    if (( ${loglevel[$1]} <= ${loglevel[${verbosity-warn}]} )); then
+    if (( level <= curlevel )); then
         echo -e "${colorlevel[$1]}[${1^^}$timestamp]${color[0]}" "${@:2}" >&2
     fi
 }
