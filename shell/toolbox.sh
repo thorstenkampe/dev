@@ -121,7 +121,7 @@ function log {
     local curlevel level timestamp
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
-    level=${loglevel[$1]}
+    level=${loglevel[$1]-}
     curlevel=${loglevel[${verbosity-warn}]}
 
     color
@@ -134,7 +134,7 @@ function log {
     fi
 
     if (( level <= curlevel )); then
-        echo -e "${colorlevel[$1]}[${1^^}$timestamp]${color[0]}" "${@:2}" >&2
+        echo -e "${colorlevel[$1]-}[${1^^}$timestamp]${color[0]}" "${@:2}" >&2
     fi
 }
 
