@@ -8,8 +8,7 @@ Param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
 
-$script    = $MyInvocation.InvocationName
-$verbosity = 'WARNING'  # default level
+$script = $MyInvocation.InvocationName
 
 if ($Help) {
     Get-Help -Name $script
