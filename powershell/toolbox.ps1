@@ -3,6 +3,26 @@ function ident {
     $args
 }
 
+# - is_elevated #
+# https://ss64.com/ps/syntax-elevate.html
+function is_elevated {
+    ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
+}
+
+##
+# - choice #
+function choice($Prompt, $Answers) {
+    do {
+        $selection = Read-Host -Prompt $prompt
+        if ($selection -in $answers) {
+            break
+        }
+    }
+    until ($false)
+
+    $selection
+}
+
 #  - ConvertTo-Ordered #
 function ConvertTo-Ordered($Hash) {
     # Shallow copy of the original (see comment for dmap)
@@ -35,6 +55,17 @@ function dupdate($hash1, $hash2) {
     }
 }
 
+# - exec #
+# * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
+# * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
+# * `exec -Cmd {false}`
+function exec($Cmd) {
+    & $cmd
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command terminated with exit code $LastExitCode"
+    }
+}
+
 #  - groupby #
 # https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
 function groupby($object, $keyfunc='ident') {
@@ -50,34 +81,4 @@ function log($Level, $Message) {
     if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
         Write-Output -InputObject "[$($Level.ToUpper())] $Message"
     }
-}
-
-# - choice #
-function choice($Prompt, $Answers) {
-    do {
-        $selection = Read-Host -Prompt $prompt
-        if ($selection -in $answers) {
-            break
-        }
-    }
-    until ($false)
-
-    $selection
-}
-
-# - exec #
-# * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
-# * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
-# * `exec -Cmd {false}`
-function exec($Cmd) {
-    & $cmd
-    if ($LASTEXITCODE -ne 0) {
-        throw "Command terminated with exit code $LastExitCode"
-    }
-}
-
-# - is_elevated #
-# https://ss64.com/ps/syntax-elevate.html
-function is_elevated {
-    ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
