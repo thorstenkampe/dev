@@ -76,9 +76,20 @@ function groupby($object, $keyfunc='ident') {
 
 # - log #
 function log($Level, $Message) {
-    $loglevel = @{error = 40; warn = 30; info = 20; debug = 10}
+    $loglevel   = @{error = 10;    warn = 20;       info = 30;      debug = 40}
+    $colorlevel = @{error = 'red'; warn = 'yellow'; info = 'white'; debug = 'blue'}
+    $prefix     = "[$($Level.ToUpper())] "
 
-    if ($loglevel[$Level] -ge $loglevel[$verbosity]) {
-        Write-Output -InputObject "[$($Level.ToUpper())] $Message"
+    if (-not (Test-Path -Path variable:verbosity)) {
+        $verbosity = 'warn'  # default level
+    }
+
+    if ($loglevel[$Level] -le $loglevel[$verbosity]) {
+        if ($colorlevel.ContainsKey($Level)) {
+            Write-Color -Text $prefix -Color $colorlevel[$Level] -NoNewLine
+            Write-Output -InputObject $Message
+        } else {
+            Write-Output -InputObject $prefix$Message
+        }
     }
 }

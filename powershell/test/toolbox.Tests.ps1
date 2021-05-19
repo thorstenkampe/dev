@@ -62,16 +62,17 @@ Describe 'groupby' {
 # log
 Describe 'log' {
     It 'info message' {
-        $verbosity = 'WARNING'
-        $result = log INFO 'test message'
+        $verbosity = 'warn'
+        $result = log info 'test message'
 
         Assert-Equal -Actual $result -Expected $null
     }
 
     It 'verbosity info message' {
-        $verbosity = 'INFO'
-        $result    = log INFO 'test message'
-        $expected  ='INFO: test message'
+        $verbosity = 'info'
+        $result    = log info 'test message'
+        # actually `[INFO] test message` (`PSWriteColor` writes only to stdout)
+        $expected  ='test message'
 
         Assert-Equal -Actual $result -Expected $expected
     }
