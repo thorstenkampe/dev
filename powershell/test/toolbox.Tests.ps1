@@ -1,4 +1,4 @@
-﻿Import-Module -Name PesterMatchHashtable
+Import-Module -Name PesterMatchHashtable
 
 BeforeAll {
     . $PSScriptRoot/../toolbox.ps1
@@ -71,8 +71,8 @@ Describe 'log' {
     It 'verbosity info message' {
         $verbosity = 'info'
         $result    = log info 'test message'
-        # actually `[INFO] test message` (`PSWriteColor` writes only to stdout)
-        $expected  ='test message'
+        color
+        $expected  = '{0}[INFO]{1} test message' -f $color['bW'], $color[0]
 
         Assert-Equal -Actual $result -Expected $expected
     }

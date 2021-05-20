@@ -1,6 +1,32 @@
-﻿#  - ident #
+﻿#  - abspath #
+function abspath($Path) {
+    # https://github.com/PowerShell/PowerShell/issues/10278
+    [System.IO.Path]::GetFullPath($Path, (Convert-Path -Path '.'))
+}
+
+#  - get_proxy #
+function get_proxy {
+    try {
+        (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').ProxyServer
+    }
+    catch [Management.Automation.PropertyNotFoundException] {
+        $null
+    }
+}
+
+#  - ident #
 function ident {
     $args
+}
+
+#  - is_domain #
+function is_domain {
+    if ($IsWindows) {
+        (Get-CimInstance -ClassName win32_computersystem).partofdomain
+    }
+    else {
+        $false
+    }
 }
 
 # - is_elevated #
@@ -9,7 +35,51 @@ function is_elevated {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
+# - second_ext #
+function second_ext($Name) {
+    Split-Path -Path (Split-Path -Path $Name -LeafBase) -Extension
+}
+
 ##
+# arc #
+function arc {
+    Param(
+        [Parameter(Mandatory, ParameterSetName='Compress')]
+        [Switch] $Compress,
+
+        [Parameter(Mandatory, ParameterSetName='Extract')]
+        [Switch] $Extract,
+
+        [Parameter(Mandatory, Position=0)]
+        [String] $Source,
+
+        [Parameter(Mandatory, ParameterSetName='Compress')]
+        [Parameter(ParameterSetName='Extract')]
+        [Parameter(Position=1)]
+        [String] $Destination = '.'
+    )
+
+    if ($Compress) {
+        if ((second_ext $Destination) -eq '.tar') {
+            $name   = Split-Path -Path $Source -Leaf
+            $parent = Split-Path -Path $Source -Parent
+
+            tar -caf (cygpath $Destination) -C $parent $name @args
+        }
+        else {
+            7z a -ssw $Destination (abspath -Path $Source) @args
+        }
+    }
+    else {
+        if ((second_ext $Source) -eq '.tar') {
+            tar -xaf (cygpath $Source) -C (cygpath $Destination) @args
+        }
+        else {
+            7z x $Source -o"$Destination" -y @args
+        }
+    }
+}
+
 # - choice #
 function choice($Prompt, $Answers) {
     do {
@@ -21,6 +91,22 @@ function choice($Prompt, $Answers) {
     until ($false)
 
     $selection
+}
+
+function color {
+    # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    $global:color = @{
+        # foreground  bright     background   bright
+        k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
+        r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
+        g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
+        y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
+        b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
+        m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
+        c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
+        w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
+        0="`e[m"                                             # reset
+    }
 }
 
 #  - ConvertTo-Ordered #
@@ -76,20 +162,15 @@ function groupby($object, $keyfunc='ident') {
 
 # - log #
 function log($Level, $Message) {
-    $loglevel   = @{error = 10;    warn = 20;       info = 30;      debug = 40}
-    $colorlevel = @{error = 'red'; warn = 'yellow'; info = 'white'; debug = 'blue'}
-    $prefix     = "[$($Level.ToUpper())] "
+    color
+    $loglevel   = @{error=10;           warn=20;           info=30;           debug=40}
+    $colorlevel = @{error=$color['bR']; warn=$color['bY']; info=$color['bW']; debug=$color['bB']}
 
     if (-not (Test-Path -Path variable:verbosity)) {
         $verbosity = 'warn'  # default level
     }
 
     if ($loglevel[$Level] -le $loglevel[$verbosity]) {
-        if ($colorlevel.ContainsKey($Level)) {
-            Write-Color -Text $prefix -Color $colorlevel[$Level] -NoNewLine
-            Write-Output -InputObject $Message
-        } else {
-            Write-Output -InputObject $prefix$Message
-        }
+        Write-Output -InputObject ("{0}[$($Level.ToUpper())]{1} $Message" -f $colorlevel[$Level], $color[0])
     }
 }
