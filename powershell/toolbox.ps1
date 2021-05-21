@@ -1,7 +1,7 @@
 ﻿#  - abspath #
 function abspath($Path) {
     # https://github.com/PowerShell/PowerShell/issues/10278
-    [System.IO.Path]::GetFullPath($Path, (Convert-Path -Path '.'))
+    [IO.Path]::GetFullPath($Path, (Convert-Path -Path '.'))
 }
 
 #  - get_proxy #
@@ -17,6 +17,11 @@ function get_proxy {
 #  - ident #
 function ident {
     $args
+}
+
+#  - is_pwshcore #
+function is_pwshcore {
+    $PSVersionTable.PSEdition -eq 'Core'
 }
 
 #  - is_domain #
@@ -95,17 +100,21 @@ function choice($Prompt, $Answers) {
 
 function color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    $global:color = @{
-        # foreground  bright     background   bright
-        k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
-        r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
-        g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
-        y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
-        b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
-        m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
-        c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
-        w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
-        0="`e[m"                                             # reset
+    if (is_pwshcore) {
+        $global:color = @{
+            # foreground  bright     background   bright
+            k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
+            r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
+            g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
+            y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
+            b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
+            m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
+            c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
+            w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
+            0="`e[m"                                             # reset
+        }
+    } else {
+        $global:color = @{}
     }
 }
 
@@ -162,15 +171,22 @@ function groupby($object, $keyfunc='ident') {
 
 # - log #
 function log($Level, $Message) {
-    color
-    $loglevel   = @{error=10;           warn=20;           info=30;           debug=40}
-    $colorlevel = @{error=$color['bR']; warn=$color['bY']; info=$color['bW']; debug=$color['bB']}
+    $loglevel   = @{error=10;    warn=20;       info=30;      debug=40}
+    # `[Enum]::GetValues([ConsoleColor])`
+    $colorlevel = @{error='red'; warn='yellow'; info='white'; debug='blue'}
+    $prefix     = "[$($Level.ToUpper())] "
 
     if (-not (Test-Path -Path variable:verbosity)) {
         $verbosity = 'warn'  # default level
     }
 
     if ($loglevel[$Level] -le $loglevel[$verbosity]) {
-        Write-Output -InputObject ("{0}[$($Level.ToUpper())]{1} $Message" -f $colorlevel[$Level], $color[0])
+        try {
+            Write-Host -Object $prefix -ForegroundColor $colorlevel[$Level] -NoNewline
+        }
+        catch [Management.Automation.ParameterBindingException] {
+            Write-Host -Object $prefix -NoNewline
+        }
+        Write-Host -Object $Message
     }
 }
