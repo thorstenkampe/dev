@@ -19,11 +19,6 @@ function ident {
     $args
 }
 
-#  - is_pwshcore #
-function is_pwshcore {
-    $PSVersionTable.PSEdition -eq 'Core'
-}
-
 #  - is_domain #
 function is_domain {
     if ($IsWindows) {
@@ -38,6 +33,11 @@ function is_domain {
 # https://ss64.com/ps/syntax-elevate.html
 function is_elevated {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
+}
+
+#  - is_pwshcore #
+function is_pwshcore {
+    $PSVersionTable.PSEdition -eq 'Core'
 }
 
 # - second_ext #
