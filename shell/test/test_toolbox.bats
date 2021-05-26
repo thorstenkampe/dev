@@ -14,6 +14,7 @@ function setup {
     source test.sh
     source toolbox.sh
     export LANGUAGE=en_US
+    export LC_ALL=POSIX
     config=test/test_ini.ini
     testdir=$(mktemp --directory)
 }
@@ -41,11 +42,28 @@ function teardown {
     assert_failure
 }
 
+@test is_online {
+    run is_online
+
+    assert_success
+    refute_output
+}
+
 @test is_tty {
     run is_tty
 
     assert_failure
     refute_output
+}
+
+@test send_mail {
+    email_address=noreply@thorstenkampe.de
+    msmtpd --port 60587 &
+
+    run send_mail -port 60587 -from $email_address -to $email_address
+    assert_success
+
+    kill $!
 }
 
 @test set_opt {
@@ -185,17 +203,6 @@ function teardown {
 
 @test 'parse_opts - no option' {
     parse_opts a:bc
-}
-
-#
-@test send_mail {
-    email_address=noreply@thorstenkampe.de
-    msmtpd --port 60587 &
-
-    run send_mail -port 60587 -from $email_address -to $email_address
-    assert_success
-
-    kill $!
 }
 
 #

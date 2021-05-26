@@ -9,12 +9,26 @@ function has_section {
     crudini --get "$@" &> /dev/null
 }
 
+function is_online {
+    if is_windows && [[ $(which ping) != /usr/bin/ping ]]; then
+        ping -n 3 8.8.8.8 -l 0 -w 1 &> /dev/null
+    else
+        ping -c 3 8.8.8.8 -i 0.2 -s 0 -W 1 &> /dev/null
+    fi
+}
+
 function is_tty {
     [[ -t 1 && -t 2 ]]
 }
 
 function is_windows {
     contains "$OSTYPE" cygwin msys
+}
+
+# https://github.com/muquit/mailsend-go
+# required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
+function send_mail {
+    mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
 # is option set?
@@ -98,6 +112,9 @@ function init {
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
     color
     export PS4="${color[C]}$ps4${color[0]} "
+    # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+    # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+    export LC_ALL=POSIX
 
     if is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
@@ -160,14 +177,6 @@ function parse_opts {
             opts[$opt]=${OPTARG-}
         fi
     done
-}
-
-# https://github.com/muquit/mailsend-go
-# required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
-function send_mail {
-    mailsend-go -smtp localhost -port 25    \
-                -from "$(whoami)@$HOSTNAME" \
-                "$@"
 }
 
 # * split arguments into arrays that evaluate to true and to false
