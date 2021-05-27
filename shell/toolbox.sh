@@ -10,10 +10,10 @@ function has_section {
 }
 
 function is_online {
-    if is_windows && [[ $(which ping) != /usr/bin/ping ]]; then
-        ping -n 3 8.8.8.8 -l 0 -w 1 &> /dev/null
+    if is_windows && [[ ! -x /usr/bin/ping ]]; then
+        ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
     else
-        ping -c 3 8.8.8.8 -i 0.2 -s 0 -W 1 &> /dev/null
+        ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
     fi
 }
 
