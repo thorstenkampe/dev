@@ -8,6 +8,47 @@ BeforeAll {
     }
 }
 
+# Clean-Path
+Describe 'Clean-Path' {
+    if ($IsWindows) {
+        It 'duplicate paths' {
+            $result = Clean-Path -Paths 'C:\;C:\'
+
+            Assert-Equal -Actual $result -Expected C:\
+        }
+
+        It 'unique paths' {
+            $result = Clean-Path -Paths 'C:\;C:\Windows'
+
+            Assert-Equal -Actual $result -Expected 'C:\;C:\Windows'
+        }
+
+        It 'non-existing path' {
+            $result = Clean-Path -Paths 'C:\does_not_exist'
+
+            Assert-Equal -Actual $result -Expected ''
+        }
+    } else {
+        It 'duplicate paths' {
+            $result = Clean-Path -Paths /bin:/bin
+
+            Assert-Equal -Actual $result -Expected /bin
+        }
+
+        It 'unique paths' {
+            $result = Clean-Path -Paths /bin:/etc
+
+            Assert-Equal -Actual $result -Expected /bin:/etc
+        }
+
+        It 'non-existing path' {
+            $result = Clean-Path -Paths /does_not_exist
+
+            Assert-Equal -Actual $result -Expected ''
+        }
+    }
+}
+
 # dmap
 Describe 'dmap' {
     BeforeEach {
@@ -56,24 +97,5 @@ Describe 'groupby' {
         $grouped['Int32'].Value  | Should -Be 1, 2, 3, 4, 5, 6, 7, 8
         $grouped['String'].Name  | Should -Be 9
         $grouped['String'].Value | Should -Be 'i'
-    }
-}
-
-# log
-Describe 'log' {
-    It 'info message' {
-        $verbosity = 'warn'
-        $result = log info 'test message'
-
-        Assert-Equal -Actual $result -Expected $null
-    }
-
-    It 'verbosity info message' {
-        $verbosity = 'info'
-        $result    = log info 'test message'
-        color
-        $expected  = '{0}[INFO]{1} test message' -f $color['bW'], $color[0]
-
-        Assert-Equal -Actual $result -Expected $expected
     }
 }

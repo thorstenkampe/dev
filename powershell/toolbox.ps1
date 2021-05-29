@@ -1,10 +1,10 @@
-﻿#  - abspath #
+﻿# - abspath #
 function abspath($Path) {
     # https://github.com/PowerShell/PowerShell/issues/10278
     [IO.Path]::GetFullPath($Path, (Convert-Path -Path '.'))
 }
 
-#  - get_proxy #
+# - get_proxy #
 function get_proxy {
     try {
         (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').ProxyServer
@@ -14,12 +14,12 @@ function get_proxy {
     }
 }
 
-#  - ident #
+# - ident #
 function ident {
     $args
 }
 
-#  - is_domain #
+# - is_domain #
 function is_domain {
     if ($IsWindows) {
         (Get-CimInstance -ClassName win32_computersystem).partofdomain
@@ -35,7 +35,7 @@ function is_elevated {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
-#  - is_pwshcore #
+# - is_pwshcore #
 function is_pwshcore {
     $PSVersionTable.PSEdition -eq 'Core'
 }
@@ -46,7 +46,7 @@ function second_ext($Name) {
 }
 
 ##
-# arc #
+# - arc #
 function arc {
     Param(
         [Parameter(Mandatory, ParameterSetName='Compress')]
@@ -98,6 +98,15 @@ function choice($Prompt, $Answers) {
     $selection
 }
 
+# - Clean-Path #
+function Clean-Path($paths) {
+    # Remove duplicate and non-existing paths from delimited path string
+    $paths = $paths -split [IO.Path]::PathSeparator
+    $paths = $paths | Select-Object -Unique | Where-Object {Test-Path $PSItem -PathType Container}
+    $paths -join [IO.Path]::PathSeparator
+}
+
+# - color #
 function color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     if (is_pwshcore) {
@@ -118,7 +127,7 @@ function color {
     }
 }
 
-#  - ConvertTo-Ordered #
+# - ConvertTo-Ordered #
 function ConvertTo-Ordered($Hash) {
     # Shallow copy of the original (see comment for dmap)
     $dict = [ordered]@{}
@@ -131,7 +140,7 @@ function ConvertTo-Ordered($Hash) {
     $dict
 }
 
-#  - dmap #
+# - dmap #
 function dmap($hash, $Keyfunc) {
     # Modifies the original. Cloning a hash is shallow and not supported for ordered
     # dictionaries. Copying with "(foreach key {clone[key] = orig[key]})" is also
@@ -141,7 +150,7 @@ function dmap($hash, $Keyfunc) {
     }
 }
 
-#  - dupdate #
+# - dupdate #
 function dupdate($hash1, $hash2) {
     if ($hash2) {
         foreach ($key in $hash2.Keys) {
@@ -161,7 +170,7 @@ function exec($Cmd) {
     }
 }
 
-#  - groupby #
+# - groupby #
 # https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
 function groupby($object, $keyfunc='ident') {
     # * `groupby $array {param($x) $x.gettype().Name}`
