@@ -102,7 +102,7 @@ function choice($Prompt, $Answers) {
 function Clean-Path($paths) {
     # Remove duplicate and non-existing paths from delimited path string
     $paths = $paths -split [IO.Path]::PathSeparator
-    $paths = $paths | Select-Object -Unique | Where-Object {Test-Path $PSItem -PathType Container}
+    $paths = $paths | Select-Object -Unique | Where-Object {Test-Path -Path $PSItem -PathType Container}
     $paths -join [IO.Path]::PathSeparator
 }
 
