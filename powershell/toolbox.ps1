@@ -40,6 +40,11 @@ function is_pwshcore {
     $PSVersionTable.PSEdition -eq 'Core'
 }
 
+# - reset #
+function reset {
+    [Console]::ResetColor()
+}
+
 # - second_ext #
 function second_ext($Name) {
     Split-Path -Path (Split-Path -Path $Name -LeafBase) -Extension
