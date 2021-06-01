@@ -24,112 +24,112 @@ function teardown {
 }
 
 ##
-@test 'has_section - existing section' {
-    has_section $config connection
+@test 'tb_has_section - existing section' {
+    tb_has_section $config connection
 }
 
-@test 'has_section - not existing section' {
-    run has_section $config no_connection
+@test 'tb_has_section - not existing section' {
+    run tb_has_section $config no_connection
     assert_failure
 }
 
-@test 'has_section - existing key' {
-    has_section $config connection user
+@test 'tb_has_section - existing key' {
+    tb_has_section $config connection user
 }
 
-@test 'has_section - not existing key' {
-    run has_section $config connection no_user
+@test 'tb_has_section - not existing key' {
+    run tb_has_section $config connection no_user
     assert_failure
 }
 
-@test is_online {
-    run is_online
+@test tb_is_online {
+    run tb_is_online
 
     assert_success
     refute_output
 }
 
-@test is_tty {
-    run is_tty
+@test tb_is_tty {
+    run tb_is_tty
 
     assert_failure
     refute_output
 }
 
-@test send_mail {
+@test tb_send_mail {
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
 
-    run send_mail -port 60587 -from $email_address -to $email_address
+    run tb_send_mail -port 60587 -from $email_address -to $email_address
     assert_success
 
     kill $!
 }
 
-@test set_opt {
-    parse_opts a:bc -a 1 -b arg1
+@test tb_set_opt {
+    tb_parse_opts a:bc -a 1 -b arg1
 
-    set_opt a
-    set_opt b
-    run set_opt c
+    tb_set_opt a
+    tb_set_opt b
+    run tb_set_opt c
     assert_failure
 }
 
-@test splitby {
-    splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
+@test tb_splitby {
+    tb_splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${splitby[*]}" '1 2 3 4 5 6 7 8 9'
 }
 
-@test timestamp {
-    run timestamp
+@test tb_timestamp {
+    run tb_timestamp
 
     assert_success
     assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
 }
 
 ##
-@test amap {
-    amap 'expr $arg + 2' array
+@test tb_amap {
+    tb_amap 'expr $arg + 2' array
     assert_equal "${array[*]}" '3 4 5 6 7 8 9 10 11'
 }
 
 #
-@test 'arc - zip' {
-    arc -c toolbox.sh "$testdir/toolbox.sh.zip"
-    arc -x "$testdir/toolbox.sh.zip" "$testdir"
+@test 'tb_arc - zip' {
+    tb_arc -c toolbox.sh "$testdir/toolbox.sh.zip"
+    tb_arc -x "$testdir/toolbox.sh.zip" "$testdir"
 
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
-@test 'arc - gzip' {
-    arc -c toolbox.sh "$testdir/toolbox.sh.tar.gz"
-    arc -x "$testdir/toolbox.sh.tar.gz" "$testdir"
+@test 'tb_arc - gzip' {
+    tb_arc -c toolbox.sh "$testdir/toolbox.sh.tar.gz"
+    tb_arc -x "$testdir/toolbox.sh.tar.gz" "$testdir"
 
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
 #
-@test contains {
-    contains 2 1 2 3
+@test tb_contains {
+    tb_contains 2 1 2 3
 }
 
-@test 'contains - not' {
-    run contains 22 1 2 3
+@test 'tb_contains - not' {
+    run tb_contains 22 1 2 3
 
     assert_failure
 }
 
 #
-@test 'init - find' {
-    init
+@test 'tb_init - find' {
+    tb_init
     run which find
 
     assert_success
     assert_output /usr/bin/find
 }
 
-@test 'init - ps' {
-    init
+@test 'tb_init - ps' {
+    tb_init
     run ps --pid $$ --format comm=
 
     assert_success
@@ -137,95 +137,95 @@ function teardown {
 }
 
 #
-@test joinby {
-    run joinby ', ' "${array[@]}"
+@test tb_joinby {
+    run tb_joinby ', ' "${array[@]}"
 
     assert_success
     assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
 }
 
-@test 'joinby - single element' {
-    run joinby ', ' '0 9'
+@test 'tb_joinby - single element' {
+    run tb_joinby ', ' '0 9'
 
     assert_success
     assert_output '0 9'
 }
 
-@test 'joinby - no element' {
-    run joinby ', '
+@test 'tb_joinby - no element' {
+    run tb_joinby ', '
 
     assert_success
     refute_output
 }
 
 #
-@test 'log - info message' {
-    run log info 'test message'
+@test 'tb_log - info message' {
+    run tb_log info 'test message'
 
     assert_success
     refute_output
 }
 
 #
-@test log_to_file {
-    init
-    run log_to_file "$testdir/test.log" true
+@test tb_log_to_file {
+    tb_init
+    run tb_log_to_file "$testdir/test.log" true
 
     assert_success
     assert_file_exist "$testdir/test.log"
 }
 
 #
-@test 'parse_opts - valid options' {
-    parse_opts a:bc -a 1 -b arg1
+@test 'tb_parse_opts - valid options' {
+    tb_parse_opts a:bc -a 1 -b arg1
 }
 
-@test 'parse_opts - option arguments' {
-    parse_opts a:bc -a 1 -b arg1
+@test 'tb_parse_opts - option arguments' {
+    tb_parse_opts a:bc -a 1 -b arg1
 
     assert_equal "${opts[a]}" 1
     assert_equal "${opts[b]}" ''
 }
 
-@test 'parse_opts - unknown option' {
-    run parse_opts a:bc -x
+@test 'tb_parse_opts - unknown option' {
+    run tb_parse_opts a:bc -x
 
     assert_failure
     assert_output --partial ': illegal option -- x'
 }
 
-@test 'parse_opts - option requires argument' {
-    run parse_opts a:bc -a
+@test 'tb_parse_opts - option requires argument' {
+    run tb_parse_opts a:bc -a
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
 }
 
-@test 'parse_opts - no option' {
-    parse_opts a:bc
+@test 'tb_parse_opts - no option' {
+    tb_parse_opts a:bc
 }
 
 #
-@test 'test_args - no arguments' {
+@test 'tb_test_args - no arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
-    test_args "$test"
+    tb_test_args "$test"
 
     assert_equal "${#true[@]}" 0
     assert_equal "${#false[@]}" 0
 }
 
-@test 'test_args - two true arguments' {
+@test 'tb_test_args - two true arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
-    test_args "$test" mssql oracle
+    tb_test_args "$test" mssql oracle
 
     assert_equal "${true[0]}" 'mssql'
     assert_equal "${true[1]}" 'oracle'
     assert_equal "${#false[@]}" 0
 }
 
-@test 'test_args - one true, two false arguments' {
+@test 'tb_test_args - one true, two false arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
-    test_args "$test" mssql oracleX oracleY
+    tb_test_args "$test" mssql oracleX oracleY
 
     assert_equal "${true[0]}" 'mssql'
     assert_equal "${false[0]}" 'oracleX'
@@ -233,26 +233,26 @@ function teardown {
 }
 
 #
-@test 'test_file - older than' {
+@test 'tb_test_file - older than' {
     tmp_file=$(mktemp)
     touch --date '1 hour ago' "$tmp_file"
 
     # test if file is older than sixty minutes
-    test_file "$tmp_file" -mmin +60
+    tb_test_file "$tmp_file" -mmin +60
     rm "$tmp_file"
 }
 
-@test 'test_file - not existing' {
+@test 'tb_test_file - not existing' {
     tmp_file=$(mktemp --dry-run)
-    run test_file "$tmp_file"
+    run tb_test_file "$tmp_file"
 
     assert_failure
     assert_file_not_exist "$tmp_file"
 }
 
 # ini #
-@test section_to_array {
-    section_to_array $config connection logging
+@test tb_section_to_array {
+    tb_section_to_array $config connection logging
 
     assert_equal "${connection[user]}" test_user
     assert_equal "${connection[password]}" test_password
@@ -260,8 +260,8 @@ function teardown {
     assert_equal "${logging[level]}" debug
 }
 
-@test 'section_to_array - ordered' {
-    section_to_array -o $config connection logging
+@test 'tb_section_to_array - ordered' {
+    tb_section_to_array -o $config connection logging
 
     assert_equal "${connection[0]}" test_user
     assert_equal "${connection[1]}" test_password
@@ -269,8 +269,8 @@ function teardown {
     assert_equal "${logging[1]}" debug
 }
 
-@test section_to_var {
-    section_to_var $config connection logging
+@test tb_section_to_var {
+    tb_section_to_var $config connection logging
 
     assert_equal "$user" test_user
     assert_equal "$password" test_password
