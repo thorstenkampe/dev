@@ -1,4 +1,5 @@
-﻿Import-Module -Name PesterMatchArray
+﻿# "now archived as the functionality exists directly in Pester" (https://pester.dev/docs/assertions/assertions#be)
+Import-Module -Name PesterMatchArray
 Import-Module -Name PesterMatchHashtable
 
 Describe 'MatchArrayOrdered examples' {

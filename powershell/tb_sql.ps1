@@ -31,7 +31,7 @@ function Engine($dsn) {
         $params.ora = @{DBAPrivilege='sysdba'}
     }
 
-    dupdate $dsn $params[(Get-ConnectionPrefix $dsn)]
+    tb_dupdate $dsn $params[(Get-ConnectionPrefix $dsn)]
 }
 
 #  - Test-DbConnection #
