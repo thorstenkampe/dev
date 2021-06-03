@@ -107,7 +107,7 @@ function tb_init {
     local ps4
 
     shopt -os errexit errtrace nounset pipefail
-    shopt -s dotglob failglob inherit_errexit 2> /dev/null || true
+    shopt -s dotglob inherit_errexit 2> /dev/null || true
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
     tb_color
