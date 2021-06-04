@@ -79,8 +79,21 @@ Describe 'tb_dupdate' {
     }
 }
 
+# tb_exec
+Describe 'tb_exec' {
+    It 'no error' {
+        tb_exec -Cmd true
+    }
+
+    It 'error' {
+        $exception = 'Command terminated with exit code 1'
+        {tb_exec -Cmd false} | Should -Throw -ExpectedMessage $exception
+    }
+}
+
 # tb_groupby
-if (tb_is_pwshcore) {
+# PowerShell Desktop would need `-AsString` for `Group-Object` in `tb_groupby`
+if (tb_is_pscore) {
     Describe 'tb_groupby' {
         BeforeEach {
             . $PSScriptRoot/../test.ps1
