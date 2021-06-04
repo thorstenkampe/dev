@@ -40,8 +40,8 @@ function tb_is_elevated {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
-# - tb_is_pwshcore #
-function tb_is_pwshcore {
+# - tb_is_pscore #
+function tb_is_pscore {
     $PSVersionTable.PSEdition -eq 'Core'
 }
 
