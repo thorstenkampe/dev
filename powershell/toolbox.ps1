@@ -49,7 +49,7 @@ function tb_is_pscore {
 # `$IsWindows` does not exist on PowerShell Desktop
 function tb_is_windows {
     try {
-        $IsWindows -or -not (tb_is_pwshcore)
+        $IsWindows -or -not (tb_is_pscore)
     }
     catch [Management.Automation.RuntimeException] {
         $true
@@ -130,7 +130,7 @@ function tb_Clean-Path($paths) {
 # - tb_color #
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    if (tb_is_pwshcore) {
+    if (tb_is_pscore) {
         $global:color = @{
             # foreground  bright     background   bright
             k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
