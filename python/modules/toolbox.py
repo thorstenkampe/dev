@@ -62,7 +62,7 @@ def is_localdb(dsn):
     localdb    = r'(localdb)\mssqllocaldb'
     parsed_url = urllib.parse.urlsplit(dsn)
 
-    if parsed_url.scheme == 'mssql':
+    if   parsed_url.scheme == 'mssql':
         return parsed_url.hostname == localdb
 
     elif not parsed_url.scheme:
