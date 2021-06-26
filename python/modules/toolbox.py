@@ -66,7 +66,7 @@ def is_localdb(dsn):
         return parsed_url.hostname == localdb
 
     elif not parsed_url.scheme:
-        return parsed_url.path.lower() == localdb
+        return localdb in parsed_url.path.lower()
 
     else:
         return False
