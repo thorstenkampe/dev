@@ -1,4 +1,4 @@
-import importlib.metadata, pathlib, re, socket, urllib
+import importlib.metadata, pathlib, re, socket, sys, urllib
 import outdated, pycompat, qprompt, tqdm
 import tb_sql
 if pycompat.system.is_windows:
@@ -43,11 +43,15 @@ def latest_version(pkg):
 def ident(x):
     return x
 
+# https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
+def is_pyinstaller():
+    return getattr(sys, 'frozen', False)
+
 def remove_ansi(text):
     return re.sub(r'\x1b\[[\d;]+m', '', text)
 
 def dmap(dict_, keyfunc):
-    '''apply function to values of dictionary'''
+    '''apply function to value of dictionary'''
     return {key: keyfunc(dict_[key]) for key in dict_}
 
 def cast_config(config):  # NOSONAR
