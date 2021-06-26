@@ -26,6 +26,16 @@ class Test_pkg_version:  # NOSONAR
 def test_latest_version():
     assert latest_version('pip-install-test') == '0.5'
 
+class Test_is_localdb:  # NOSONAR
+    def test_mslocal(self):
+        assert is_localdb(r'mssql://(LocalDB)\MSSQLLocalDB')
+
+    def test_mslocal_no_scheme(self):
+        assert is_localdb(r'(LocalDB)\MSSQLLocalDB')
+
+    def test_mysql(self):
+        assert not is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
+
 def test_remove_ansi():
     color_string = "\x1b[01;31mCRITICAL\x1b[0m: can't find file type\x1b[0m"
     assert remove_ansi(color_string) == "CRITICAL: can't find file type"

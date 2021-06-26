@@ -1,12 +1,27 @@
 import importlib.metadata, pathlib, re, socket, sys, urllib
 import outdated, pycompat, qprompt, tqdm
-import tb_sql
 if pycompat.system.is_windows:
     import pythoncom, pywintypes, win32com.client
     pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
 from rich            import console
+
+defaults = {
+    'port':    {
+        'mssql':      1433,
+        'mysql':      3306,
+        'oracle':     1521,
+        'postgresql': 5432
+    },
+
+    'db_user': {
+        'mssql':      'sa',
+        'mysql':      'root',
+        'oracle':     'sys',
+        'postgresql': 'postgres'
+    }
+}
 
 def stringify(obj):
     if type(obj) == float:
@@ -42,6 +57,19 @@ def latest_version(pkg):
 
 def ident(x):
     return x
+
+def is_localdb(dsn):
+    localdb    = r'(localdb)\mssqllocaldb'
+    parsed_url = urllib.parse.urlsplit(dsn)
+
+    if parsed_url.scheme == 'mssql':
+        return parsed_url.hostname == localdb
+
+    elif not parsed_url.scheme:
+        return parsed_url.path.lower() == localdb
+
+    else:
+        return False
 
 # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
 def is_pyinstaller():
@@ -87,20 +115,19 @@ def typeof(obj):
 def host_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
-    default_port = {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432}
     urlp = urllib.parse.urlsplit(url)
 
     if not urlp.scheme:
         raise ValueError('no URL scheme given')
 
-    if tb_sql.islocaldb(url):
+    if is_localdb(url):
         return True
 
     if urlp.port:
         port = urlp.port
     else:  # no port from parsed URL
         try:
-            port = default_port[urlp.scheme.split('+')[0]]
+            port = defaults['port'][urlp.scheme.split('+')[0]]
         except KeyError:
             msg = f'no port given and can\'t find default port for scheme "{urlp.scheme}"'
             raise ValueError(msg) from None

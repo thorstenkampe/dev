@@ -1,8 +1,6 @@
 import urllib
 import pyodbc, sqlalchemy as sa
-
-def islocaldb(dsn):
-    return urllib.parse.urlsplit(dsn).hostname == r'(localdb)\mssqllocaldb'
+import toolbox as tb
 
 def databases(engine):
     query = {
@@ -50,7 +48,7 @@ def engine(dsn):
         # https://github.com/sqlalchemy/sqlalchemy/issues/5440
         pyodbc.pooling = False
 
-        if islocaldb(dsn):
+        if tb.is_localdb(dsn):
             query_params['Encrypt'] = 'no'
 
     elif scheme == 'mysql':
