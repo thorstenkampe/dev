@@ -1,8 +1,9 @@
 import importlib.metadata, pathlib, re, socket, sys, urllib
-import outdated, pycompat, qprompt, tqdm
+import outdated, pycompat, pyodbc, qprompt, sqlalchemy as sa, tqdm
 if pycompat.system.is_windows:
     import pythoncom, pywintypes, win32com.client
     pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
+from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
 from rich            import console
@@ -176,3 +177,140 @@ def spinner(func):
     with con.status(status='', spinner='bouncingBall', spinner_style='royal_blue1',
                     speed=0.4):
         func()
+
+# DATA #
+def dfsplit(df):
+    return df.to_dict(orient='split')
+
+def shape(seq):
+    dimension = tuple()
+    # MappingView is any of dict.items(), keys(), values()
+    while typeof(seq) in (MappingView, list, tuple):
+        dimension += (len(seq), )
+        try:
+            seq = list(seq)[0]
+        except IndexError:  # sequence is empty
+            break
+    return dimension
+
+def sort_index(dict_, keyfunc=ident):
+    '''sort dictionary by index (dictionary key)'''
+    return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
+
+def sort_value(dict_, keyfunc=ident):
+    '''sort dictionary by value'''
+    return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
+
+def groupby(iter_, keyfunc=ident, axis=None):
+    '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
+    type_    = typeof(iter_)
+    eq_class = defaultdict(type_)
+
+    if axis and type_ != DataFrame:
+        raise TypeError('axis specified but iterable is not dataframe')
+
+    if axis not in [None, 'rows', 'columns']:
+        raise ValueError("axis must be 'rows' or 'columns'")
+
+    if   type_ == dict:
+        iter_ = iter_.items()
+
+        def grouper(proj, elem):
+            eq_class[proj][elem[0]] = elem[1]
+
+    elif type_ == list:
+        def grouper(proj, elem):
+            eq_class[proj].append(elem)
+
+    elif type_ == set:
+        def grouper(proj, elem):
+            eq_class[proj].add(elem)
+
+    elif type_ == tuple:
+        def grouper(proj, elem):
+            eq_class[proj] += (elem,)
+
+    elif type_ == Series:
+        return iter_.groupby(iter_.apply(keyfunc), axis='index', sort=False)
+
+    # https://realpython.com/pandas-groupby/
+    elif type_ == DataFrame:
+        if axis == 'columns':
+            iter_ = iter_.transpose()  # = apply by axis=rows, groupby by axis=columns
+        return iter_.groupby(iter_.apply(keyfunc, axis='columns'), axis='index', sort=False)
+
+    else:
+        msg = ('Type not supported for iterable. Use dictionary, list, set, tuple,'
+               ' series, or dataframe.')
+        raise TypeError(msg)
+
+    for proj, elem in zip(map(keyfunc, iter_), iter_):
+        grouper(proj, elem)
+
+    return dict(eq_class)
+
+# SQL #
+def databases(engine):
+    query = {
+        'mssql':      'select name from sys.databases',
+        'mysql':      'show databases',
+        'oracle':     'select pdb_name from dba_pdbs',
+        'postgresql': 'select datname from pg_database'
+    }
+
+    with engine.connect() as conn:
+        result = conn.execute(sa.text(query[engine.name]))
+        return [db[0] for db in result]
+
+def tables(engine, schema=None):
+    return sa.inspect(engine).get_table_names(schema)
+
+def engine(dsn):
+    '''create SQLAlchemy engine with sane parameters'''
+
+    # dsn = scheme://netloc/path
+    urlp = urllib.parse.urlsplit(dsn)
+    scheme, netloc, path, _, _ = urlp
+
+    query_params = {
+        # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
+        'mssql': {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes', 'TrustServerCertificate': 'yes'},
+
+        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#ensuring-the-correct-client-encoding
+        'oracle': {'service_name': path[1:], 'encoding': 'UTF-8', 'nencoding': 'UTF-8'},
+    }
+
+    engine_params = {
+        # only necessary for interactive use (e.g. IPython) to prevent open sessions
+        'default': {'poolclass': sa.pool.NullPool, 'future': True},
+
+        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#max-identifier-lengths
+        'oracle': {'exclude_tablespaces': None, 'max_identifier_length': 30}
+    }
+
+    query_params     = query_params.get(scheme, {})
+    my_engine_params = engine_params['default']
+    my_engine_params.update(engine_params.get(scheme, {}))
+
+    if   scheme == 'mssql':
+        # https://github.com/sqlalchemy/sqlalchemy/issues/5440
+        pyodbc.pooling = False
+
+        if is_localdb(dsn):
+            query_params['Encrypt'] = 'no'
+
+    elif scheme == 'mysql':
+        # change default driver for MySQL from `mysqlclient` to MySQL Connector/Python
+        # https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html
+        dsn = dsn.replace('mysql://', 'mysql+mysqlconnector://')
+
+    elif scheme == 'oracle':
+        # remove database (path) because we'll pass it as `service_name` query parameter
+        dsn = f'oracle://{netloc}/'
+
+        if urlp.username == 'sys':
+            query_params['mode'] = 'sysdba'
+
+    dsn += '?' + '&'.join(f'{key}={value}' for key, value in query_params.items())
+
+    return sa.create_engine(dsn, **my_engine_params)

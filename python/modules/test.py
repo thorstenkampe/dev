@@ -1,8 +1,8 @@
 # pylint: disable = redefined-builtin
-import toolbox as tb, tb_data
+import toolbox as tb
 from configparser import ConfigParser
 from pandas import DataFrame, Series
-from tb_sql import engine
+from toolbox import engine
 
 # pytest helpers
 def even(integer):
@@ -55,7 +55,7 @@ df = DataFrame(
 df.index.name   = 'index'
 df.columns.name = 'cols'
 
-group = tb_data.groupby(df, keyfunc=lambda x: even(x['e']))
+group = tb.groupby(df, keyfunc=lambda x: even(x['e']))
 
 class dsn:  # pylint: disable = too-few-public-methods
     mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook')
