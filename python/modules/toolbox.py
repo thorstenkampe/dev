@@ -157,15 +157,6 @@ def progress(iter_, func):
 
     pbar.close()
 
-def select(selections, title):
-    '''
-    >>> selections = ['MSSQL', 'MySQL', 'Oracle', 'PostgreSQL', 'SQLite']
-    >>> select(selections, 'Select database [1-5]')
-    '''
-
-    menu = qprompt.enum_menu(strs=selections, header=title, msg='')
-    return int(menu.show()) - 1
-
 def spinner(func):
     '''
     >>> import time
