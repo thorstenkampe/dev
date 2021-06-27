@@ -137,7 +137,7 @@ def test_sort_value():
     result = OrderedDict([('a', 1), ('c', 3), ('e', 5), ('g', 7), (9, 9), ('b', 2), ('d', 4), ('f', 6), ('h', 8)])
     assert sort_value(dict_, keyfunc=even) == result
 
-# SQL #
+# SQLALCHEMY #
 class Test_engine:  # NOSONAR
     def test_mslocal(self):
         result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'

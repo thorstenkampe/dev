@@ -9,28 +9,10 @@ from pandas          import DataFrame, Series
 from rich            import console
 
 defaults = {
-    'port':    {
-        'mssql':      1433,
-        'mysql':      3306,
-        'oracle':     1521,
-        'postgresql': 5432
-    },
-
-    'db_user': {
-        'mssql':      'sa',
-        'mysql':      'root',
-        'oracle':     'sys',
-        'postgresql': 'postgres'
-    }
+    'port':    {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432},
+    'db_user': {'mssql': 'sa', 'mysql': 'root', 'oracle': 'sys', 'postgresql': 'postgres'}
 }
 
-def stringify(obj):
-    if type(obj) == float:
-        return f'{obj:.1f}'
-    else:
-        return str(obj)
-
-#
 def file_version(file):
     if pycompat.system.is_windows:
         # * http://timgolden.me.uk/python/win32_how_do_i/get_dll_version.html
@@ -237,22 +219,7 @@ def groupby(iter_, keyfunc=ident, axis=None):
 
     return dict(eq_class)
 
-# SQL #
-def databases(engine):
-    query = {
-        'mssql':      'select name from sys.databases',
-        'mysql':      'show databases',
-        'oracle':     'select pdb_name from dba_pdbs',
-        'postgresql': 'select datname from pg_database'
-    }
-
-    with engine.connect() as conn:
-        result = conn.execute(sa.text(query[engine.name]))
-        return [db[0] for db in result]
-
-def tables(engine, schema=None):
-    return sa.inspect(engine).get_table_names(schema)
-
+# SQLALCHEMY #
 def engine(dsn):
     '''create SQLAlchemy engine with sane parameters'''
 
