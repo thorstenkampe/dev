@@ -227,32 +227,19 @@ def engine(dsn):
     urlp = urllib.parse.urlsplit(dsn)
     scheme, netloc, path, _, _ = urlp
 
-    query_params = {
-        # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
-        'mssql': {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes', 'TrustServerCertificate': 'yes'},
-
-        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#ensuring-the-correct-client-encoding
-        'oracle': {'service_name': path[1:], 'encoding': 'UTF-8', 'nencoding': 'UTF-8'},
-    }
-
-    engine_params = {
-        # only necessary for interactive use (e.g. IPython) to prevent open sessions
-        'default': {'poolclass': sa.pool.NullPool, 'future': True},
-
-        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#max-identifier-lengths
-        'oracle': {'exclude_tablespaces': None, 'max_identifier_length': 30}
-    }
-
-    query_params     = query_params.get(scheme, {})
-    my_engine_params = engine_params['default']
-    my_engine_params.update(engine_params.get(scheme, {}))
+    # only necessary for interactive use (e.g. IPython) to prevent open sessions
+    engine_params = {'poolclass': sa.pool.NullPool, 'future': True}
+    query_params  = {}
 
     if   scheme == 'mssql':
-        # https://github.com/sqlalchemy/sqlalchemy/issues/5440
-        pyodbc.pooling = False
+        # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
+        query_params = {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes', 'TrustServerCertificate': 'yes'}
 
         if is_localdb(dsn):
             query_params['Encrypt'] = 'no'
+
+        # https://github.com/sqlalchemy/sqlalchemy/issues/5440
+        pyodbc.pooling = False
 
     elif scheme == 'mysql':
         # change default driver for MySQL from `mysqlclient` to MySQL Connector/Python
@@ -260,12 +247,18 @@ def engine(dsn):
         dsn = dsn.replace('mysql://', 'mysql+mysqlconnector://')
 
     elif scheme == 'oracle':
-        # remove database (path) because we'll pass it as `service_name` query parameter
-        dsn = f'oracle://{netloc}/'
+        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#max-identifier-lengths
+        engine_params.update({'exclude_tablespaces': None, 'max_identifier_length': 30})
+
+        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#ensuring-the-correct-client-encoding
+        query_params = {'service_name': path[1:], 'encoding': 'UTF-8', 'nencoding': 'UTF-8'}
 
         if urlp.username == 'sys':
             query_params['mode'] = 'sysdba'
 
+        # remove database (path) because we'll pass it as `service_name` query parameter
+        dsn = f'oracle://{netloc}/'
+
     dsn += '?' + '&'.join(f'{key}={value}' for key, value in query_params.items())
 
-    return sa.create_engine(dsn, **my_engine_params)
+    return sa.create_engine(dsn, **engine_params)
