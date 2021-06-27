@@ -170,9 +170,6 @@ def spinner(func):
         func()
 
 # DATA #
-def dfsplit(df):
-    return df.to_dict(orient='split')
-
 def shape(seq):
     dimension = tuple()
     # MappingView is any of dict.items(), keys(), values()
