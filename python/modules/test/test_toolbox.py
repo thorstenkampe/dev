@@ -39,10 +39,6 @@ class Test_is_localdb:  # NOSONAR
     def test_mysql(self):
         assert not is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
 
-def test_remove_ansi():
-    color_string = "\x1b[01;31mCRITICAL\x1b[0m: can't find file type\x1b[0m"
-    assert remove_ansi(color_string) == "CRITICAL: can't find file type"
-
 def test_dmap():
     result = {'a': False, 'b': True, 'c': False, 'd': True, 'e': False, 'f': True, 'g': False, 'h': True, 9: False}
     assert dmap(dict_, keyfunc=even) == result

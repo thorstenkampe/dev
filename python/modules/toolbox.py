@@ -1,5 +1,5 @@
 import importlib.metadata, pathlib, re, socket, sys, urllib
-import outdated, pycompat, pyodbc, qprompt, sqlalchemy as sa, tqdm
+import outdated, pycompat, pyodbc, sqlalchemy as sa, tqdm
 if pycompat.system.is_windows:
     import pythoncom, pywintypes, win32com.client
     pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
@@ -57,9 +57,6 @@ def is_localdb(dsn):
 # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
 def is_pyinstaller():
     return getattr(sys, 'frozen', False)
-
-def remove_ansi(text):
-    return re.sub(r'\x1b\[[\d;]+m', '', text)
 
 def dmap(dict_, keyfunc):
     '''apply function to value of dictionary'''
@@ -228,6 +225,7 @@ def engine(dsn):
     scheme, netloc, path, _, _ = urlp
 
     # only necessary for interactive use (e.g. IPython) to prevent open sessions
+    # noinspection PyUnresolvedReferences
     engine_params = {'poolclass': sa.pool.NullPool, 'future': True}
     query_params  = {}
 
@@ -247,10 +245,10 @@ def engine(dsn):
         dsn = dsn.replace('mysql://', 'mysql+mysqlconnector://')
 
     elif scheme == 'oracle':
-        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#max-identifier-lengths
+        # https://docs.sqlalchemy.org/en/14/dialects/oracle.html#max-identifier-lengths
         engine_params.update({'exclude_tablespaces': None, 'max_identifier_length': 30})
 
-        # https://docs.sqlalchemy.org/en/13/dialects/oracle.html#ensuring-the-correct-client-encoding
+        # https://docs.sqlalchemy.org/en/14/dialects/oracle.html#ensuring-the-correct-client-encoding
         query_params = {'service_name': path[1:], 'encoding': 'UTF-8', 'nencoding': 'UTF-8'}
 
         if urlp.username == 'sys':
