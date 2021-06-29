@@ -13,30 +13,12 @@ defaults = {
     'db_user': {'mssql': 'sa', 'mysql': 'root', 'oracle': 'sys', 'postgresql': 'postgres'}
 }
 
-def file_version(file):
-    if pycompat.system.is_windows:
-        # * http://timgolden.me.uk/python/win32_how_do_i/get_dll_version.html
-        # * https://github.com/mhammond/pywin32/blob/d64fac8d7bda2cb1d81e2c9366daf99e802e327f/win32/Demos/getfilever.py
-        # * https://stackoverflow.com/questions/580924/how-to-access-a-files-properties-on-windows
-        try:
-            return win32com.client.Dispatch('Scripting.FileSystemObject').GetFileVersion(file)
-        except pywintypes.com_error:
-            pass
-    else:
-        try:
-            return '.'.join(re.findall(r'\d+\.\d+', pathlib.Path(file).name))
-        except IndexError:
-            pass
-
 def pkg_version(pkg):
     '''return the installed version of package or None if not installed'''
     try:
         return importlib.metadata.version(pkg)
     except importlib.metadata.PackageNotFoundError:
         return None
-
-def latest_version(pkg):
-    return outdated.check_outdated(pkg, '')[1]
 
 def ident(x):
     return x

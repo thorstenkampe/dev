@@ -11,23 +11,12 @@ from test        import (
 )
 from toolbox     import *  # NOSONAR
 
-def test_file_version():
-    winfile   = r'\scoop\apps\miniconda3\current\envs\main\python.exe'
-    if pycompat.system.is_windows:
-        match = r'3\.\d{1,2}\.\d{3,4}\.\d{4}'  # 3.9.150.1013
-        assert re.fullmatch(match, file_version(winfile))
-    else:
-        assert file_version('/libpython3.8.so.1.0') == '3.8.1.0'
-
 class Test_pkg_version:  # NOSONAR
     def test_installed(self):
         assert pkg_version('pip') == pip.__version__
 
     def test_not_installed(self):
         assert pkg_version('DoesNotExist') is None
-
-def test_latest_version():
-    assert latest_version('pip-install-test') == '0.5'
 
 class Test_is_localdb:  # NOSONAR
     def test_mslocal(self):
