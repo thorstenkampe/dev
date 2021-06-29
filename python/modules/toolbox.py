@@ -1,8 +1,5 @@
-import importlib.metadata, pathlib, re, socket, sys, urllib
-import outdated, pycompat, pyodbc, sqlalchemy as sa, tqdm
-if pycompat.system.is_windows:
-    import pythoncom, pywintypes, win32com.client
-    pythoncom.CoInitialize()  # "com_error: CoInitialize has not been called."
+import importlib.metadata, socket, sys, urllib
+import pyodbc, sqlalchemy as sa, tqdm
 from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
