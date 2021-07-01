@@ -128,17 +128,6 @@ def spinner(func):
         func()
 
 # DATA #
-def shape(seq):
-    dimension = tuple()
-    # MappingView is any of dict.items(), keys(), values()
-    while typeof(seq) in (MappingView, list, tuple):
-        dimension += (len(seq), )
-        try:
-            seq = list(seq)[0]
-        except IndexError:  # sequence is empty
-            break
-    return dimension
-
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
     return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
