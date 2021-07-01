@@ -2,7 +2,7 @@
 
 # shellcheck disable=SC2154
 source "$(/usr/bin/dirname "$0")/toolbox.sh"
-init
+tb_init
 
 _params=( "$@" )
 scriptname=$(basename "$0")
@@ -10,23 +10,23 @@ scriptname=$(basename "$0")
 # MAIN CODE STARTS HERE #
 
 # shellcheck disable=SC2016
-test_args 'which $arg' mailsend-go
+tb_test_args 'which $arg' mailsend-go
 
 if (( ${#false[@]} )); then
-    log warn "can't find dependencies: ${false[*]}"
+    tb_log warn "can't find dependencies: ${false[*]}"
 fi
 
 function error_handler {
-    log error "command \"$1\" in $2" || true
+    tb_log error "command \"$1\" in $2" || true
     #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
 trap 'error_handler "$BASH_COMMAND" "$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO"' err
 
-parse_opts hl:d "$@"
+tb_parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-if set_opt h; then
+if tb_set_opt h; then
     echo "Usage: $scriptname [-l <logfile>]"
     echo
     echo Options:
@@ -36,11 +36,11 @@ if set_opt h; then
     exit
 fi
 
-if set_opt l; then
-    log_to_file "${opts[l]}" bash "$0" "${_params[@]}"
+if tb_set_opt l; then
+    tb_log_to_file "${opts[l]}" bash "$0" "${_params[@]}"
 fi
 
-if set_opt d; then
+if tb_set_opt d; then
     export verbosity=debug
     if ! shopt -oq xtrace; then
         exec bash -x "$0" "${_params[@]}"
