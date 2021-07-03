@@ -9,11 +9,18 @@ function tb_has_section {
     crudini --get "$@" &> /dev/null
 }
 
+function tb_is_linux {
+    [[ $OSTYPE == linux-gnu ]]
+}
+
 function tb_is_online {
-    if tb_is_windows && [[ ! -x /usr/bin/ping ]]; then
+    if  tb_is_linux || [[ -x /usr/bin/ping ]]; then  # POSIX ping
+        # `-i` is locale sensitive on Cygwin
+        LC_NUMERIC=POSIX ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
+    elif tb_is_windows; then                         # Cygwin but no POSIX ping
         ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
     else
-        ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
+        false
     fi
 }
 
