@@ -284,7 +284,7 @@ function tb_choice {
             if tb_contains "$answer" "${@:2}"; then
                 break
             else
-                echo -en '\nSelection out of range - please try again' >&2
+                echo 'Selection out of range - please try again' >&2
             fi
         done
     else
@@ -293,7 +293,7 @@ function tb_choice {
             if tb_contains "$answer" "${@:2}"; then
                 break
             else
-                echo -e '\nInvalid answer - please try again' >&2
+                echo 'Invalid answer - please try again' >&2
             fi
         done
     fi
