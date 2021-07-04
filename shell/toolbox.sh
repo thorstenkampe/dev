@@ -118,8 +118,7 @@ function tb_init {
     shopt -s dotglob inherit_errexit 2> /dev/null || true
 
     if [[ ! -v BASH_VERSINFO[0] ]]; then
-        tb_log error "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
-        exit 1
+        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
     fi
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
