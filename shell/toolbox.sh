@@ -10,7 +10,7 @@ function tb_has_section {
 }
 
 function tb_is_linux {
-    [[ $OSTYPE == linux-gnu ]]
+    [[ $(uname --kernel-name) == Linux ]]
 }
 
 function tb_is_online {
@@ -22,6 +22,10 @@ function tb_is_online {
     else
         false
     fi
+}
+
+function tb_host_reachable {
+    nc -z -w 1 "$1" "$2" &> /dev/null
 }
 
 function tb_is_tty {
@@ -128,7 +132,10 @@ function tb_init {
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX
 
-    if tb_is_windows; then
+    if   tb_is_linux; then
+        PATH=/usr/local/bin:$PATH
+
+    elif tb_is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
 
         function ps {
