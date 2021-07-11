@@ -24,7 +24,7 @@ function tb_is_online {
     fi
 }
 
-function tb_host_reachable {
+function tb_is_port_reachable {
     nc -z -w 1 "$1" "$2" &> /dev/null
 }
 

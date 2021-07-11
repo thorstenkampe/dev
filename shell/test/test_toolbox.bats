@@ -24,39 +24,48 @@ function teardown {
 }
 
 ##
-@test 'tb_has_section - existing section' {
+@test 'has_section - existing section' {
     tb_has_section $config connection
 }
 
-@test 'tb_has_section - not existing section' {
+@test 'has_section - not existing section' {
     run tb_has_section $config no_connection
     assert_failure
 }
 
-@test 'tb_has_section - existing key' {
+@test 'has_section - existing key' {
     tb_has_section $config connection user
 }
 
-@test 'tb_has_section - not existing key' {
+@test 'has_section - not existing key' {
     run tb_has_section $config connection no_user
     assert_failure
 }
 
-@test tb_is_online {
+@test is_online {
     run tb_is_online
 
     assert_success
     refute_output
 }
 
-@test tb_is_tty {
+@test 'is_port_reachable - reachable' {
+    tb_is_port_reachable 8.8.8.8 53
+}
+
+@test 'is_port_reachable - unreachable' {
+    run tb_is_port_reachable localhost 1
+    assert_failure
+}
+
+@test is_tty {
     run tb_is_tty
 
     assert_failure
     refute_output
 }
 
-@test tb_send_mail {
+@test send_mail {
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
 
@@ -66,7 +75,7 @@ function teardown {
     kill $!
 }
 
-@test tb_set_opt {
+@test set_opt {
     tb_parse_opts a:bc -a 1 -b arg1
 
     tb_set_opt a
@@ -75,12 +84,12 @@ function teardown {
     assert_failure
 }
 
-@test tb_splitby {
+@test splitby {
     tb_splitby ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${splitby[*]}" '1 2 3 4 5 6 7 8 9'
 }
 
-@test tb_timestamp {
+@test timestamp {
     run tb_timestamp
 
     assert_success
@@ -88,20 +97,20 @@ function teardown {
 }
 
 ##
-@test tb_amap {
+@test amap {
     tb_amap 'expr $arg + 2' array
     assert_equal "${array[*]}" '3 4 5 6 7 8 9 10 11'
 }
 
 #
-@test 'tb_arc - zip' {
+@test 'arc - zip' {
     tb_arc -c toolbox.sh "$testdir/toolbox.sh.zip"
     tb_arc -x "$testdir/toolbox.sh.zip" "$testdir"
 
     cmp --quiet toolbox.sh "$testdir/toolbox.sh"
 }
 
-@test 'tb_arc - gzip' {
+@test 'arc - gzip' {
     tb_arc -c toolbox.sh "$testdir/toolbox.sh.tar.gz"
     tb_arc -x "$testdir/toolbox.sh.tar.gz" "$testdir"
 
@@ -109,18 +118,18 @@ function teardown {
 }
 
 #
-@test tb_contains {
+@test contains {
     tb_contains 2 1 2 3
 }
 
-@test 'tb_contains - not' {
+@test 'contains - not' {
     run tb_contains 22 1 2 3
 
     assert_failure
 }
 
 #
-@test 'tb_init - find' {
+@test 'init - find' {
     tb_init
     run which find
 
@@ -128,7 +137,7 @@ function teardown {
     assert_output /usr/bin/find
 }
 
-@test 'tb_init - ps' {
+@test 'init - ps' {
     tb_init
     run ps --pid $$ --format comm=
 
@@ -137,21 +146,21 @@ function teardown {
 }
 
 #
-@test tb_joinby {
+@test joinby {
     run tb_joinby ', ' "${array[@]}"
 
     assert_success
     assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
 }
 
-@test 'tb_joinby - single element' {
+@test 'joinby - single element' {
     run tb_joinby ', ' '0 9'
 
     assert_success
     assert_output '0 9'
 }
 
-@test 'tb_joinby - no element' {
+@test 'joinby - no element' {
     run tb_joinby ', '
 
     assert_success
@@ -159,7 +168,7 @@ function teardown {
 }
 
 #
-@test 'tb_log - info message' {
+@test 'log - info message' {
     run tb_log info 'test message'
 
     assert_success
@@ -167,7 +176,7 @@ function teardown {
 }
 
 #
-@test tb_log_to_file {
+@test log_to_file {
     tb_init
     run tb_log_to_file "$testdir/test.log" true
 
@@ -176,37 +185,37 @@ function teardown {
 }
 
 #
-@test 'tb_parse_opts - valid options' {
+@test 'parse_opts - valid options' {
     tb_parse_opts a:bc -a 1 -b arg1
 }
 
-@test 'tb_parse_opts - option arguments' {
+@test 'parse_opts - option arguments' {
     tb_parse_opts a:bc -a 1 -b arg1
 
     assert_equal "${opts[a]}" 1
     assert_equal "${opts[b]}" ''
 }
 
-@test 'tb_parse_opts - unknown option' {
+@test 'parse_opts - unknown option' {
     run tb_parse_opts a:bc -x
 
     assert_failure
     assert_output --partial ': illegal option -- x'
 }
 
-@test 'tb_parse_opts - option requires argument' {
+@test 'parse_opts - option requires argument' {
     run tb_parse_opts a:bc -a
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
 }
 
-@test 'tb_parse_opts - no option' {
+@test 'parse_opts - no option' {
     tb_parse_opts a:bc
 }
 
 #
-@test 'tb_test_args - no arguments' {
+@test 'test_args - no arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     tb_test_args "$test"
 
@@ -214,7 +223,7 @@ function teardown {
     assert_equal "${#false[@]}" 0
 }
 
-@test 'tb_test_args - two true arguments' {
+@test 'test_args - two true arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     tb_test_args "$test" mssql oracle
 
@@ -223,7 +232,7 @@ function teardown {
     assert_equal "${#false[@]}" 0
 }
 
-@test 'tb_test_args - one true, two false arguments' {
+@test 'test_args - one true, two false arguments' {
     test='[[ $arg =~ ^(mssql|oracle)$ ]]'
     tb_test_args "$test" mssql oracleX oracleY
 
@@ -233,7 +242,7 @@ function teardown {
 }
 
 #
-@test 'tb_test_file - older than' {
+@test 'test_file - older than' {
     tmp_file=$(mktemp)
     touch --date '1 hour ago' "$tmp_file"
 
@@ -242,7 +251,7 @@ function teardown {
     rm "$tmp_file"
 }
 
-@test 'tb_test_file - not existing' {
+@test 'test_file - not existing' {
     tmp_file=$(mktemp --dry-run)
     run tb_test_file "$tmp_file"
 
@@ -251,7 +260,7 @@ function teardown {
 }
 
 # ini #
-@test tb_section_to_array {
+@test section_to_array {
     tb_section_to_array $config connection logging
 
     assert_equal "${connection[user]}" test_user
@@ -260,7 +269,7 @@ function teardown {
     assert_equal "${logging[level]}" debug
 }
 
-@test 'tb_section_to_array - ordered' {
+@test 'section_to_array - ordered' {
     tb_section_to_array -o $config connection logging
 
     assert_equal "${connection[0]}" test_user
@@ -269,7 +278,7 @@ function teardown {
     assert_equal "${logging[1]}" debug
 }
 
-@test tb_section_to_var {
+@test section_to_var {
     tb_section_to_var $config connection logging
 
     assert_equal "$user" test_user
