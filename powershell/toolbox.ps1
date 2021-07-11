@@ -40,6 +40,11 @@ function tb_is_elevated {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
+# - tb_is_port_reachable #
+function tb_is_port_reachable($Server, $Port) {
+    Test-Connection -TargetName $Server -TcpPort $Port -TimeoutSeconds 1 -Quiet
+}
+
 # - tb_is_pscore #
 function tb_is_pscore {
     $PSVersionTable.PSEdition -eq 'Core'

@@ -63,7 +63,7 @@ function Test-DbConnection($dsn) {
         $true
     }
     else {
-        Test-Connection -TargetName $server -TcpPort $port -TimeoutSeconds 1 -Quiet
+        tb_is_port_reachable -Server $server -Port $port
     }
 }
 
