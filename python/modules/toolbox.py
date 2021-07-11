@@ -1,5 +1,5 @@
 import importlib.metadata, socket, sys, urllib
-import pyodbc, sqlalchemy as sa, tqdm
+import alive_progress, pyodbc, sqlalchemy as sa
 from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
@@ -106,14 +106,10 @@ def progress(iter_, func):
     >>> def func(x): time.sleep(0.1)
     >>> progress(range(50), func)
     '''
-
-    fmt  = '[{bar}]{percentage:3.0f}% ({n_fmt}/{total_fmt})  time left: {remaining}'
-    pbar = tqdm.tqdm(iterable=iter_, ncols=80, bar_format=fmt, leave=False)
-
-    for item in pbar:
-        func(item)
-
-    pbar.close()
+    with alive_progress.alive_bar(total=len(iter_), bar='circles', spinner='dots_reverse') as bar:
+        for item in iter_:
+            func(item)
+            bar()
 
 def spinner(func):
     '''
