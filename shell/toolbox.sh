@@ -10,7 +10,7 @@ function tb_has_section {
 }
 
 function tb_is_linux {
-    [[ $(uname --kernel-name) == Linux ]]
+    tb_contains "$OSTYPE" linux linux-gnu
 }
 
 function tb_is_online {
@@ -25,7 +25,15 @@ function tb_is_online {
 }
 
 function tb_is_port_reachable {
-    nc -z -w 1 "$1" "$2" &> /dev/null
+    {
+    if   which ncat; then
+        ncat -z --wait 0.024 "$1" "$2"
+    elif which nc; then
+        nc -z -w 1 "$1" "$2"
+    else
+        false
+    fi
+    } &> /dev/null
 }
 
 function tb_is_tty {
@@ -47,9 +55,9 @@ function tb_set_opt {
     [[ -v opts[$1] ]]
 }
 
-# split string into array 'splitby', e.g. `splitby : "$PATH"`
-function tb_splitby {
-    IFS=$1 read -ra splitby <<< "$2"
+# split string into array 'split', e.g. `tb_split : "$PATH"`
+function tb_split {
+    IFS=$1 read -ra split <<< "$2"
 }
 
 # create timestamp "yyyy-mm-dd hh:mm:ss"
@@ -70,7 +78,7 @@ function tb_amap {
 }
 
 function tb_arc {
-    local dest false true splitby
+    local dest false true split
 
     tb_parse_opts cx "$@"
     shift $(( OPTIND - 1 ))
@@ -83,18 +91,18 @@ function tb_arc {
     fi
 
     if tb_set_opt c; then
-        tb_splitby . "$2"
+        tb_split . "$2"
 
-        if [[ ${splitby[-2]} == tar ]]; then
+        if [[ ${split[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
             7za a -ssw "$2" "$(readlink -m "$1")" "${@:3}"
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
-        tb_splitby . "$1"
+        tb_split . "$1"
 
-        if [[ ${splitby[-2]} == tar ]]; then
+        if [[ ${split[-2]} == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
         else
             7za x "$1" -o"$dest" -y "${@:3}"
@@ -121,17 +129,6 @@ function tb_init {
     # `inherit_errexit` added in version 4.4
     shopt -s dotglob inherit_errexit 2> /dev/null || true
 
-    if [[ ! -v BASH_VERSINFO[0] ]]; then
-        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
-    fi
-
-    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
-    tb_color
-    export PS4="${color[C]}$ps4${color[0]} "
-    # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-    # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-    export LC_ALL=POSIX
-
     if   tb_is_linux; then
         PATH=/usr/local/bin:$PATH
 
@@ -142,6 +139,17 @@ function tb_init {
             procps "$@"
         }
     fi
+
+    if [[ ! -v BASH_VERSINFO[0] ]]; then
+        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
+    fi
+
+    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
+    tb_color
+    export PS4="${color[C]}$ps4${color[0]} "
+    # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+    # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
+    export LC_ALL=POSIX
 }
 
 # * https://stackoverflow.com/a/35329275/5740232
@@ -150,7 +158,6 @@ function tb_init {
 function tb_joinby {
     local rest=( "${@:3}" )
     printf %s "${2-}" "${rest[@]/#/$1}"
-    echo
 }
 
 function tb_log {
