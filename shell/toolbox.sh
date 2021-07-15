@@ -44,6 +44,14 @@ function tb_is_windows {
     tb_contains "$OSTYPE" cygwin msys
 }
 
+# * https://stackoverflow.com/a/35329275/5740232
+# * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
+# * tb_join ';' "${array[@]}"
+function tb_join {
+    local rest=( "${@:3}" )
+    printf %s "${2-}" "${rest[@]/#/$1}"
+}
+
 # https://github.com/muquit/mailsend-go
 # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
 function tb_send_mail {
@@ -150,14 +158,6 @@ function tb_init {
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX
-}
-
-# * https://stackoverflow.com/a/35329275/5740232
-# * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
-# * tb_joinby ';' "${array[@]}"
-function tb_joinby {
-    local rest=( "${@:3}" )
-    printf %s "${2-}" "${rest[@]/#/$1}"
 }
 
 function tb_log {

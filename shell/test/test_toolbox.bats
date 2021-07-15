@@ -65,6 +65,27 @@ function teardown {
     refute_output
 }
 
+@test join {
+    run tb_join ', ' "${array[@]}"
+
+    assert_success
+    assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
+}
+
+@test 'join - single element' {
+    run tb_join ', ' '0 9'
+
+    assert_success
+    assert_output '0 9'
+}
+
+@test 'join - no element' {
+    run tb_join ', '
+
+    assert_success
+    refute_output
+}
+
 @test send_mail {
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
@@ -143,28 +164,6 @@ function teardown {
 
     assert_success
     assert_output bash
-}
-
-#
-@test joinby {
-    run tb_joinby ', ' "${array[@]}"
-
-    assert_success
-    assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
-}
-
-@test 'joinby - single element' {
-    run tb_joinby ', ' '0 9'
-
-    assert_success
-    assert_output '0 9'
-}
-
-@test 'joinby - no element' {
-    run tb_joinby ', '
-
-    assert_success
-    refute_output
 }
 
 #
