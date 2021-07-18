@@ -106,6 +106,7 @@ def progress(iter_, func):
     >>> def func(x): time.sleep(0.1)
     >>> progress(range(50), func)
     '''
+    # pylint: disable = disallowed-name
     with alive_progress.alive_bar(total=len(iter_), bar='circles', spinner='dots_reverse') as bar:
         for item in iter_:
             func(item)
@@ -189,7 +190,6 @@ def engine(dsn):
     scheme, netloc, path, _, _ = urlp
 
     # only necessary for interactive use (e.g. IPython) to prevent open sessions
-    # noinspection PyUnresolvedReferences
     engine_params = {'poolclass': sa.pool.NullPool, 'future': True}
     query_params  = {}
 
