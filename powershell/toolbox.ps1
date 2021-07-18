@@ -71,6 +71,15 @@ function tb_second_ext($Name) {
     Split-Path -Path (Split-Path -Path $Name -LeafBase) -Extension
 }
 
+# - tb_Set-EnvironmentVariable #
+# modifying the persistent environment is expensive so we only update if environment
+# value differs
+function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
+        if ([environment]::getEnvironmentVariable($name, $Scope) -ne $value) {
+            [environment]::setEnvironmentVariable($name, $value, $Scope)
+        }
+}
+
 ##
 # - tb_arc #
 function tb_arc {
