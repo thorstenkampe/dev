@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # shellcheck disable=SC2154
-source "$(/usr/bin/dirname "$0")/toolbox.sh"
+source "$(/usr/bin/dirname "$0")/toolbox.sh" || exit
 tb_init
 
 _params=( "$@" )
