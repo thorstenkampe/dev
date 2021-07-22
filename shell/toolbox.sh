@@ -10,7 +10,7 @@ function tb_has_section {
 }
 
 function tb_is_linux {
-    tb_contains "$OSTYPE" linux linux-gnu
+    tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
 
 function tb_is_online {
