@@ -53,12 +53,7 @@ function tb_is_pscore {
 # - tb_is_windows #
 # `$IsWindows` does not exist on PowerShell Desktop
 function tb_is_windows {
-    try {
-        $IsWindows -or -not (tb_is_pscore)
-    }
-    catch [Management.Automation.RuntimeException] {
-        $true
-    }
+    -not (tb_is_pscore) -or $IsWindows
 }
 
 # - tb_reset #
