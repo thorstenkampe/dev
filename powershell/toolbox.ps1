@@ -216,7 +216,7 @@ function tb_log($Level, $Message) {
     $prefix     = "[$($Level.ToUpper())] "
 
     if (-not (Test-Path -Path variable:verbosity)) {
-        $verbosity = 'warn'  # default level
+        $verbosity = 'info'  # default level
     }
 
     if ($loglevel[$Level] -le $loglevel[$verbosity]) {
