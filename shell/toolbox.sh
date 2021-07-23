@@ -165,7 +165,7 @@ function tb_log {
     declare -A loglevel colorlevel
     loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
     level=${loglevel[$1]-}
-    curlevel=${loglevel[${verbosity-warn}]}
+    curlevel=${loglevel[${verbosity-info}]}
 
     tb_color
     colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
