@@ -35,8 +35,8 @@ function tb_is_domain {
 }
 
 # - tb_is_elevated #
-# https://ss64.com/ps/syntax-elevate.html
 function tb_is_elevated {
+    # https://ss64.com/ps/syntax-elevate.html
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
@@ -51,8 +51,8 @@ function tb_is_pscore {
 }
 
 # - tb_is_windows #
-# `$IsWindows` does not exist on PowerShell Desktop
 function tb_is_windows {
+    # `$IsWindows` does not exist on PowerShell Desktop
     -not (tb_is_pscore) -or $IsWindows
 }
 
@@ -67,12 +67,12 @@ function tb_second_ext($Name) {
 }
 
 # - tb_Set-EnvironmentVariable #
-# modifying the persistent environment is expensive so we only update if environment
-# value differs
 function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
-        if ([environment]::getEnvironmentVariable($name, $Scope) -ne $value) {
-            [environment]::setEnvironmentVariable($name, $value, $Scope)
-        }
+    # modifying the persistent environment is expensive so we only update if environment
+    # value differs
+    if ([environment]::getEnvironmentVariable($name, $Scope) -ne $value) {
+        [environment]::setEnvironmentVariable($name, $value, $Scope)
+    }
 }
 
 ##
@@ -190,10 +190,10 @@ function tb_dupdate($hash1, $hash2) {
 }
 
 # - tb_exec #
-# * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
-# * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
-# * `tb_exec -Cmd {false}`
 function tb_exec($Cmd) {
+    # * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
+    # * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
+    # * `tb_exec -Cmd {false}`
     & $cmd
     if ($LASTEXITCODE -ne 0) {
         throw "Command terminated with exit code $LastExitCode"
@@ -201,8 +201,8 @@ function tb_exec($Cmd) {
 }
 
 # - tb_groupby #
-# https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
 function tb_groupby($object, $keyfunc='ident') {
+    # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
     $object.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable

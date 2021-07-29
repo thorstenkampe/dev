@@ -33,8 +33,8 @@ def is_localdb(dsn):
     else:
         return False
 
-# https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
 def is_pyinstaller():
+    # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
     return getattr(sys, 'frozen', False)
 
 def dmap(dict_, keyfunc):

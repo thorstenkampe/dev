@@ -9,6 +9,10 @@ function tb_has_section {
     crudini --get "$@" &> /dev/null
 }
 
+function tb_is_interactive {
+    [[ -v PS1 ]]
+}
+
 function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
@@ -44,38 +48,38 @@ function tb_is_windows {
     tb_contains "$OSTYPE" cygwin msys
 }
 
-# * https://stackoverflow.com/a/35329275/5740232
-# * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
-# * tb_join ';' "${array[@]}"
 function tb_join {
+    # * https://stackoverflow.com/a/35329275/5740232
+    # * https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
+    # * tb_join ';' "${array[@]}"
     local rest=( "${@:3}" )
     printf %s "${2-}" "${rest[@]/#/$1}"
 }
 
-# https://github.com/muquit/mailsend-go
-# required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
 function tb_send_mail {
+    # https://github.com/muquit/mailsend-go
+    # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
     mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
-# is option set?
 function tb_set_opt {
+    # is option set?
     [[ -v opts[$1] ]]
 }
 
-# split string into array 'split', e.g. `tb_split : "$PATH"`
 function tb_split {
+    # split string into array 'split', e.g. `tb_split : "$PATH"`
     IFS=$1 read -ra split <<< "$2"
 }
 
-# create timestamp "yyyy-mm-dd hh:mm:ss"
 function tb_timestamp {
+    # create timestamp "yyyy-mm-dd hh:mm:ss"
     date +'%F %T'
 }
 
 ##
-# `tb_amap 'expr $arg + 2' array`
 function tb_amap {
+    # `tb_amap 'expr $arg + 2' array`
     local key arg
     declare -n _array=$2
 
@@ -118,8 +122,8 @@ function tb_arc {
     fi
 }
 
-# `tb_contains 2 1 2 3 -> true`
 function tb_contains {
+    # `tb_contains 2 1 2 3 -> true`
     local elem
 
     for elem in "${@:2}"; do
@@ -205,10 +209,10 @@ function tb_parse_opts {
     done
 }
 
-# * split arguments into arrays that evaluate to true and to false
-# * `tb_test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
-# * same as above: `tb_test_args 'expr $arg % 2' ...`
 function tb_test_args {
+    # * split arguments into arrays that evaluate to true and to false
+    # * `tb_test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
+    # * same as above: `tb_test_args 'expr $arg % 2' ...`
     local arg
     true=()
     false=()
@@ -222,9 +226,9 @@ function tb_test_args {
     done
 }
 
-# test whether file (or folder) satisfies test
-# `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
 function tb_test_file {
+    # test whether file (or folder) satisfies test
+    # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
     local path name
     path=$(dirname "$1")
     name=$(basename "$1")
@@ -288,9 +292,9 @@ function tb_cecho {
     echo -en "$2${color[0]}"
 }
 
-# `tb_choice 'Continue? [Y|n]: ' y n ''`
-# `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
 function tb_choice {
+    # `tb_choice 'Continue? [Y|n]: ' y n ''`
+    # `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
     local PS3 answer
 
     tb_parse_opts m "$@"
@@ -352,8 +356,8 @@ function tb_color {
     fi
 }
 
-# `for item in $(seq 50); do sleep 0.1; echo; done | tb_progress -s 50`
 function tb_progress {
+    # `for item in $(seq 50); do sleep 0.1; echo; done | tb_progress -s 50`
     local pv_opts
     tb_parse_opts s: "$@"
     shift $(( OPTIND - 1 ))
@@ -367,9 +371,9 @@ function tb_progress {
     pv "${pv_opts[@]}" > /dev/null
 }
 
-# `tb_spinner 'sleep 10'`
-# source: https://stackoverflow.com/a/12498305/5740232
 function tb_spinner {
+    # `tb_spinner 'sleep 10'`
+    # source: https://stackoverflow.com/a/12498305/5740232
     local spin i
     # shellcheck disable=SC1003
     spin=( '-' '\' '|' '/' )
