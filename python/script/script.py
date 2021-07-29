@@ -1,7 +1,7 @@
 import sys
 import click, click_help_colors
 from loguru import logger
-from rich import traceback
+from rich   import traceback
 
 traceback.install(width=80, extra_lines=1)
 
