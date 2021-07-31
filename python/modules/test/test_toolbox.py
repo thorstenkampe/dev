@@ -6,10 +6,17 @@ from collections import OrderedDict
 from socket      import create_server
 from pytest      import raises
 from test        import (
-    config, even, df, dict as dict_, even, groups_lst, list as list_, set as set_,
-    sr, str as str_, table, tuple as tuple_
+    config, even, df, dict as dict_, even, list as list_, set as set_, sr, str as str_,
+    table, tuple as tuple_
 )
 from toolbox     import *  # NOSONAR
+
+def groups_lst(groupby):
+    '''
+    return `groups`-like dictionary from Pandas GroupBy object with list as values
+    instead of index for pytest assertions
+    '''
+    return dmap(groupby.groups, lambda x: x.to_list())
 
 class Test_pkg_version:  # NOSONAR
     def test_installed(self):

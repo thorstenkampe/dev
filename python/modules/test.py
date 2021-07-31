@@ -8,13 +8,6 @@ from toolbox import engine
 def even(integer):
     return not integer % 2
 
-def groups_lst(groupby):
-    '''
-    return `groups`-like dictionary from Pandas GroupBy object with list as values
-    instead of index for pytest assertions
-    '''
-    return tb.dmap(groupby.groups, lambda x: x.to_list())
-
 #
 list   = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
