@@ -167,8 +167,8 @@ function teardown {
 }
 
 #
-@test 'log - info message' {
-    run tb_log info 'test message'
+@test 'log - debug message' {
+    run tb_log debug 'test message'
 
     assert_success
     refute_output
