@@ -3,7 +3,7 @@ import alive_progress, pyodbc, sqlalchemy as sa
 from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 from pandas          import DataFrame, Series
-from rich            import console
+from rich            import box, console, table
 
 defaults = {
     'port':    {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432},
@@ -100,6 +100,46 @@ def host_reachable(url):
         return True
 
 # input/output #  NOSONAR
+def prettytab(iter_, title=None, headers=None, pager=False):
+    def stringify(obj):
+        if type(obj) == float:
+            return f'{obj:.1f}'
+        else:
+            return str(obj)
+
+    if not headers:
+        headers = []
+
+    if type(iter_) == DataFrame:
+        if iter_.index.name:
+            index_name = iter_.index.name
+        else:
+            index_name = ''
+
+        headers = [index_name] + list(iter_.columns)
+        iter_   = iter_.itertuples()
+
+    iter_ = list(iter_)
+
+    if pager:
+        tabbox = box.ASCII
+    else:
+        tabbox = box.MINIMAL_HEAVY_HEAD
+
+    tab = table.Table(*headers, safe_box=False, highlight=True, box=tabbox, show_edge=False,
+                      show_header=bool(headers), title=title)
+
+    for row in iter_:
+        row = [stringify(item) for item in row]
+        tab.add_row(*row)
+
+    con = console.Console()
+    if pager:
+        with con.pager(styles=True):
+            con.print(tab)
+    else:
+        con.print(tab)
+
 def progress(iter_, func):
     '''
     >>> import time
@@ -110,7 +150,7 @@ def progress(iter_, func):
     with alive_progress.alive_bar(total=len(iter_), bar='circles', spinner='dots_reverse') as bar:
         for item in iter_:
             func(item)
-            bar()
+            bar()  # pylint: disable = not-callable
 
 def spinner(func):
     '''
