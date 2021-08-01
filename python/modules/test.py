@@ -2,7 +2,6 @@
 import toolbox as tb
 from configparser import ConfigParser
 from pandas import DataFrame, Series
-from toolbox import engine
 
 # pytest helpers
 def even(integer):
@@ -51,6 +50,8 @@ df.columns.name = 'cols'
 group = tb.groupby(df, keyfunc=lambda x: even(x['e']))
 
 class dsn:  # pylint: disable = too-few-public-methods
+    from toolbox import engine
+
     mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook')
     mslinux     = engine('mssql://sa:password@db/Chinook')
     mswindows   = engine('mssql://sa:password@windows-db/Chinook')

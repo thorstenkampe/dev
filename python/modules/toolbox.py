@@ -1,10 +1,3 @@
-import importlib.metadata, socket, sys, urllib
-import alive_progress, pyodbc, sqlalchemy as sa
-from collections     import defaultdict, OrderedDict
-from collections.abc import MappingView
-from pandas          import DataFrame, Series
-from rich            import box, console, table
-
 defaults = {
     'port':    {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432},
     'db_user': {'mssql': 'sa', 'mysql': 'root', 'oracle': 'sys', 'postgresql': 'postgres'}
@@ -12,6 +5,7 @@ defaults = {
 
 def pkg_version(pkg):
     '''return the installed version of package or None if not installed'''
+    import importlib.metadata
     try:
         return importlib.metadata.version(pkg)
     except importlib.metadata.PackageNotFoundError:
@@ -21,6 +15,8 @@ def ident(x):
     return x
 
 def is_localdb(dsn):
+    import urllib
+
     localdb    = r'(localdb)\mssqllocaldb'
     parsed_url = urllib.parse.urlsplit(dsn)
 
@@ -34,6 +30,7 @@ def is_localdb(dsn):
         return False
 
 def is_pyinstaller():
+    import sys
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
     return getattr(sys, 'frozen', False)
 
@@ -65,6 +62,8 @@ def cast_config(config):  # NOSONAR
 
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''
+    from collections.abc import MappingView
+    from pandas          import DataFrame, Series
     for type_ in (dict, list, set, tuple, MappingView, Series, DataFrame):
         if isinstance(obj, type_):
             return type_
@@ -74,6 +73,8 @@ def typeof(obj):
 def host_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
+    import socket, urllib
+
     urlp = urllib.parse.urlsplit(url)
 
     if not urlp.scheme:
@@ -101,6 +102,9 @@ def host_reachable(url):
 
 # input/output #  NOSONAR
 def prettytab(iter_, title=None, headers=None, pager=False):
+    from pandas import DataFrame
+    from rich   import box, console, table
+
     def stringify(obj):
         if type(obj) == float:
             return f'{obj:.1f}'
@@ -146,6 +150,9 @@ def progress(iter_, func):
     >>> def func(x): time.sleep(0.1)
     >>> progress(range(50), func)
     '''
+    import alive_progress
+    from rich import console
+
     # pylint: disable = disallowed-name
     with alive_progress.alive_bar(total=len(iter_), bar='circles', spinner='dots_reverse') as bar:
         for item in iter_:
@@ -167,14 +174,19 @@ def spinner(func):
 # DATA #
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
+    from collections import OrderedDict
     return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
 
 def sort_value(dict_, keyfunc=ident):
     '''sort dictionary by value'''
+    from collections import OrderedDict
     return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
 
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
+    from collections import defaultdict
+    from pandas      import DataFrame, Series
+
     type_    = typeof(iter_)
     eq_class = defaultdict(type_)
 
@@ -224,6 +236,8 @@ def groupby(iter_, keyfunc=ident, axis=None):
 # SQLALCHEMY #
 def engine(dsn):
     '''create SQLAlchemy engine with sane parameters'''
+    import urllib
+    import pyodbc, sqlalchemy as sa
 
     # dsn = scheme://netloc/path
     urlp = urllib.parse.urlsplit(dsn)
