@@ -46,32 +46,32 @@ def test_cast_config():
 def test_typeof():
     assert typeof(set_) == set
 
-class Test_host_reachable:  # NOSONAR
+class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
         server = create_server(('localhost', 0))
         port   = server.getsockname()[1]
-        assert host_reachable(f'scheme://localhost:{port}')
+        assert port_reachable(f'scheme://localhost:{port}')
         server.close()
 
     def test_mslocal(self):
-        assert host_reachable(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
+        assert port_reachable(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
 
     def test_default_port(self):
         server = create_server(('localhost', 1521))
-        assert host_reachable('oracle://localhost')
+        assert port_reachable('oracle://localhost')
         server.close()
 
     def test_unreachable(self):
-        assert not host_reachable('scheme://localhost:1')
+        assert not port_reachable('scheme://localhost:1')
 
     def test_no_port_unknown_scheme(self):
         match = '^no port given and can\'t find default port for scheme "scheme"$'
         with raises(ValueError, match=match):
-            host_reachable('scheme://')
+            port_reachable('scheme://')
 
     def test_no_scheme(self):
         with raises(ValueError, match='^no URL scheme given$'):
-            host_reachable('liteloc')
+            port_reachable('liteloc')
 
 # DATA #
 class Test_groupby:  # NOSONAR

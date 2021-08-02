@@ -16,7 +16,6 @@ def ident(x):
 
 def is_localdb(dsn):
     import urllib
-
     localdb    = r'(localdb)\mssqllocaldb'
     parsed_url = urllib.parse.urlsplit(dsn)
 
@@ -70,11 +69,10 @@ def typeof(obj):
 
     return None
 
-def host_reachable(url):
+def port_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
     import socket, urllib
-
     urlp = urllib.parse.urlsplit(url)
 
     if not urlp.scheme:
@@ -151,7 +149,6 @@ def progress(iter_, func):
     >>> progress(range(50), func)
     '''
     import alive_progress
-    from rich import console
 
     # pylint: disable = disallowed-name
     with alive_progress.alive_bar(total=len(iter_), bar='circles', spinner='dots_reverse') as bar:
@@ -165,6 +162,7 @@ def spinner(func):
     >>> def func(): time.sleep(10)
     >>> spinner(func)
     '''
+    from rich import console
 
     con = console.Console()
     with con.status(status='', spinner='bouncingBall', spinner_style='royal_blue1',
