@@ -49,15 +49,6 @@ function teardown {
     refute_output
 }
 
-@test 'is_port_reachable - reachable' {
-    tb_is_port_reachable 8.8.8.8 53
-}
-
-@test 'is_port_reachable - unreachable' {
-    run tb_is_port_reachable localhost 1
-    assert_failure
-}
-
 @test is_tty {
     run tb_is_tty
 
@@ -84,6 +75,15 @@ function teardown {
 
     assert_success
     refute_output
+}
+
+@test 'port_reachable - reachable' {
+    tb_port_reachable 8.8.8.8 53
+}
+
+@test 'port_reachable - unreachable' {
+    run tb_port_reachable localhost 1
+    assert_failure
 }
 
 @test send_mail {

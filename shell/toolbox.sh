@@ -28,18 +28,6 @@ function tb_is_online {
     fi
 }
 
-function tb_is_port_reachable {
-    {
-    if   which ncat; then
-        ncat -z --wait 0.024 "$1" "$2"
-    elif which nc; then
-        nc -z -w 1 "$1" "$2"
-    else
-        false
-    fi
-    } &> /dev/null
-}
-
 function tb_is_tty {
     [[ -t 1 && -t 2 ]]
 }
@@ -54,6 +42,18 @@ function tb_join {
     # * tb_join ';' "${array[@]}"
     local rest=( "${@:3}" )
     printf %s "${2-}" "${rest[@]/#/$1}"
+}
+
+function tb_port_reachable {
+    {
+    if   which ncat; then
+        ncat -z --wait 0.024 "$1" "$2"
+    elif which nc; then
+        nc -z -w 1 "$1" "$2"
+    else
+        false
+    fi
+    } &> /dev/null
 }
 
 function tb_send_mail {
