@@ -99,7 +99,7 @@ def port_reachable(url):
         return True
 
 # input/output #  NOSONAR
-def prettytab(iter_, title=None, headers=None, pager=False):
+def prettytab(iter_, headers=None, pager=False, **kwargs):
     from pandas import DataFrame
     from rich   import box, console, table
 
@@ -128,8 +128,8 @@ def prettytab(iter_, title=None, headers=None, pager=False):
     else:
         tabbox = box.MINIMAL_HEAVY_HEAD
 
-    tab = table.Table(*headers, safe_box=False, highlight=True, box=tabbox, show_edge=False,
-                      show_header=bool(headers), title=title)
+    tab = table.Table(*headers, safe_box=False, box=tabbox, show_edge=False, show_header=bool(headers),
+                      **kwargs)
 
     for row in iter_:
         row = [stringify(item) for item in row]
