@@ -1,10 +1,8 @@
-﻿# - tb_abspath #
-function tb_abspath($Path) {
+﻿function tb_abspath($Path) {
     # https://github.com/PowerShell/PowerShell/issues/10278
     [IO.Path]::GetFullPath($Path, (Convert-Path -Path '.'))
 }
 
-# - tb_get_proxy #
 function tb_get_proxy {
     try {
         (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').ProxyServer
@@ -14,17 +12,10 @@ function tb_get_proxy {
     }
 }
 
-# - tb_ident #
-function tb_ident {
-    $args
-}
-
-# - tb_is_admin #
 function tb_is_admin {
 	[Boolean] ([Security.Principal.WindowsIdentity]::GetCurrent().UserClaims | Where-Object {$PSItem.Value -eq 'S-1-5-32-544'})
 }
 
-# - tb_is_domain #
 function tb_is_domain {
     if ($IsWindows) {
         (Get-CimInstance -ClassName win32_computersystem).partofdomain
@@ -34,39 +25,24 @@ function tb_is_domain {
     }
 }
 
-# - tb_is_elevated #
 function tb_is_elevated {
     # https://ss64.com/ps/syntax-elevate.html
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 }
 
-# - tb_is_port_reachable #
-function tb_is_port_reachable($Server, $Port) {
+function tb_port_reachable($Server, $Port) {
     Test-Connection -TargetName $Server -TcpPort $Port -TimeoutSeconds 1 -Quiet
 }
 
-# - tb_is_pscore #
 function tb_is_pscore {
     $PSVersionTable.PSEdition -eq 'Core'
 }
 
-# - tb_is_windows #
 function tb_is_windows {
     # `$IsWindows` does not exist on PowerShell Desktop
     -not (tb_is_pscore) -or $IsWindows
 }
 
-# - tb_reset #
-function tb_reset {
-    [Console]::ResetColor()
-}
-
-# - tb_second_ext #
-function tb_second_ext($Name) {
-    Split-Path -Path (Split-Path -Path $Name -LeafBase) -Extension
-}
-
-# - tb_Set-EnvironmentVariable #
 function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
     # modifying the persistent environment is expensive so we only update if environment
     # value differs
@@ -76,7 +52,6 @@ function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
 }
 
 ##
-# - tb_arc #
 function tb_arc {
     Param(
         [Parameter(Mandatory, ParameterSetName='Compress')]
@@ -94,20 +69,24 @@ function tb_arc {
         [String] $Destination = '.'
     )
 
+    function second_ext($Name) {
+        Split-Path -Path (Split-Path -Path $Name -LeafBase) -Extension
+    }
+
     if ($Compress) {
-        if ((tb_second_ext $Destination) -eq '.tar') {
+        if ((second_ext $Destination) -eq '.tar') {
             $name   = Split-Path -Path $Source -Leaf
             $parent = Split-Path -Path $Source -Parent
 
-            tar -caf (cygpath $Destination) -C $parent $name @args
+            tar -caf $Destination -C $parent $name @args
         }
         else {
             7z a -ssw $Destination (abspath -Path $Source) @args
         }
     }
     else {
-        if ((tb_second_ext $Source) -eq '.tar') {
-            tar -xaf (cygpath $Source) -C (cygpath $Destination) @args
+        if ((second_ext $Source) -eq '.tar') {
+            tar -xaf $Source -C $Destination @args
         }
         else {
             7z x $Source -o"$Destination" -y @args
@@ -115,7 +94,6 @@ function tb_arc {
     }
 }
 
-# - tb_choice #
 function tb_choice($Prompt, $Answers) {
     do {
         $selection = Read-Host -Prompt $prompt
@@ -128,7 +106,6 @@ function tb_choice($Prompt, $Answers) {
     $selection
 }
 
-# - tb_Clean-Path #
 function tb_Clean-Path($paths) {
     # Remove duplicate and non-existing paths from delimited path string
     $paths = $paths -split [IO.Path]::PathSeparator
@@ -136,7 +113,6 @@ function tb_Clean-Path($paths) {
     $paths -join [IO.Path]::PathSeparator
 }
 
-# - tb_color #
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     if (tb_is_pscore) {
@@ -157,7 +133,6 @@ function tb_color {
     }
 }
 
-# - tb_ConvertTo-Ordered #
 function tb_ConvertTo-Ordered($Hash) {
     # Shallow copy of the original (see comment for dmap)
     $dict = [ordered]@{}
@@ -170,7 +145,6 @@ function tb_ConvertTo-Ordered($Hash) {
     $dict
 }
 
-# - tb_dmap #
 function tb_dmap($hash, $Keyfunc) {
     # Modifies the original. Cloning a hash is shallow and not supported for ordered
     # dictionaries. Copying with "(foreach key {clone[key] = orig[key]})" is also
@@ -180,7 +154,6 @@ function tb_dmap($hash, $Keyfunc) {
     }
 }
 
-# - tb_dupdate #
 function tb_dupdate($hash1, $hash2) {
     if ($hash2) {
         foreach ($key in $hash2.Keys) {
@@ -189,7 +162,6 @@ function tb_dupdate($hash1, $hash2) {
     }
 }
 
-# - tb_exec #
 function tb_exec($Cmd) {
     # * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
     # * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
@@ -200,15 +172,13 @@ function tb_exec($Cmd) {
     }
 }
 
-# - tb_groupby #
-function tb_groupby($object, $keyfunc='ident') {
+function tb_groupby($object, $keyfunc={param($x) $x}) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
     $object.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
 }
 
-# - tb_log #
 function tb_log($Level, $Message) {
     $loglevel   = @{error=10;    warn=20;       info=30;      debug=40}
     # `[Enum]::GetValues([ConsoleColor])`
