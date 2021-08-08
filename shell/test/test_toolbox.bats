@@ -78,7 +78,7 @@ function teardown {
 }
 
 @test 'port_reachable - reachable' {
-    tb_port_reachable 8.8.8.8 53
+    run tb_port_reachable 8.8.8.8 53
 }
 
 @test 'port_reachable - unreachable' {
