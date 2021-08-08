@@ -2,7 +2,6 @@
 
 . $PSScriptRoot/toolbox.ps1
 
-#  - open_conn #
 $open_conn = @{
         ms   = 'Open-SqlConnection'
         my   = 'Open-MySqlConnection'
@@ -10,7 +9,6 @@ $open_conn = @{
         post = 'Open-PostGreConnection'
 }
 
-#  - Get-ConnectionPrefix #
 function Get-ConnectionPrefix($dsn) {
     foreach ($prefix in 'ms', 'my', 'ora', 'post', 'lite') {
         if ($dsn.ConnectionName.StartsWith($prefix)) {
@@ -20,7 +18,6 @@ function Get-ConnectionPrefix($dsn) {
     }
 }
 
-#  - Engine #
 function Engine($dsn) {
     $params = @{
         my   = @{SSLMode='Required'}
@@ -34,7 +31,6 @@ function Engine($dsn) {
     tb_dupdate $dsn $params[(Get-ConnectionPrefix $dsn)]
 }
 
-#  - Test-DbConnection #
 function Test-DbConnection($dsn) {
     $default_port = @{ms = 1433; my = 3306; ora  = 1521; post = 5432}
 
@@ -63,7 +59,7 @@ function Test-DbConnection($dsn) {
         $true
     }
     else {
-        tb_is_port_reachable -Server $server -Port $port
+        tb_port_reachable -Server $server -Port $port
     }
 }
 
