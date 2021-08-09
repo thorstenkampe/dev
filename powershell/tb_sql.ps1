@@ -3,10 +3,10 @@
 . $PSScriptRoot/toolbox.ps1
 
 $open_conn = @{
-        ms   = 'Open-SqlConnection'
-        my   = 'Open-MySqlConnection'
-        ora  = 'Open-OracleConnection'
-        post = 'Open-PostGreConnection'
+    ms   = 'Open-SqlConnection'
+    my   = 'Open-MySqlConnection'
+    ora  = 'Open-OracleConnection'
+    post = 'Open-PostGreConnection'
 }
 
 # DSNs

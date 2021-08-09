@@ -128,7 +128,8 @@ function tb_color {
             w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
             0="`e[m"                                             # reset
         }
-    } else {
+    }
+    else {
         $global:color = @{}
     }
 }
@@ -145,7 +146,7 @@ function tb_ConvertTo-Ordered($Hash) {
     $dict
 }
 
-function tb_dmap($hash, $Keyfunc) {
+function tb_dmap($Hash, $Keyfunc) {
     # Modifies the original. Cloning a hash is shallow and not supported for ordered
     # dictionaries. Copying with "(foreach key {clone[key] = orig[key]})" is also
     # shallow
@@ -172,7 +173,7 @@ function tb_exec($Cmd) {
     }
 }
 
-function tb_groupby($object, $keyfunc={param($x) $x}) {
+function tb_groupby($Object, $Keyfunc={param($x) $x}) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`

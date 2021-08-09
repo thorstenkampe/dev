@@ -3,10 +3,10 @@ Param(
     [Switch] $Help
 )
 
-. $PSScriptRoot\toolbox.ps1
-
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version latest
+
+. $PSScriptRoot\toolbox.ps1
 
 $script = $MyInvocation.InvocationName
 
