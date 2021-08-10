@@ -106,13 +106,6 @@ function tb_choice($Prompt, $Answers) {
     $selection
 }
 
-function tb_Clean-Path($paths) {
-    # Remove duplicate and non-existing paths from delimited path string
-    $paths = $paths -split [IO.Path]::PathSeparator
-    $paths = $paths | Select-Object -Unique | Where-Object {Test-Path -Path $PSItem -PathType Container}
-    $paths -join [IO.Path]::PathSeparator
-}
-
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     if (tb_is_pscore) {
