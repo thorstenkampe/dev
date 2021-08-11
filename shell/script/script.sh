@@ -26,7 +26,7 @@ fi
 
 function error_handler {
     tb_log error "command \"$1\" in $2" || true
-    #send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+    #tb_send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
 }
 
 trap 'error_handler "$BASH_COMMAND" "$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO"' err
