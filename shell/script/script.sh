@@ -5,9 +5,17 @@ source "$(/usr/bin/dirname "$0")/toolbox.sh" || exit
 tb_init
 
 _params=( "$@" )
-scriptname=$(basename "$0")
 
 # MAIN CODE STARTS HERE #
+
+_usage="
+Usage: $(basename "$0") [-l <logfile>]
+
+Options:
+  -l <logfile>  Log to file
+  -h            Show help
+  -d            Show debug and trace messages
+"
 
 # shellcheck disable=SC2016
 tb_test_args 'which $arg' mailsend-go
@@ -27,12 +35,7 @@ tb_parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
 if tb_set_opt h; then
-    echo "Usage: $scriptname [-l <logfile>]"
-    echo
-    echo Options:
-    echo '  -l <logfile>  Log to file'
-    echo '  -h            Show help'
-    echo '  -d            Show debug and trace messages'
+    echo -n "$_usage"
     exit
 fi
 
