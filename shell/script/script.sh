@@ -9,12 +9,12 @@ _params=( "$@" )
 # MAIN CODE STARTS HERE #
 
 _usage="
-Usage: $(basename "$0") [-l <logfile>]
+${color[c]}Usage${color[0]}: $(basename "$0") [-l <logfile>]
 
-Options:
-  -l <logfile>  Log to file
-  -h            Show help
-  -d            Show debug and trace messages
+${color[c]}Options${color[0]}:
+  ${color[W]}-l <logfile>${color[0]}  Log to file
+  ${color[W]}-h${color[0]}            Show help
+  ${color[W]}-d${color[0]}            Show debug and trace messages
 "
 
 # shellcheck disable=SC2016
@@ -35,7 +35,7 @@ tb_parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
 if tb_set_opt h; then
-    echo -n "$_usage"
+    echo -en "$_usage"
     exit
 fi
 
