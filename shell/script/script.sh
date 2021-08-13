@@ -25,11 +25,14 @@ if (( ${#false[@]} )); then
 fi
 
 function error_handler {
-    tb_log error "command \"$1\" in $2" || true
-    #tb_send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+    # "[ERROR] command "command" in script_name:function_name:line_number"
+    tb_log error "command \"$BASH_COMMAND\" in $(basename "${BASH_SOURCE[1]}"):${FUNCNAME[1]}:${BASH_LINENO[0]}" || true
+    if ! tb_is_tty; then
+        tb_send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+    fi
 }
 
-trap 'error_handler "$BASH_COMMAND" "$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO"' err
+trap error_handler err
 
 tb_parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
