@@ -51,6 +51,10 @@ function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
     }
 }
 
+function tb_uac_enabled {
+    [bool] (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System).EnableLUA
+}
+
 ##
 function tb_arc {
     Param(
@@ -171,6 +175,10 @@ function tb_groupby($Object, $Keyfunc={param($x) $x}) {
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
     $object.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
+}
+
+function tb_init {
+	$Env:LC_ALL = 'POSIX'
 }
 
 function tb_log($Level, $Message) {
