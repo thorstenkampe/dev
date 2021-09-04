@@ -72,6 +72,12 @@ function tb_split {
     IFS=$1 read -ra split <<< "$2"
 }
 
+function tb_test_file {
+    # test whether file (or folder) satisfies test
+    # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
+    [[ $(find "$(dirname "$1")" -mindepth 1 -maxdepth 1 -name "$(basename "$1")" "${@:2}") ]]
+}
+
 function tb_timestamp {
     # create timestamp "yyyy-mm-dd hh:mm:ss"
     date +'%F %T'
@@ -224,16 +230,6 @@ function tb_test_args {
             false+=( "$arg" )
         fi
     done
-}
-
-function tb_test_file {
-    # test whether file (or folder) satisfies test
-    # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
-    local path name
-    path=$(dirname "$1")
-    name=$(basename "$1")
-
-    [[ $(find "$path" -mindepth 1 -maxdepth 1 -name "$name" "${@:2}") ]]
 }
 
 # ini #
