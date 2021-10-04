@@ -10,7 +10,11 @@ if os.isatty(2):
 else:
     timestamp = ' {time:YYYY-MM-DD HH:mm:ss}'
 logfmt = f'<level>[{{level}}{timestamp}]</> {{message}}\n'
-logger.configure(handlers=[dict(sink=sys.stderr, format=logfmt, level='INFO')])
+
+def configure_logging(level, fmt=logfmt):
+    logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=fmt)])
+
+configure_logging(level='info')
 
 @click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
