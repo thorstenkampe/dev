@@ -11,8 +11,8 @@ load /usr/local/libexec/bats-file/load.bash
 
 function setup {
     shopt -ou nounset
-    source test.sh
-    source toolbox.sh
+    source ./test.sh
+    source ./toolbox.sh
     export LANGUAGE=en_US
     export LC_ALL=POSIX
     config=test/test_ini.ini
@@ -108,6 +108,23 @@ function teardown {
 @test split {
     tb_split ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
+}
+
+@test 'test_file - older than' {
+    tmp_file=$(mktemp)
+    touch --date '1 hour ago' "$tmp_file"
+
+    # test if file is older than sixty minutes
+    tb_test_file "$tmp_file" -mmin +60
+    rm "$tmp_file"
+}
+
+@test 'test_file - not existing' {
+    tmp_file=$(mktemp --dry-run)
+    run tb_test_file "$tmp_file"
+
+    assert_failure
+    assert_file_not_exist "$tmp_file"
 }
 
 @test timestamp {
@@ -241,21 +258,32 @@ function teardown {
 }
 
 #
-@test 'test_file - older than' {
-    tmp_file=$(mktemp)
-    touch --date '1 hour ago' "$tmp_file"
+@test 'vartype - string' {
+    run tb_vartype string
 
-    # test if file is older than sixty minutes
-    tb_test_file "$tmp_file" -mmin +60
-    rm "$tmp_file"
+    assert_success
+    assert_output string
 }
 
-@test 'test_file - not existing' {
-    tmp_file=$(mktemp --dry-run)
-    run tb_test_file "$tmp_file"
+@test 'vartype - integer' {
+    run tb_vartype int
 
-    assert_failure
-    assert_file_not_exist "$tmp_file"
+    assert_success
+    assert_output integer
+}
+
+@test 'vartype - array' {
+    run tb_vartype array
+
+    assert_success
+    assert_output array
+}
+
+@test 'vartype - associative array' {
+    run tb_vartype assoc
+
+    assert_success
+    assert_output 'associative array'
 }
 
 # ini #

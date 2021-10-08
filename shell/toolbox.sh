@@ -24,7 +24,7 @@ function tb_is_online {
     elif tb_is_windows; then                         # Cygwin but no POSIX ping
         ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
     else
-        false
+        return 1
     fi
 }
 
@@ -51,7 +51,7 @@ function tb_port_reachable {
     elif which nc; then
         nc -z -w 1 "$1" "$2"
     else
-        false
+        return 1
     fi
     } &> /dev/null
 }
@@ -230,6 +230,25 @@ function tb_test_args {
             false+=( "$arg" )
         fi
     done
+}
+
+function tb_vartype {
+    case $(declare -p "$1") in
+        (declare\ -a*)
+            echo array
+            ;;
+
+        (declare\ -A*)
+            echo 'associative array'
+            ;;
+
+        (declare\ -i*)
+            echo integer
+            ;;
+
+        (*)
+            echo string
+    esac
 }
 
 # ini #
