@@ -1,7 +1,9 @@
 # shellcheck disable=SC2034
 
 string='The quick brown fox jumps over the lazy dog'
-declare -gi int=123
+
+declare -gi int
+int=123
 
 # https://mywiki.wooledge.org/BashGuide/Arrays
 # show all: `declare -p array`
