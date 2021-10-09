@@ -286,6 +286,14 @@ function teardown {
     assert_output 'associative array'
 }
 
+@test 'vartype - not set' {
+    unset var
+    run tb_vartype var
+
+    assert_failure
+    refute_output
+}
+
 # ini #
 @test section_to_array {
     tb_section_to_array $config connection logging
