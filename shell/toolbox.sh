@@ -171,11 +171,7 @@ function tb_init {
 }
 
 function tb_install_pkg {
-    local ext split
-    tb_split . "$1"
-    ext=${split[-1]}
-
-    case $ext in
+    case ${1##*.} in
         (deb)
             dpkg --install --refuse-downgrade --skip-same-version "$1"
             ;;
