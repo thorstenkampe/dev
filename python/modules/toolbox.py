@@ -2,11 +2,6 @@ import importlib.metadata, socket, sys, urllib
 from collections     import defaultdict, OrderedDict
 from collections.abc import MappingView
 
-defaults = {
-    'port':    {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432},
-    'db_user': {'mssql': 'sa', 'mysql': 'root', 'oracle': 'sys', 'postgresql': 'postgres'}
-}
-
 def pkg_version(pkg):
     '''return the installed version of package or None if not installed'''
     try:
@@ -72,7 +67,8 @@ def typeof(obj):
 def port_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
-    urlp = urllib.parse.urlsplit(url)
+    default_port = {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432}
+    urlp         = urllib.parse.urlsplit(url)
 
     if not urlp.scheme:
         raise ValueError('no URL scheme given')
@@ -84,7 +80,7 @@ def port_reachable(url):
         port = urlp.port
     else:  # no port from parsed URL
         try:
-            port = defaults['port'][urlp.scheme.split('+')[0]]
+            port = default_port[urlp.scheme.split('+')[0]]
         except KeyError:
             msg = f'no port given and can\'t find default port for scheme "{urlp.scheme}"'
             raise ValueError(msg) from None

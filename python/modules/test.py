@@ -8,27 +8,29 @@ def even(integer):
     return not integer % 2
 
 #
-list   = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+list    = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-set    = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+set     = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-tuple  = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+tuple   = (1, 2, 3, 4, 5, 6, 7, 8, 9)
 
-dict   = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 9: 9}
+dict    = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 9: 9}
 
-str    = 'The quick brown fox jumps over the lazy dog'
+str     = 'The quick brown fox jumps over the lazy dog'
 
-table  = [
+table   = [
     ('1a', '1b', '1c', 1.0, 1),
     ('2a', '2b', '2c', 2.0, 2),
     ('3a', '3b', '3c', 3.0, 3),
     ('4a', '4b', '4c', 4.0, 4)
 ]
 
-redis  = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
+redis   = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
 
-config = ConfigParser()
+config  = ConfigParser()
+config['DEFAULT'] = {'def_key': 'def_value'}
 config['section'] = {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False', 'none': 'None', 'str': 'text'}
+section = config['section']
 
 # Pandas
 sr = Series(
