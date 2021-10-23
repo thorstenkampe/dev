@@ -40,7 +40,7 @@ def test_dmap():
     assert dmap(dict_, keyfunc=even) == result
 
 def test_cast_config():
-    result = {'section': {'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}}
+    result = {'section': {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}}
     assert cast_config(config) == result
 
 def test_typeof():
