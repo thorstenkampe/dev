@@ -96,15 +96,6 @@ function teardown {
     kill $!
 }
 
-@test set_opt {
-    tb_parse_opts a:bc -a 1 -b arg1
-
-    tb_set_opt a
-    tb_set_opt b
-    run tb_set_opt c
-    assert_failure
-}
-
 @test split {
     tb_split ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'

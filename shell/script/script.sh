@@ -37,16 +37,16 @@ trap error_handler err
 tb_parse_opts hl:d "$@"
 shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-if tb_set_opt h; then
+if [[ -v opts[h] ]]; then
     echo -en "$_usage"
     exit
 fi
 
-if tb_set_opt l; then
+if [[ -v opts[l] ]]; then
     tb_log_to_file "${opts[l]}" bash "$0" "${_params[@]}"
 fi
 
-if tb_set_opt d; then
+if [[ -v opts[d] ]]; then
     export verbosity=debug
     if ! shopt -oq xtrace; then
         exec bash -x "$0" "${_params[@]}"

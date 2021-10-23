@@ -62,11 +62,6 @@ function tb_send_mail {
     mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
-function tb_set_opt {
-    # is option set?
-    [[ -v opts[$1] ]]
-}
-
 function tb_split {
     # split string into array 'split', e.g. `tb_split : "$PATH"`
     IFS=$1 read -ra split <<< "$2"
@@ -101,14 +96,14 @@ function tb_arc {
     tb_parse_opts cx "$@"
     shift $(( OPTIND - 1 ))
 
-    tb_test_args 'tb_set_opt $arg' c x
+    tb_test_args '[[ -v opts[$arg] ]]' c x
 
     if (( ${#true[@]} != 1 )); then
         tb_log error 'either option "c" (compress) or "x" (extract) must be given'
         return 1
     fi
 
-    if tb_set_opt c; then
+    if [[ -v opts[c] ]]; then
         tb_split . "$2"
 
         if [[ ${split[-2]} == tar ]]; then
@@ -282,7 +277,7 @@ function tb_section_to_array {
 
     for section in "${@:2}"; do
         unset "$section"
-        if ! tb_set_opt o; then
+        if [[ ! -v opts[o] ]]; then
             declare -gA "$section"
         fi
         # create array with same name as section name
@@ -293,7 +288,7 @@ function tb_section_to_array {
             mapfile -t keys < <(crudini --get "$1" "$section")
             for key in "${keys[@]}"; do
                 value=$(crudini --get "$1" "$section" "$key")
-                if tb_set_opt o; then
+                if [[ -v opts[o] ]]; then
                     array+=( "$value" )
                 else
                     array[$key]=$value
@@ -336,7 +331,7 @@ function tb_choice {
     tb_parse_opts m "$@"
     shift $(( OPTIND - 1 ))  # make arguments available as $1, $2...
 
-    if tb_set_opt m; then
+    if [[ -v opts[m] ]]; then
         PS3=$1
 
         select answer in "${@:2}"; do
@@ -399,7 +394,7 @@ function tb_progress {
     shift $(( OPTIND - 1 ))
 
     pv_opts=( --interval 0.1 --width 80 --line-mode --format )
-    if tb_set_opt s; then
+    if [[ -v opts[s] ]]; then
         pv_opts+=( "%p (%bof ${opts[s]})  %e" --size "${opts[s]}" )
     else
         pv_opts+=( '%p items processed: %b' )
