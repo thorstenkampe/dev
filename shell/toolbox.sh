@@ -4,14 +4,7 @@
 ## file name without extension: `${file%.*}`; file extension: `${file##*.}`
 ## absolute path: `readlink -m`
 ## escape characters (!, ", $, ', *, \, `): `printf %q`
-
-function tb_has_section {
-    crudini --get "$@" &> /dev/null
-}
-
-function tb_is_interactive {
-    [[ -v PS1 ]]
-}
+## interactive shell sets `PS1` variable
 
 function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
@@ -268,6 +261,10 @@ function tb_vartype {
 }
 
 # ini #
+function tb_has_section {
+    crudini --get "$@" &> /dev/null
+}
+
 function tb_section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
