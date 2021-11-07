@@ -112,6 +112,7 @@ function tb_choice($Prompt, $Answers) {
 
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    # `"$($color['br'])Hello World"`
     if (tb_is_pscore) {
         $global:color = @{
             # foreground  bright     background   bright
@@ -127,7 +128,12 @@ function tb_color {
         }
     }
     else {
-        $global:color = @{}
+        $global:color = @{
+            k=''; bK=''; _k=''; _bK=''; r=''; bR=''; _r=''; _bR=''
+            g=''; bG=''; _g=''; _bG=''; y=''; bY=''; _y=''; _bY=''
+            b=''; bB=''; _b=''; _bB=''; m=''; bM=''; _m=''; _bM=''
+            c=''; bC=''; _c=''; _bC=''; w=''; bW=''; _w=''; _bW=''; 0=''
+        }
     }
 }
 
