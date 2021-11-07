@@ -11,7 +11,7 @@ function tb_is_linux {
 }
 
 function tb_is_online {
-    if  tb_is_linux || [[ -x /usr/bin/ping ]]; then  # POSIX ping
+    if   tb_is_linux || [[ -x /usr/bin/ping ]]; then  # POSIX ping
         # `-i` is locale sensitive on Cygwin
         LC_NUMERIC=POSIX ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
     elif tb_is_windows; then                         # Cygwin but no POSIX ping
@@ -176,14 +176,10 @@ function tb_install_pkg {
 }
 
 function tb_log {
-    local curlevel level timestamp
+    local timestamp
     declare -A loglevel colorlevel
-    loglevel=( [error]=10 [warn]=20 [info]=30 [debug]=40 )
-    level=${loglevel[$1]-}
-    curlevel=${loglevel[${verbosity-info}]}
-
-    tb_color
-    colorlevel=( [error]=${color[R]} [warn]=${color[Y]} [info]=${color[W]} [debug]=${color[B]} )
+    loglevel=(   [error]=10 [warn]=20 [info]=30 [debug]=40 )
+    colorlevel=( [error]=R  [warn]=Y  [info]=W  [debug]=B )
 
     if tb_is_tty; then
         timestamp=''
@@ -191,8 +187,9 @@ function tb_log {
         timestamp=" $(tb_timestamp)"
     fi
 
-    if (( level <= curlevel )); then
-        echo -e "${colorlevel[$1]-}[${1^^}$timestamp]${color[0]}" "${@:2}" >&2
+    if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
+        tb_cecho "${colorlevel[$1]}" "[${1^^}$timestamp] " >&2
+        echo -e "${@:2}" >&2
     fi
 }
 
