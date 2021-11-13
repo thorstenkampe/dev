@@ -1,7 +1,6 @@
 # shellcheck disable=SC2016
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
-## file name without extension: `${file%.*}`; file extension: `${file##*.}`
 ## absolute path: `readlink -m`
 ## escape characters (!, ", $, ', *, \, `): `printf %q`
 ## interactive shell sets `PS1` variable
@@ -159,7 +158,10 @@ function tb_init {
 }
 
 function tb_install_pkg {
-    case ${1##*.} in
+    local split
+    tb_split . "$1"
+
+    case ${split[-1]} in
         (deb)
             dpkg --install --refuse-downgrade --skip-same-version "$1"
             ;;
