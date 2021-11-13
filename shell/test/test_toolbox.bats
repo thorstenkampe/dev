@@ -78,8 +78,8 @@ function teardown {
     kill $!
 }
 
-@test split {
-    tb_split ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
+@test split_char {
+    tb_split_char ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
     assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
 }
 

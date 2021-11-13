@@ -54,8 +54,9 @@ function tb_send_mail {
     mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
-function tb_split {
-    # split string into array 'split', e.g. `tb_split : "$PATH"`
+function tb_split_char {
+    # * split string into array 'split', e.g. `tb_split_char : "$PATH"`
+    # * if split_by contains more than one character, split by either character
     IFS=$1 read -ra split <<< "$2"
 }
 
@@ -96,7 +97,7 @@ function tb_arc {
     fi
 
     if [[ -v opts[c] ]]; then
-        tb_split . "$2"
+        tb_split_char . "$2"
 
         if [[ ${split[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
@@ -105,7 +106,7 @@ function tb_arc {
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
-        tb_split . "$1"
+        tb_split_char . "$1"
 
         if [[ ${split[-2]} == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
@@ -159,7 +160,7 @@ function tb_init {
 
 function tb_install_pkg {
     local split
-    tb_split . "$1"
+    tb_split_char . "$1"
 
     case ${split[-1]} in
         (deb)
