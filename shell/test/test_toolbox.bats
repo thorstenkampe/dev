@@ -42,7 +42,7 @@ function teardown {
     run tb_join ', ' "${array[@]}"
 
     assert_success
-    assert_output '1, 2, 3, 4, 5, 6, 7, 8, 9'
+    assert_output '1, 2, 3, 4, 5, 6, 7, 8, '
 }
 
 @test 'join - single element' {
@@ -78,11 +78,6 @@ function teardown {
     kill $!
 }
 
-@test split_char {
-    tb_split_char ', ' '1, 2, 3, 4, 5, 6, 7, 8, 9'
-    assert_equal "${split[*]}" '1 2 3 4 5 6 7 8 9'
-}
-
 @test 'test_file - older than' {
     tmp_file=$(mktemp)
     touch --date '1 hour ago' "$tmp_file"
@@ -109,8 +104,9 @@ function teardown {
 
 ##
 @test amap {
-    tb_amap 'expr $arg + 2' array
-    assert_equal "${array[*]}" '3 4 5 6 7 8 9 10 11'
+    array=( "${array[@]:0:8}" )
+    tb_amap 'expr $arg \* 2' array
+    assert_equal "${array[*]}" '2 4 6 8 10 12 14 16'
 }
 
 #
@@ -137,6 +133,17 @@ function teardown {
     run tb_contains 22 1 2 3
 
     assert_failure
+}
+
+#
+@test count {
+    run tb_count ', ' ', 1, 2, 3, 4, '
+    assert_output 5
+}
+
+@test 'count - no match' {
+    run tb_count '; ' ', 1, 2, 3, 4, '
+    assert_output 0
 }
 
 #
@@ -201,6 +208,12 @@ function teardown {
 
 @test 'parse_opts - no option' {
     tb_parse_opts a:bc
+}
+
+#
+@test split {
+    tb_split ', ' ', 1, 2, 3, 4, 5, 6, 7, 8, 9, '
+    assert_equal "${split[*]}" ' 1 2 3 4 5 6 7 8 9 '
 }
 
 #

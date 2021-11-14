@@ -54,12 +54,6 @@ function tb_send_mail {
     mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
-function tb_split_char {
-    # * split string into array 'split', e.g. `tb_split_char : "$PATH"`
-    # * if split_by contains more than one character, split by either character
-    IFS=$1 read -ra split <<< "$2"
-}
-
 function tb_test_file {
     # test whether file (or folder) satisfies test
     # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
@@ -97,7 +91,7 @@ function tb_arc {
     fi
 
     if [[ -v opts[c] ]]; then
-        tb_split_char . "$2"
+        tb_split . "$2"
 
         if [[ ${split[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
@@ -106,7 +100,7 @@ function tb_arc {
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
-        tb_split_char . "$1"
+        tb_split . "$1"
 
         if [[ ${split[-2]} == tar ]]; then
             tar -xaf "$1" -C "$dest" "${@:3}"
@@ -126,6 +120,13 @@ function tb_contains {
         fi
     done
     return 1
+}
+
+function tb_count {
+    local split
+
+    tb_split "$1" "$2"
+    echo $((${#split[@]} - 1))
 }
 
 function tb_init {
@@ -160,7 +161,7 @@ function tb_init {
 
 function tb_install_pkg {
     local split
-    tb_split_char . "$1"
+    tb_split . "$1"
 
     case ${split[-1]} in
         (deb)
@@ -217,6 +218,19 @@ function tb_parse_opts {
         else
             opts[$opt]=${OPTARG-}
         fi
+    done
+}
+
+function tb_split {
+    # * split string into array 'split', e.g. `tb_split : "$PATH"`
+    # * https://www.tutorialkart.com/bash-shell-scripting/bash-split-string/
+    local string
+    string=$2$1
+    split=()
+
+    while [[ $string ]]; do
+      split+=( "${string%%$1*}" )
+      string=${string#*$1}
     done
 }
 
