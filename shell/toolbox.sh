@@ -1,4 +1,4 @@
-# shellcheck disable=SC2016
+# shellcheck disable=SC2016,SC2294
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
 ## absolute path: `readlink -m`
@@ -67,7 +67,7 @@ function tb_timestamp {
 
 ##
 function tb_amap {
-    # `tb_amap 'expr $arg + 2' array`
+    # `tb_amap 'expr $arg \* 2' array`
     local key arg
     declare -n _array=$2
 
@@ -224,13 +224,12 @@ function tb_parse_opts {
 function tb_split {
     # * split string into array 'split', e.g. `tb_split : "$PATH"`
     # * https://www.tutorialkart.com/bash-shell-scripting/bash-split-string/
-    local string
-    string=$2$1
+    local string=$2$1
     split=()
 
     while [[ $string ]]; do
-      split+=( "${string%%$1*}" )
-      string=${string#*$1}
+        split+=( "${string%%"$1"*}" )
+        string=${string#*"$1"}
     done
 }
 
@@ -416,10 +415,9 @@ function tb_progress {
 function tb_spinner {
     # `tb_spinner 'sleep 10'`
     # source: https://stackoverflow.com/a/12498305/5740232
-    local spin i
     # shellcheck disable=SC1003
-    spin=( '-' '\' '|' '/' )
-    i=0
+    local spin=( '-' '\' '|' '/' )
+    local i=0
 
     if tb_is_tty; then
         eval "$@" &
