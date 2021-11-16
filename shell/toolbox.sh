@@ -1,7 +1,7 @@
 # shellcheck disable=SC2016,SC2294
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
-## absolute path: `readlink -m`
+## absolute path: `readlink|realpath --canonicalize-missing`
 ## escape characters (!, ", $, ', *, \, `): `printf %q`
 ## interactive shell sets `PS1` variable
 
@@ -13,7 +13,7 @@ function tb_is_online {
     if   tb_is_linux || [[ -x /usr/bin/ping ]]; then  # POSIX ping
         # `-i` is locale sensitive on Cygwin
         LC_NUMERIC=POSIX ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
-    elif tb_is_windows; then                         # Cygwin but no POSIX ping
+    elif tb_is_windows; then                          # Cygwin but no POSIX ping
         ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
     else
         return 1
@@ -96,7 +96,7 @@ function tb_arc {
         if [[ ${split[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
-            7za a -ssw "$2" "$(readlink -m "$1")" "${@:3}"
+            7za a -ssw "$2" "$(readlink --canonicalize-missing "$1")" "${@:3}"
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
@@ -274,37 +274,37 @@ function tb_vartype {
 }
 
 # ini #
-function tb_has_section {
-    crudini --get "$@" &> /dev/null
-}
-
 function tb_section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
-    local section key keys value
+    local section key keys ordered value
 
     tb_parse_opts o "$@"
     shift $(( OPTIND - 1 ))
 
+    if [[ -v opts[o] ]]; then
+        ordered=true
+    else
+        ordered=false
+    fi
+
     for section in "${@:2}"; do
         unset "$section"
-        if [[ ! -v opts[o] ]]; then
+        if ! $ordered; then
             declare -gA "$section"
         fi
         # create array with same name as section name
         declare -n array=$section
         array=()
 
-        if tb_has_section "$1" "$section"; then
-            mapfile -t keys < <(crudini --get "$1" "$section")
-            for key in "${keys[@]}"; do
-                value=$(crudini --get "$1" "$section" "$key")
-                if [[ -v opts[o] ]]; then
-                    array+=( "$value" )
-                else
-                    array[$key]=$value
-                fi
-            done
-        fi
+        mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
+        for key in "${keys[@]}"; do
+            value=$(crudini --get "$1" "$section" "$key")
+            if $ordered; then
+                array+=( "$value" )
+            else
+                array[$key]=$value
+            fi
+        done
     done
 }
 
@@ -312,9 +312,7 @@ function tb_section_to_var {
     local section
 
     for section in "${@:2}"; do
-        if tb_has_section "$1" "$section"; then
-            eval "$(crudini --get --format sh "$1" "$section")"
-        fi
+        eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
     done
 }
 

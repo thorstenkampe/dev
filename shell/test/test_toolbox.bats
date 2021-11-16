@@ -281,24 +281,6 @@ function teardown {
 }
 
 # ini #
-@test 'has_section - existing section' {
-    tb_has_section $config connection
-}
-
-@test 'has_section - not existing section' {
-    run tb_has_section $config no_connection
-    assert_failure
-}
-
-@test 'has_section - existing key' {
-    tb_has_section $config connection user
-}
-
-@test 'has_section - not existing key' {
-    run tb_has_section $config connection no_user
-    assert_failure
-}
-
 @test section_to_array {
     tb_section_to_array $config connection logging
 
