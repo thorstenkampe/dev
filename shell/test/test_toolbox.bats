@@ -95,13 +95,6 @@ function teardown {
     assert_file_not_exist "$tmp_file"
 }
 
-@test timestamp {
-    run tb_timestamp
-
-    assert_success
-    assert_output --regexp '^[0-9]{4}(-[0-9]{2}){2} ([0-9]{2}:){2}[0-9]{2}$'
-}
-
 ##
 @test amap {
     array=( "${array[@]:0:8}" )

@@ -2,7 +2,7 @@
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
 ## absolute path: `readlink|realpath --canonicalize-missing`
-## escape characters (!, ", $, ', *, \, `): `printf %q`
+## escape characters: `printf %q`
 ## interactive shell sets `PS1` variable
 
 function tb_is_linux {
@@ -58,11 +58,6 @@ function tb_test_file {
     # test whether file (or folder) satisfies test
     # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
     [[ $(find "$(dirname "$1")" -mindepth 1 -maxdepth 1 -name "$(basename "$1")" "${@:2}") ]]
-}
-
-function tb_timestamp {
-    # create timestamp "yyyy-mm-dd hh:mm:ss"
-    date +'%F %T'
 }
 
 ##
@@ -129,6 +124,19 @@ function tb_count {
     echo $((${#split[@]} - 1))
 }
 
+function tb_groupby {
+    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> ([3]="333 444" [2]="11 22")
+    local arg result
+    declare -gA groupby=()
+
+    for arg in "${@:2}"; do
+        result=$(eval "$1")
+        groupby[$result]="${groupby[$result]-}$arg "
+    done
+
+    tb_amap 'echo ${arg::-1}' groupby
+}
+
 function tb_init {
     local ps4
 
@@ -188,7 +196,7 @@ function tb_log {
     if tb_is_tty; then
         timestamp=''
     else
-        timestamp=" $(tb_timestamp)"
+        timestamp=" $(date +'%F %T')"
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
