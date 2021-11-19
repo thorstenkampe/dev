@@ -125,7 +125,7 @@ function tb_count {
 }
 
 function tb_groupby {
-    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> ([3]="333 444" [2]="11 22")
+    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> ([3]="333 444" [2]="22" [1]="1")
     local arg result
     declare -gA groupby=()
 

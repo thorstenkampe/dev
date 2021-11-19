@@ -157,6 +157,14 @@ function teardown {
 }
 
 #
+@test groupby {
+    tb_groupby 'echo ${#arg}' 1 22 333 444
+    assert_equal "${groupby[1]}" 1
+    assert_equal "${groupby[2]}" 22
+    assert_equal "${groupby[3]}" '333 444'
+}
+
+#
 @test 'log - debug message' {
     run tb_log debug 'test message'
 
