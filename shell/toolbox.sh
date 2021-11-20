@@ -129,9 +129,9 @@ function tb_groupby {
     # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
     # arrayname=${groupby[3]}; array="${arrayname}[@]"; echo "${!array}"
 
-    local arg result index
+    local arg result index i
     declare -gA groupby=()
-    declare -i i=0
+    i=0
 
     for arg in "${@:2}"; do
         result=$(eval "$1")
@@ -143,6 +143,10 @@ function tb_groupby {
             index=()
         fi
         index+=( "$arg" )
+    done
+
+    while [[ -v groupby$i ]]; do
+        unset -v groupby$((i++))
     done
 }
 
