@@ -146,7 +146,7 @@ function tb_groupby {
     done
 
     while [[ -v groupby$i ]]; do
-        unset -v groupby$((i++))
+        unset groupby$((i++))
     done
 }
 
