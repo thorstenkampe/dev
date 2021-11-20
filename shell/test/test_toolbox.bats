@@ -1,4 +1,4 @@
-# shellcheck disable=SC2016,SC2154
+# shellcheck disable=SC2016,SC2154,SC2178
 
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
@@ -159,9 +159,18 @@ function teardown {
 #
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
-    assert_equal "${groupby[1]}" 1
-    assert_equal "${groupby[2]}" 22
-    assert_equal "${groupby[3]}" '333 444'
+
+    arrayname=${groupby[1]}
+    array="${arrayname}[@]"
+    assert_equal "${!array}" 1
+
+    arrayname=${groupby[2]}
+    array="${arrayname}[@]"
+    assert_equal "${!array}" 22
+
+    arrayname=${groupby[3]}
+    array="${arrayname}[*]"
+    assert_equal "${!array}" '333 444'
 }
 
 #

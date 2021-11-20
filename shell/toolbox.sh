@@ -125,16 +125,25 @@ function tb_count {
 }
 
 function tb_groupby {
-    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> ([3]="333 444" [2]="22" [1]="1")
-    local arg result
+    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> groupby=([1]=groupby0 [2]=groupby1
+    # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
+    # arrayname=${groupby[3]}; array="${arrayname}[@]"; echo "${!array}"
+
+    local arg result index
     declare -gA groupby=()
+    declare -i i=0
 
     for arg in "${@:2}"; do
         result=$(eval "$1")
-        groupby[$result]="${groupby[$result]-}$arg "
+        if [[ -v groupby[$result] ]]; then
+            declare -n index=${groupby[$result]}
+        else
+            groupby[$result]=groupby$((i++))
+            declare -n index=${groupby[$result]}
+            index=()
+        fi
+        index+=( "$arg" )
     done
-
-    tb_amap 'echo ${arg::-1}' groupby
 }
 
 function tb_init {
