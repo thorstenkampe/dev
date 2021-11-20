@@ -423,13 +423,12 @@ function tb_progress {
     tb_parse_opts s: "$@"
     shift $(( OPTIND - 1 ))
 
-    pv_opts=( --interval 0.1 --width 80 --line-mode --format )
     if [[ -v opts[s] ]]; then
-        pv_opts+=( "%p (%bof ${opts[s]})  %e" --size "${opts[s]}" )
+        pv_opts=( "%p (%bof ${opts[s]})  %e" --size "${opts[s]}" )
     else
-        pv_opts+=( '%p items processed: %b' )
+        pv_opts=( '%p items processed: %b' )
     fi
-    pv "${pv_opts[@]}" > /dev/null
+    pv --interval 0.1 --width 80 --line-mode --format "${pv_opts[@]}" > /dev/null
 }
 
 function tb_spinner {
