@@ -127,7 +127,9 @@ function tb_count {
 function tb_groupby {
     # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> groupby=([1]=groupby0 [2]=groupby1
     # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
-    # array="${groupby[3]}[@]"; echo "${!array}"
+    #
+    # array=${groupby[3]}[@]; echo "${!array}"
+    # assemble: `tb_amap 'array=$arg[@]; echo "${!array}"' groupby`
 
     local arg result index i
     declare -gA groupby=()
@@ -257,7 +259,6 @@ function tb_split {
 function tb_test_args {
     # * split arguments into arrays that evaluate to true and to false
     # * `tb_test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
-    # * same as above: `tb_test_args 'expr $arg % 2' ...`
     local arg
     true=()
     false=()
@@ -438,18 +439,12 @@ function tb_spinner {
     local spin=( '-' '\' '|' '/' )
     local i=0
 
-    if tb_is_tty; then
-        eval "$@" &
-
-        # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
-        while [[ -d /proc/$! ]]; do
-            echo -en "\r[${spin[(i += 1) % 4]}]" 1>&2
-            sleep 0.1
-        done
-
-        echo
-        wait $!
-    else
-        eval "$@"
-    fi
+    eval "$@" &
+    # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
+    while [[ -d /proc/$! ]]; do
+        echo -en "\r[${spin[(i += 1) % 4]}]" 1>&2
+        sleep 0.1
+    done
+    echo
+    wait $!
 }
