@@ -160,16 +160,13 @@ function teardown {
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
 
-    arrayname=${groupby[1]}
-    array="${arrayname}[@]"
+    array="${groupby[1]}[@]"
     assert_equal "${!array}" 1
 
-    arrayname=${groupby[2]}
-    array="${arrayname}[@]"
+    array="${groupby[2]}[@]"
     assert_equal "${!array}" 22
 
-    arrayname=${groupby[3]}
-    array="${arrayname}[*]"
+    array="${groupby[3]}[*]"
     assert_equal "${!array}" '333 444'
 }
 

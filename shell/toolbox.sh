@@ -127,7 +127,7 @@ function tb_count {
 function tb_groupby {
     # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> groupby=([1]=groupby0 [2]=groupby1
     # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
-    # arrayname=${groupby[3]}; array="${arrayname}[@]"; echo "${!array}"
+    # array="${groupby[3]}[@]"; echo "${!array}"
 
     local arg result index i
     declare -gA groupby=()
