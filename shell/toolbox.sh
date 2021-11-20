@@ -138,8 +138,8 @@ function tb_groupby {
         if [[ -v groupby[$result] ]]; then
             declare -n index=${groupby[$result]}
         else
-            groupby[$result]=groupby$((i++))
-            declare -n index=${groupby[$result]}
+            groupby[$result]=groupby$i
+            declare -n index=groupby$((i++))
             index=()
         fi
         index+=( "$arg" )
