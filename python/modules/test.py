@@ -35,18 +35,18 @@ section = config['section']
 try:
     from pandas import DataFrame, Series
 
-    sr = Series(
-             data  = list,
-             # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
-             index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+    sr    = Series(
+                data  = list,
+                # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
+                index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
          )
     sr.name       = 'sr'
     sr.index.name = 'index'
 
-    df = DataFrame(
-             data    = table,
-             index   = [1, 2, 3, 4],
-             columns = ['a', 'b', 'c', 'd', 'e']
+    df    = DataFrame(
+                data    = table,
+                index   = [1, 2, 3, 4],
+                columns = ['a', 'b', 'c', 'd', 'e']
          )
     df.index.name   = 'index'
     df.columns.name = 'cols'
