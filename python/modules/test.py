@@ -1,7 +1,6 @@
 # pylint: disable = redefined-builtin
 import toolbox as tb
 from configparser import ConfigParser
-from pandas import DataFrame, Series
 
 # pytest helpers
 def even(integer):
@@ -33,42 +32,50 @@ config['section'] = {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False
 section = config['section']
 
 # Pandas
-sr = Series(
-         data  = list,
-         # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
-         index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
-     )
-sr.name       = 'sr'
-sr.index.name = 'index'
+try:
+    from pandas import DataFrame, Series
 
-df = DataFrame(
-         data    = table,
-         index   = [1, 2, 3, 4],
-         columns = ['a', 'b', 'c', 'd', 'e']
-     )
-df.index.name   = 'index'
-df.columns.name = 'cols'
+    sr = Series(
+             data  = list,
+             # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
+             index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+         )
+    sr.name       = 'sr'
+    sr.index.name = 'index'
 
-group = tb.groupby(df, keyfunc=lambda x: even(x['e']))
+    df = DataFrame(
+             data    = table,
+             index   = [1, 2, 3, 4],
+             columns = ['a', 'b', 'c', 'd', 'e']
+         )
+    df.index.name   = 'index'
+    df.columns.name = 'cols'
 
-class dsn:  # pylint: disable = too-few-public-methods
-    from toolbox import engine
+    group = tb.groupby(df, keyfunc=lambda x: even(x['e']))
+except ModuleNotFoundError:
+    pass
 
-    mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook')
-    mslinux     = engine('mssql://sa:password@db/Chinook')
-    mswindows   = engine('mssql://sa:password@windows-db/Chinook')
+try:
+    class dsn:  # pylint: disable = too-few-public-methods
+        from toolbox import engine
 
-    mylocal     = engine('mysql://root:password@rednails/Chinook')
-    mylinux     = engine('mysql://root:password@db/Chinook')
-    mywindows   = engine('mysql://root:password@windows-db/Chinook')
+        mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook')
+        mslinux     = engine('mssql://sa:password@db/Chinook')
+        mswindows   = engine('mssql://sa:password@windows-db/Chinook')
 
-    oralinux    = engine('oracle://sys:password@db/xe')
-    orawindows  = engine('oracle://sys:password@windows-db/xepdb1')
-    oracdb      = engine('oracle://sys:password@windows-db')
+        mylocal     = engine('mysql://root:password@rednails/Chinook')
+        mylinux     = engine('mysql://root:password@db/Chinook')
+        mywindows   = engine('mysql://root:password@windows-db/Chinook')
 
-    postlocal   = engine('postgresql://postgres:password@rednails/')
-    postlinux   = engine('postgresql://postgres:password@db/')
-    postwindows = engine('postgresql://postgres:password@windows-db/')
+        oralinux    = engine('oracle://sys:password@db/xe')
+        orawindows  = engine('oracle://sys:password@windows-db/xepdb1')
+        oracdb      = engine('oracle://sys:password@windows-db')
 
-    litelocal   = engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite')
-    litelinux   = engine('sqlite:////home/thorsten/data/Chinook.sqlite')
+        postlocal   = engine('postgresql://postgres:password@rednails/')
+        postlinux   = engine('postgresql://postgres:password@db/')
+        postwindows = engine('postgresql://postgres:password@windows-db/')
+
+        litelocal   = engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite')
+        litelinux   = engine('sqlite:////home/thorsten/data/Chinook.sqlite')
+except ModuleNotFoundError:
+    pass
