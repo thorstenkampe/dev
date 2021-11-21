@@ -1,4 +1,5 @@
 # pylint: disable = redefined-builtin
+import types
 import toolbox as tb
 from configparser import ConfigParser
 
@@ -36,18 +37,18 @@ try:
     from pandas import DataFrame, Series
 
     sr    = Series(
-                data  = list,
-                # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
-                index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
-         )
+        data  = list,
+        # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
+        index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+    )
     sr.name       = 'sr'
     sr.index.name = 'index'
 
     df    = DataFrame(
-                data    = table,
-                index   = [1, 2, 3, 4],
-                columns = ['a', 'b', 'c', 'd', 'e']
-         )
+        data    = table,
+        index   = [1, 2, 3, 4],
+        columns = ['a', 'b', 'c', 'd', 'e']
+    )
     df.index.name   = 'index'
     df.columns.name = 'cols'
 
@@ -56,26 +57,26 @@ except ModuleNotFoundError:
     pass
 
 try:
-    class dsn:  # pylint: disable = too-few-public-methods
-        from toolbox import engine
+    from toolbox import engine
+    dsn = types.SimpleNamespace(
+        mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
+        mslinux     = engine('mssql://sa:password@db/Chinook'),
+        mswindows   = engine('mssql://sa:password@windows-db/Chinook'),
 
-        mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook')
-        mslinux     = engine('mssql://sa:password@db/Chinook')
-        mswindows   = engine('mssql://sa:password@windows-db/Chinook')
+        mylocal     = engine('mysql://root:password@rednails/Chinook'),
+        mylinux     = engine('mysql://root:password@db/Chinook'),
+        mywindows   = engine('mysql://root:password@windows-db/Chinook'),
 
-        mylocal     = engine('mysql://root:password@rednails/Chinook')
-        mylinux     = engine('mysql://root:password@db/Chinook')
-        mywindows   = engine('mysql://root:password@windows-db/Chinook')
+        oralinux    = engine('oracle://sys:password@db/xe'),
+        orawindows  = engine('oracle://sys:password@windows-db/xepdb1'),
+        oracdb      = engine('oracle://sys:password@windows-db'),
 
-        oralinux    = engine('oracle://sys:password@db/xe')
-        orawindows  = engine('oracle://sys:password@windows-db/xepdb1')
-        oracdb      = engine('oracle://sys:password@windows-db')
+        postlocal   = engine('postgresql://postgres:password@rednails/'),
+        postlinux   = engine('postgresql://postgres:password@db/'),
+        postwindows = engine('postgresql://postgres:password@windows-db/'),
 
-        postlocal   = engine('postgresql://postgres:password@rednails/')
-        postlinux   = engine('postgresql://postgres:password@db/')
-        postwindows = engine('postgresql://postgres:password@windows-db/')
-
-        litelocal   = engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite')
+        litelocal   = engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
         litelinux   = engine('sqlite:////home/thorsten/data/Chinook.sqlite')
+    )
 except ModuleNotFoundError:
     pass
