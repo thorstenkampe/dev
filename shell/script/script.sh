@@ -7,6 +7,7 @@ tb_init
 _params=( "$@" )
 
 # MAIN CODE STARTS HERE #
+tb_test_deps mailsend-go
 
 _usage="
 ${color[c]}Usage${color[0]}: $(basename "$0") [-l <logfile>]
@@ -16,13 +17,6 @@ ${color[c]}Options${color[0]}:
   ${color[W]}-h${color[0]}            Show help
   ${color[W]}-d${color[0]}            Show debug and trace messages
 "
-
-# shellcheck disable=SC2016
-tb_test_args 'which $arg' mailsend-go
-
-if (( ${#false[@]} )); then
-    tb_log warn "can't find dependencies: ${false[*]}"
-fi
 
 function error_handler {
     # "[ERROR] command "command" in script_name:function_name:line_number"
