@@ -139,12 +139,13 @@ function tb_groupby {
         result=$(eval "$1")
         if [[ -v groupby[$result] ]]; then
             declare -n index=${groupby[$result]}
+            index+=( "$arg" )
         else
-            groupby[$result]=groupby$i
-            declare -n index=groupby$((i++))
-            index=()
+            # shellcheck disable=SC2178
+            declare -n index=groupby$i
+            index=( "$arg" )
+            groupby[$result]=groupby$((i++))
         fi
-        index+=( "$arg" )
     done
 
     while [[ -v groupby$i ]]; do
@@ -175,7 +176,7 @@ function tb_init {
     fi
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
-    tb_color
+    tb_char  # `tb_char` runs `tb_color`
     export PS4="${color[C]}$ps4${color[0]} "
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
@@ -353,6 +354,16 @@ function tb_cecho {
     echo -en "$2${color[0]}"
 }
 
+function tb_char {
+    declare -gA char
+
+    tb_color
+    char=(
+        [error]="${color[s]}${color[R]}✗${color[0]}"
+        [success]="${color[s]}${color[G]}✓${color[0]}"
+    )
+}
+
 function tb_choice {
     # `tb_choice 'Continue? [Y|n]: ' y n ''`
     # `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
@@ -389,31 +400,41 @@ function tb_color {
     # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     declare -gA color
     # create color alias with `declare -n c=color`
-    if tb_is_tty; then
-        color=(
-            # foreground bright       background    bright
-            [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
-            [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
-            [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
-            [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
-            [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
-            [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
-            [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
-            [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
+    color=(
+        # foreground bright       background    bright
+        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
+        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
+        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
+        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
+        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
+        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
+        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
+        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
 
-            # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
-            # n: negative, h: hidden, t: strikethrough, 0: reset
-            [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
-            [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
-        )
-    else
-        color=(
-            [k]='' [K]='' [_k]='' [_K]='' [r]='' [R]='' [_r]='' [_R]=''
-            [g]='' [G]='' [_g]='' [_G]='' [y]='' [Y]='' [_y]='' [_Y]=''
-            [b]='' [B]='' [_b]='' [_B]='' [m]='' [M]='' [_m]='' [_M]=''
-            [c]='' [C]='' [_c]='' [_C]='' [w]='' [W]='' [_w]='' [_W]=''
-            [s]='' [d]='' [i]='' [u]='' [U]='' [f]='' [n]='' [h]='' [t]='' [0]=''
-        )
+        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
+        # n: negative, h: hidden, t: strikethrough, 0: reset
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
+        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
+    )
+
+    if ! tb_is_tty; then
+        tb_amap '' color
+    fi
+}
+
+function tb_test_deps {
+    # shellcheck disable=SC2034
+    local false true
+
+    tb_char
+    tb_test_args 'which $arg' "$@"
+
+    if (( ${#false[@]} )); then
+        tb_log error "can't find dependencies:"
+        for dep in "${false[@]}"; do
+            echo -e "${char[error]} $dep"
+        done
+        return 1
     fi
 }
 
