@@ -414,7 +414,6 @@ function tb_color {
 
 function tb_test_deps {
     local false true
-
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
