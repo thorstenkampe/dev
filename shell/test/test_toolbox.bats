@@ -251,6 +251,17 @@ function teardown {
 }
 
 #
+@test 'test_deps - success' {
+    tb_test_deps bash
+}
+
+@test 'test_deps - failure' {
+    run tb_test_deps bash does_not_exist
+
+    assert_failure
+}
+
+#
 @test 'vartype - string' {
     run tb_vartype string
 
