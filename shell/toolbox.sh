@@ -176,7 +176,7 @@ function tb_init {
     fi
 
     ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
-    tb_char  # `tb_char` runs `tb_color`
+    tb_color
     export PS4="${color[C]}$ps4${color[0]} "
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
@@ -354,16 +354,6 @@ function tb_cecho {
     echo -en "$2${color[0]}"
 }
 
-function tb_char {
-    declare -gA char
-
-    tb_color
-    char=(
-        [error]="${color[s]}${color[R]}✗${color[0]}"
-        [success]="${color[s]}${color[G]}✓${color[0]}"
-    )
-}
-
 function tb_choice {
     # `tb_choice 'Continue? [Y|n]: ' y n ''`
     # `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
@@ -423,16 +413,15 @@ function tb_color {
 }
 
 function tb_test_deps {
-    # shellcheck disable=SC2034
     local false true
 
-    tb_char
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
         tb_log error "can't find dependencies:"
         for dep in "${false[@]}"; do
-            echo -e "${char[error]} $dep"
+            tb_cecho sR '✗'
+            echo " $dep"
         done
         return 1
     fi
