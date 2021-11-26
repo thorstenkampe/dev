@@ -61,17 +61,6 @@ function tb_test_file {
 }
 
 ##
-function tb_amap {
-    # `tb_amap 'expr $arg \* 2' array`
-    local key arg
-    declare -n _array=$2
-
-    for key in "${!_array[@]}"; do
-        arg=${_array[$key]}
-        _array[$key]=$(eval "$1")
-    done
-}
-
 function tb_arc {
     local dest false true split
 
@@ -129,7 +118,7 @@ function tb_groupby {
     # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
     #
     # array=${groupby[3]}[@]; echo "${!array}"
-    # assemble: `tb_amap 'array=$arg[@]; echo "${!array}"' groupby`
+    # assemble: `tb_map 'array=$arg[@]; echo "${!array}"' groupby`
 
     local arg result index i
     declare -gA groupby=()
@@ -194,7 +183,7 @@ function tb_install_pkg {
 
         (rpm)
             # https://serverfault.com/questions/880398/yum-install-local-rpm-throws-error-if-up-to-date
-            yum install --assumeyes "$1" || true
+            yum install --assumeyes --cacheonly "$1" || true
             ;;
 
         (*)
@@ -228,6 +217,17 @@ function tb_log_to_file {
     if [[ $parent_process != logsave ]]; then
         exec logsave -a "$1" "${@:2}"
     fi
+}
+
+function tb_map {
+    # `tb_map 'expr $arg \* 2' array`
+    local key arg
+    declare -n _array=$2
+
+    for key in "${!_array[@]}"; do
+        arg=${_array[$key]}
+        _array[$key]=$(eval "$1")
+    done
 }
 
 function tb_parse_opts {
@@ -408,7 +408,7 @@ function tb_color {
     )
 
     if ! tb_is_tty; then
-        tb_amap '' color
+        tb_map '' color
     fi
 }
 

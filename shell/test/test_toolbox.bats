@@ -96,13 +96,6 @@ function teardown {
 }
 
 ##
-@test amap {
-    array=( "${array[@]:0:8}" )
-    tb_amap 'expr $arg \* 2' array
-    assert_equal "${array[*]}" '2 4 6 8 10 12 14 16'
-}
-
-#
 @test 'arc - zip' {
     tb_arc -c toolbox.sh "$testdir/toolbox.sh.zip"
     tb_arc -x "$testdir/toolbox.sh.zip" "$testdir"
@@ -160,6 +153,7 @@ function teardown {
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
 
+    # shellcheck disable=SC2030
     array="${groupby[1]}[@]"
     assert_equal "${!array}" 1
 
@@ -185,6 +179,20 @@ function teardown {
 
     assert_success
     assert_file_exist "$testdir/test.log"
+}
+
+#
+@test 'map - array' {
+    unset "array[8]"
+    tb_map 'expr $arg \* 2' array
+    # shellcheck disable=SC2031
+    assert_equal "${array[*]}" '2 4 6 8 10 12 14 16'
+}
+
+@test 'map - associative array' {
+    unset "assoc[9]"
+    tb_map 'expr $arg \* 2' assoc
+    assert_equal "${assoc[*]}" '16 14 12 10 8 6 4 2'
 }
 
 #
