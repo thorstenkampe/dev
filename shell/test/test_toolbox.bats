@@ -269,43 +269,6 @@ function teardown {
     assert_failure
 }
 
-#
-@test 'vartype - string' {
-    run tb_vartype string
-
-    assert_success
-    assert_output string
-}
-
-@test 'vartype - integer' {
-    run tb_vartype int
-
-    assert_success
-    assert_output integer
-}
-
-@test 'vartype - array' {
-    run tb_vartype array
-
-    assert_success
-    assert_output array
-}
-
-@test 'vartype - associative array' {
-    run tb_vartype assoc
-
-    assert_success
-    assert_output 'associative array'
-}
-
-@test 'vartype - not set' {
-    unset var
-    run tb_vartype var
-
-    assert_failure
-    refute_output
-}
-
 # ini #
 @test section_to_array {
     tb_section_to_array $config connection logging

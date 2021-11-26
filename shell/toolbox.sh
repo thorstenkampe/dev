@@ -273,29 +273,6 @@ function tb_test_args {
     done
 }
 
-function tb_vartype {
-    case $(declare -p "$1" 2> /dev/null) in
-        (declare\ -a*)
-            echo array
-            ;;
-
-        (declare\ -A*)
-            echo 'associative array'
-            ;;
-
-        (declare\ -i*)
-            echo integer
-            ;;
-
-        (declare\ --*)
-            echo string
-            ;;
-
-        (*)
-            return 1
-    esac
-}
-
 # ini #
 function tb_section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
