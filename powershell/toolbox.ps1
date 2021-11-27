@@ -113,32 +113,26 @@ function tb_choice($Prompt, $Answers) {
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     # `"$($color['br'])Hello World"`
-    if (tb_is_pscore) {
-        $global:color = @{
-            # foreground  bright     background   bright
-            k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
-            r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
-            g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
-            y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
-            b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
-            m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
-            c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
-            w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
-            0="`e[m"                                             # reset
-        }
+    $global:color = @{
+        # foreground  bright     background   bright
+        k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
+        r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
+        g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
+        y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
+        b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
+        m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
+        c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
+        w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
+        0="`e[m"                                             # reset
     }
-    else {
-        $global:color = @{
-            k=''; bK=''; _k=''; _bK=''; r=''; bR=''; _r=''; _bR=''
-            g=''; bG=''; _g=''; _bG=''; y=''; bY=''; _y=''; _bY=''
-            b=''; bB=''; _b=''; _bB=''; m=''; bM=''; _m=''; _bM=''
-            c=''; bC=''; _c=''; _bC=''; w=''; bW=''; _w=''; _bW=''; 0=''
-        }
+
+    if (-not (tb_is_pscore))  {
+        tb_map {''} $color
     }
 }
 
 function tb_ConvertTo-Ordered($Hash) {
-    # Shallow copy of the original (see comment for dmap)
+    # Shallow copy of the original (see comment for map)
     $dict = [ordered]@{}
     $keys = $Hash.Keys | Sort-Object
 
@@ -149,12 +143,19 @@ function tb_ConvertTo-Ordered($Hash) {
     $dict
 }
 
-function tb_dmap($Hash, $Keyfunc) {
+function tb_map($Keyfunc, $Collection) {
     # Modifies the original. Cloning a hash is shallow and not supported for ordered
     # dictionaries. Copying with "(foreach key {clone[key] = orig[key]})" is also
     # shallow
-    foreach ($key in @($hash.Keys)) {
-        $hash[$key] = & $Keyfunc $hash[$key]
+    try {
+        $indices = @($Collection.Keys)
+    }
+    catch [Management.Automation.PropertyNotFoundException] {
+        $indices = 0 .. ($Collection.Length - 1)
+    }
+
+    foreach ($index in $indices) {
+        $Collection[$index] = & $Keyfunc $Collection[$index]
     }
 }
 
@@ -176,7 +177,7 @@ function tb_exec($Cmd) {
     }
 }
 
-function tb_groupby($Object, $Keyfunc={param($x) $x}) {
+function tb_groupby($Keyfunc={param($x) $x}, $Object) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
