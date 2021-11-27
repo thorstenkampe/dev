@@ -10,47 +10,6 @@ BeforeAll {
     }
 }
 
-# tb_Clean-Path
-Describe 'tb_Clean-Path' {
-    if (tb_is_windows) {
-        It 'duplicate paths' {
-            $result = tb_Clean-Path -Paths 'C:\;C:\'
-
-            Assert-Equal -Actual $result -Expected C:\
-        }
-
-        It 'unique paths' {
-            $result = tb_Clean-Path -Paths 'C:\;C:\Windows'
-
-            Assert-Equal -Actual $result -Expected 'C:\;C:\Windows'
-        }
-
-        It 'non-existing path' {
-            $result = tb_Clean-Path -Paths 'C:\does_not_exist'
-
-            Assert-Equal -Actual $result -Expected ''
-        }
-    } else {
-        It 'duplicate paths' {
-            $result = tb_Clean-Path -Paths /bin:/bin
-
-            Assert-Equal -Actual $result -Expected /bin
-        }
-
-        It 'unique paths' {
-            $result = tb_Clean-Path -Paths /bin:/etc
-
-            Assert-Equal -Actual $result -Expected /bin:/etc
-        }
-
-        It 'non-existing path' {
-            $result = tb_Clean-Path -Paths /does_not_exist
-
-            Assert-Equal -Actual $result -Expected ''
-        }
-    }
-}
-
 # tb_dmap
 Describe 'tb_dmap' {
     BeforeEach {
