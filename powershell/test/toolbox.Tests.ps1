@@ -4,6 +4,9 @@ Import-Module -Name PesterMatchHashtable
 . $PSScriptRoot/../toolbox.ps1
 
 BeforeAll {
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version latest
+
     . $PSScriptRoot/../toolbox.ps1
 
     function Get-TypeName($object) {
@@ -59,27 +62,24 @@ Describe 'tb_exec' {
 }
 
 # tb_groupby
-# PowerShell Desktop would need `-AsString` for `Group-Object` in `tb_groupby`
-if (tb_is_pscore) {
-    Describe 'tb_groupby' {
-        BeforeEach {
-            . $PSScriptRoot/../test.ps1
-        }
+Describe 'tb_groupby' {
+    BeforeEach {
+        . $PSScriptRoot/../test.ps1
+    }
 
-        It 'array' {
-            $grouped = tb_groupby -keyfunc Get-TypeName $array
+    It 'array' {
+        $grouped = tb_groupby -keyfunc Get-TypeName $array
 
-            $grouped['Int32']  | Should -Be 1, 2, 3, 4, 5, 6, 7, 8
-            $grouped['String'] | Should -Be 'i'
-        }
+        $grouped['Int32']  | Should -Be 1, 2, 3, 4, 5, 6, 7, 8
+        $grouped['String'] | Should -Be 'i'
+    }
 
-        It 'hashtable' {
-            $grouped = tb_groupby -keyfunc {param($x) Get-TypeName $x.Value} $ordered
+    It 'hashtable' {
+        $grouped = tb_groupby -keyfunc {param($x) Get-TypeName $x.Value} $ordered
 
-            $grouped['Int32'].Name   | Should -Be 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
-            $grouped['Int32'].Value  | Should -Be 1, 2, 3, 4, 5, 6, 7, 8
-            $grouped['String'].Name  | Should -Be 9
-            $grouped['String'].Value | Should -Be 'i'
-        }
+        $grouped['Int32'].Name   | Should -Be 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+        $grouped['Int32'].Value  | Should -Be 1, 2, 3, 4, 5, 6, 7, 8
+        $grouped['String'].Name  | Should -Be 9
+        $grouped['String'].Value | Should -Be 'i'
     }
 }

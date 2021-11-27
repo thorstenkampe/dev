@@ -176,9 +176,9 @@ function tb_exec($Cmd) {
 
 function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
-    # * `tb_groupby $array {param($x) $x.gettype().Name}`
-    # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
-    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
+    # * `tb_groupby {param($x) $x.gettype().Name} $array`
+    # * `tb_groupby {param($x) $x.Value.GetType().Name} $hashtable`
+    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable -AsString -CaseSensitive
 }
 
 function tb_init {
