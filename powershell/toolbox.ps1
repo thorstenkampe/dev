@@ -178,7 +178,14 @@ function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby {param($x) $x.gettype().Name} $array`
     # * `tb_groupby {param($x) $x.Value.GetType().Name} $hashtable`
-    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable -AsString -CaseSensitive
+    if (tb_is_pscore) {
+        $params = @{'-CaseSensitive' = $true}
+    }
+    else {
+        # `-CaseSensitive` and `-AsHashTable` mutually exclusive in PowerShell Desktop
+        $params = @{}
+    }
+    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable -AsString @params
 }
 
 function tb_init {

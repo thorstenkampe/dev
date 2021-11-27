@@ -82,4 +82,17 @@ Describe 'tb_groupby' {
         $grouped['String'].Name  | Should -Be 9
         $grouped['String'].Value | Should -Be 'i'
     }
+
+    It 'case sensitive' {
+        $grouped = tb_groupby {param($x) $x} @('a', 'A')
+
+        if (tb_is_pscore) {
+            $grouped['A'] | Should -Be 'A'
+            $grouped['a'] | Should -Be 'a'
+        }
+        else {
+            $grouped['A'] | Should -Be 'a', 'A'
+            $grouped['a'] | Should -Be 'a', 'A'
+        }
+    }
 }
