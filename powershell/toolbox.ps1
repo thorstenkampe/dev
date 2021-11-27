@@ -183,9 +183,9 @@ function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
     }
     else {
         # error in PowerShell Desktop with `-CaseSensitive` ("key duplication")
-        $params = @{}
+        $params = @{'-AsString' = $true}
     }
-    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable -AsString @params
+    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable @params
 }
 
 function tb_init {
