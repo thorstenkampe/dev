@@ -32,16 +32,16 @@ Describe 'tb_map' {
     }
 }
 
-# tb_dupdate
-Describe 'tb_dupdate' {
+# tb_update
+Describe 'tb_update' {
     BeforeEach {
         . $PSScriptRoot/../test.ps1
     }
 
-    It 'tb_dupdate' {
+    It 'tb_update' {
         $result = @{a=1; b=2; c=3; d=4; e=5; f=6; g=7; h=8; i=9; '9'='j'}
 
-        tb_dupdate $hashtable @{i=9; '9'='j'}
+        tb_update $hashtable @{i=9; '9'='j'}
         $hashtable | Should -MatchHashtable $result
     }
 }

@@ -132,7 +132,7 @@ function tb_color {
 }
 
 function tb_ConvertTo-Ordered($Hash) {
-    # Shallow copy of the original (see comment for map)
+    # Shallow copy of the original
     $dict = [ordered]@{}
     $keys = $Hash.Keys | Sort-Object
 
@@ -144,9 +144,6 @@ function tb_ConvertTo-Ordered($Hash) {
 }
 
 function tb_map($Keyfunc, $Collection) {
-    # Modifies the original. Cloning a hash is shallow and not supported for ordered
-    # dictionaries. Copying with "(foreach key {clone[key] = orig[key]})" is also
-    # shallow
     try {
         $indices = @($Collection.Keys)
     }
@@ -159,7 +156,7 @@ function tb_map($Keyfunc, $Collection) {
     }
 }
 
-function tb_dupdate($hash1, $hash2) {
+function tb_update($hash1, $hash2) {
     if ($hash2) {
         foreach ($key in $hash2.Keys) {
             $hash1.$key = $hash2.$key
@@ -177,11 +174,11 @@ function tb_exec($Cmd) {
     }
 }
 
-function tb_groupby($Keyfunc={param($x) $x}, $Object) {
+function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
     # * `tb_groupby $array {param($x) $x.gettype().Name}`
     # * `tb_groupby $hashtable {param($x) $x.Value.GetType().Name}`
-    $object.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
+    $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable
 }
 
 function tb_init {
