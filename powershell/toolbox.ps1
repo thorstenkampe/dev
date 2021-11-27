@@ -182,7 +182,7 @@ function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
         $params = @{'-CaseSensitive' = $true}
     }
     else {
-        # `-CaseSensitive` and `-AsHashTable` mutually exclusive in PowerShell Desktop
+        # error in PowerShell Desktop with `-CaseSensitive` ("key duplication")
         $params = @{}
     }
     $Collection.GetEnumerator() | Group-Object -Property {& $keyfunc $PSItem} -AsHashTable -AsString @params
