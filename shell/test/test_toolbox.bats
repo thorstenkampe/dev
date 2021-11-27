@@ -122,17 +122,6 @@ function teardown {
 }
 
 #
-@test count {
-    run tb_count ', ' ', 1, 2, 3, 4, '
-    assert_output 5
-}
-
-@test 'count - no match' {
-    run tb_count '; ' ', 1, 2, 3, 4, '
-    assert_output 0
-}
-
-#
 @test 'init - find' {
     tb_init
     run which find

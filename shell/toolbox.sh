@@ -106,13 +106,6 @@ function tb_contains {
     return 1
 }
 
-function tb_count {
-    local split
-
-    tb_split "$1" "$2"
-    echo $((${#split[@]} - 1))
-}
-
 function tb_groupby {
     # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> groupby=([1]=groupby0 [2]=groupby1
     # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
