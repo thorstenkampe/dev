@@ -84,7 +84,7 @@ Describe 'tb_groupby' {
     }
 
     It 'case sensitive' {
-        $grouped = tb_groupby {param($x) $x} @('a', 'A')
+        $grouped = tb_groupby {param($x) $x} 'a', 'A'
 
         if (tb_is_pscore) {
             $grouped['A'] | Should -Be 'A'
