@@ -246,6 +246,20 @@ function tb_test_args {
     done
 }
 
+function tb_test_deps {
+    local false true
+    tb_test_args 'which $arg' "$@"
+
+    if (( ${#false[@]} )); then
+        tb_log error "can't find dependencies:"
+        for dep in "${false[@]}"; do
+            tb_cecho sR '✗'
+            echo " $dep"
+        done
+        return 1
+    fi
+}
+
 # ini #
 function tb_section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
@@ -359,20 +373,6 @@ function tb_color {
 
     if ! tb_is_tty; then
         tb_map '' color
-    fi
-}
-
-function tb_test_deps {
-    local false true
-    tb_test_args 'which $arg' "$@"
-
-    if (( ${#false[@]} )); then
-        tb_log error "can't find dependencies:"
-        for dep in "${false[@]}"; do
-            tb_cecho sR '✗'
-            echo " $dep"
-        done
-        return 1
     fi
 }
 
