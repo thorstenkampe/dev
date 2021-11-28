@@ -144,18 +144,13 @@ function tb_map($Keyfunc, $Collection) {
     }
 }
 
-function tb_update($hash1, $hash2) {
-    foreach ($key in $hash2.Keys) {
-        $hash1.$key = $hash2.$key
-    }
-}
-
 function tb_exec($Cmd) {
     # * https://rkeithhill.wordpress.com/2009/08/03/effective-powershell-item-16-dealing-with-errors/
-    # * http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
+    # * https://web.archive.org/web/20150427174442/http://codebetter.com/jameskovacs/2010/02/25/the-exec-problem/
     # * `tb_exec -Cmd {false}`
     & $cmd
     if ($LASTEXITCODE -ne 0) {
+        # creates `Management.Automation.RuntimeException`
         throw "Command terminated with exit code $LastExitCode"
     }
 }

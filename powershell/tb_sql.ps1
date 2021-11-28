@@ -47,7 +47,14 @@ function Engine($dsn) {
         $params.ora = @{DBAPrivilege='sysdba'}
     }
 
-    tb_update $dsn $params[(Get-ConnectionPrefix $dsn)]
+    $params = $params[(Get-ConnectionPrefix $dsn)]
+    try {
+        foreach ($key in $params.Keys) {
+            $dsn.$key = $params.$key
+        }
+    }
+    catch [Management.Automation.PropertyNotFoundException] {
+    }
 }
 
 function Test-DbConnection($dsn) {
