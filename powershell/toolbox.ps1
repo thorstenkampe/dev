@@ -131,18 +131,6 @@ function tb_color {
     }
 }
 
-function tb_ConvertTo-Ordered($Hash) {
-    # Shallow copy of the original
-    $dict = [ordered]@{}
-    $keys = $Hash.Keys | Sort-Object
-
-    foreach ($key in $keys) {
-        $dict[$key] = $Hash[$key]
-    }
-
-    $dict
-}
-
 function tb_map($Keyfunc, $Collection) {
     try {
         $indices = @($Collection.Keys)
