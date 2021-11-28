@@ -165,26 +165,6 @@ function tb_init {
     export LC_ALL=POSIX
 }
 
-function tb_install_pkg {
-    local split
-    tb_split . "$1"
-
-    case ${split[-1]} in
-        (deb)
-            dpkg --install --refuse-downgrade --skip-same-version "$1"
-            ;;
-
-        (rpm)
-            # https://serverfault.com/questions/880398/yum-install-local-rpm-throws-error-if-up-to-date
-            yum install --assumeyes --cacheonly "$1" || true
-            ;;
-
-        (*)
-            return 1
-
-    esac
-}
-
 function tb_log {
     local timestamp
     declare -A loglevel colorlevel
