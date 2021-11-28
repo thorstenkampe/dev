@@ -145,10 +145,8 @@ function tb_map($Keyfunc, $Collection) {
 }
 
 function tb_update($hash1, $hash2) {
-    if ($hash2) {
-        foreach ($key in $hash2.Keys) {
-            $hash1.$key = $hash2.$key
-        }
+    foreach ($key in $hash2.Keys) {
+        $hash1.$key = $hash2.$key
     }
 }
 
