@@ -191,12 +191,7 @@ function tb_log($Level, $Message) {
     }
 
     if ($loglevel[$Level] -le $loglevel[$verbosity]) {
-        try {
-            Write-Host -Object $prefix -ForegroundColor $colorlevel[$Level] -NoNewline
-        }
-        catch [Management.Automation.ParameterBindingException] {
-            Write-Host -Object $prefix -NoNewline
-        }
+        Write-Host -Object $prefix -ForegroundColor $colorlevel[$Level] -NoNewline
         Write-Host -Object $Message
     }
 }
