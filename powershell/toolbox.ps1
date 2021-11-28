@@ -46,8 +46,8 @@ function tb_is_windows {
 function tb_Set-EnvironmentVariable($Name, $Scope, $Value) {
     # modifying the persistent environment is expensive so we only update if environment
     # value differs
-    if ([environment]::getEnvironmentVariable($name, $Scope) -ne $value) {
-        [environment]::setEnvironmentVariable($name, $value, $Scope)
+    if ([environment]::getEnvironmentVariable($Name, $Scope) -ne $Value) {
+        [environment]::setEnvironmentVariable($Name, $Value, $Scope)
     }
 }
 
@@ -100,8 +100,8 @@ function tb_arc {
 
 function tb_choice($Prompt, $Answers) {
     do {
-        $selection = Read-Host -Prompt $prompt
-        if ($selection -in $answers) {
+        $selection = Read-Host -Prompt $Prompt
+        if ($selection -in $Answers) {
             break
         }
     }

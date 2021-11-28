@@ -1,6 +1,6 @@
 ﻿# SimplySQL - https://github.com/mithrandyr/simplysql
 
-. $PSScriptRoot/toolbox.ps1
+. toolbox.ps1
 
 $open_conn = @{
     ms   = 'Open-SqlConnection'
@@ -33,12 +33,8 @@ $dsn       = [ordered]@{
 
 #
 function Get-ConnectionPrefix($dsn) {
-    foreach ($prefix in 'ms', 'my', 'ora', 'post', 'lite') {
-        if ($dsn.ConnectionName.StartsWith($prefix)) {
-            $prefix
-            break
-        }
-    }
+    $prefix = 'ms', 'my', 'ora', 'post', 'lite'
+    (tb_groupby -KeyFunc {param($x) $dsn.ConnectionName.StartsWith($x)} -Collection $prefix)[$true]
 }
 
 function Engine($dsn) {
