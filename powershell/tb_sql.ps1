@@ -34,6 +34,7 @@ $dsn       = [ordered]@{
 #
 function Get-ConnectionPrefix($dsn) {
     $prefix = 'ms', 'my', 'ora', 'post', 'lite'
+    # `['true']` on Powershell Desktop
     (tb_groupby -KeyFunc {param($x) $dsn.ConnectionName.StartsWith($x)} -Collection $prefix)[$true]
 }
 
