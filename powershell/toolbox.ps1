@@ -110,28 +110,6 @@ function tb_choice($Prompt, $Answers) {
     $selection
 }
 
-function tb_color {
-    # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    # * `'{0}text{1}' -f $color['bR'], $color[0]`
-    if (tb_is_pscore) {
-        $global:color = @{
-            # foreground  bright     background   bright
-            k="`e[30m"; bK="`e[90m"; _k="`e[40m"; _bK="`e[100m"  # black
-            r="`e[31m"; bR="`e[91m"; _r="`e[41m"; _bR="`e[101m"  # red
-            g="`e[32m"; bG="`e[92m"; _g="`e[42m"; _bG="`e[102m"  # green
-            y="`e[33m"; bY="`e[93m"; _y="`e[43m"; _bY="`e[103m"  # yellow
-            b="`e[34m"; bB="`e[94m"; _b="`e[44m"; _bB="`e[104m"  # blue
-            m="`e[35m"; bM="`e[95m"; _m="`e[45m"; _bM="`e[105m"  # magenta
-            c="`e[36m"; bC="`e[96m"; _c="`e[46m"; _bC="`e[106m"  # cyan
-            w="`e[37m"; bW="`e[97m"; _w="`e[47m"; _bW="`e[107m"  # white
-            0="`e[m"                                             # reset
-        }
-    }
-    else {
-        $global:color = @{}
-    }
-}
-
 function tb_map($Keyfunc, $Collection) {
     try {
         $indices = @($Collection.Keys)
