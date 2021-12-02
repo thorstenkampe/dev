@@ -106,7 +106,6 @@ function tb_choice($Prompt, $Answers) {
         }
     }
     until ($false)
-
     $selection
 }
 
