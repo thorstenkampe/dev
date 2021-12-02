@@ -157,9 +157,7 @@ function tb_init {
         tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
     fi
 
-    ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
-    tb_color
-    export PS4="${color[C]}$ps4${color[0]} "
+    export ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX
@@ -169,7 +167,7 @@ function tb_log {
     local timestamp
     declare -A loglevel colorlevel
     loglevel=(   [error]=10 [warn]=20 [info]=30 [debug]=40 )
-    colorlevel=( [error]=R  [warn]=Y  [info]=W  [debug]=B )
+    colorlevel=( [error]=red  [warn]=yellow  [info]=white  [debug]=blue )
 
     if tb_is_tty; then
         timestamp=''
@@ -178,7 +176,7 @@ function tb_log {
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
-        tb_cecho "${colorlevel[$1]}" "[${1^^}$timestamp] " >&2
+        pastel paint --no-newline "${colorlevel[$1]}" "[${1^^}$timestamp] " >&2
         echo -e "${@:2}" >&2
     fi
 }
@@ -251,10 +249,9 @@ function tb_test_deps {
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
-        tb_log error "can't find dependencies:"
+        echo -e "\e[91m[ERROR]\e[m can't find dependencies:" 1>&2
         for dep in "${false[@]}"; do
-            tb_cecho sR '✗'
-            echo " $dep"
+            echo -e "\e[1;91m✗\e[m $dep" 1>&2
         done
         return 1
     fi
@@ -304,20 +301,6 @@ function tb_section_to_var {
 }
 
 # input/output #
-function tb_cecho {
-    local i char
-    tb_color
-
-    for (( i = 0; i < ${#1}; i++ )); do
-        char=${1:$i:1}
-        if [[ $char == _ ]]; then
-            char+=${1:$(( ++i )):1}
-        fi
-        echo -en "${color[$char]}"
-    done
-    echo -en "$2${color[0]}"
-}
-
 function tb_choice {
     # `tb_choice 'Continue? [Y|n]: ' y n ''`
     # `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
@@ -347,33 +330,6 @@ function tb_choice {
         done
     fi
     echo "$answer"
-}
-
-function tb_color {
-    # * https://github.com/ppo/bash-colors
-    # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    declare -gA color
-    # create color alias with `declare -n c=color`
-    color=(
-        # foreground bright       background    bright
-        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
-        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
-        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
-        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
-        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
-        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
-        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
-        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
-
-        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
-        # n: negative, h: hidden, t: strikethrough, 0: reset
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
-        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
-    )
-
-    if ! tb_is_tty; then
-        tb_map '' color
-    fi
 }
 
 function tb_progress {
