@@ -249,9 +249,9 @@ function tb_test_deps {
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
-        echo -e "\e[91m[ERROR]\e[m can't find dependencies:" 1>&2
+        echo -e "\e[91m[ERROR]\e[m can't find dependencies:" >&2
         for dep in "${false[@]}"; do
-            echo -e "\e[1;91m✗\e[m $dep" 1>&2
+            echo -e "\e[1;91m✗\e[m $dep" >&2
         done
         return 1
     fi
@@ -356,7 +356,7 @@ function tb_spinner {
     eval "$@" &
     # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
     while [[ -d /proc/$! ]]; do
-        echo -en "\r[${spin[(i += 1) % 4]}]" 1>&2
+        echo -en "\r[${spin[(i += 1) % 4]}]" >&2
         sleep 0.1
     done
     echo
