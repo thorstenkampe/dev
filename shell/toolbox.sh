@@ -154,7 +154,7 @@ function tb_init {
     tb_color
 
     if [[ ! -v BASH_VERSINFO[0] ]]; then
-        echo -e "${color[Y]}[WARN]${color[0]} unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)" >&2
+        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
     fi
 
     export PS4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
@@ -166,8 +166,9 @@ function tb_init {
 function tb_log {
     local timestamp
     declare -A loglevel colorlevel
-    loglevel=(   [error]=10  [warn]=20     [info]=30    [debug]=40 )
-    colorlevel=( [error]=red [warn]=yellow [info]=white [debug]=blue )
+    loglevel=(   [error]=10 [warn]=20 [info]=30 [debug]=40 )
+    colorlevel=( [error]=R  [warn]=Y  [info]=W  [debug]=B )
+    tb_color
 
     if tb_is_tty; then
         timestamp=''
@@ -176,8 +177,7 @@ function tb_log {
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
-        pastel paint --no-newline "${colorlevel[$1]}" "[${1^^}$timestamp] " >&2
-        echo -e "${@:2}" >&2
+        echo -e "${color[${colorlevel[$1]}]}[${1^^}$timestamp]${color[0]} ${*:2}" >&2
     fi
 }
 
@@ -249,7 +249,7 @@ function tb_test_deps {
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
-        echo -e "${color[R]}[ERROR]${color[0]} can't find dependencies:" >&2
+        tb_log error "can't find dependencies:"
         for dep in "${false[@]}"; do
             echo -e "${color[s]}${color[R]}✗${color[0]} $dep" >&2
         done

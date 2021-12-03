@@ -7,7 +7,7 @@ tb_init
 _params=( "$@" )
 
 # MAIN CODE STARTS HERE #
-tb_test_deps mailsend-go pastel
+tb_test_deps mailsend-go
 
 _usage="
 ${color[c]}Usage${color[0]}: $(basename "$0") [-l <logfile>]
