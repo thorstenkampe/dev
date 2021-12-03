@@ -328,8 +328,7 @@ function tb_choice {
 
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    declare -gA color
-    color=(
+    declare -gA color=(
         # foreground                                background
         [black]='\e[30m'   [brightblack]='\e[90m'   [bblack]='\e[40m'   [bbrightblack]='\e[100m'
         [red]='\e[31m'     [brightred]='\e[91m'     [bred]='\e[41m'     [bbrightred]='\e[101m'
