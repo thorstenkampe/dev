@@ -10,12 +10,12 @@ _params=( "$@" )
 tb_test_deps mailsend-go
 
 _usage="
-${color[c]}Usage${color[0]}: $(basename "$0") [-l <logfile>]
+${color[cyan]}Usage${color[reset]}: $(basename "$0") [-l <logfile>]
 
-${color[c]}Options${color[0]}:
-  ${color[W]}-l <logfile>${color[0]}  Log to file
-  ${color[W]}-h${color[0]}            Show help
-  ${color[W]}-d${color[0]}            Show debug and trace messages
+${color[cyan]}Options${color[reset]}:
+  ${color[brightwhite]}-l <logfile>${color[reset]}  Log to file
+  ${color[brightwhite]}-h${color[reset]}            Show help
+  ${color[brightwhite]}-d${color[reset]}            Show debug and trace messages
 "
 
 function error_handler {

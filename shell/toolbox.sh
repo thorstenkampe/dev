@@ -166,8 +166,8 @@ function tb_init {
 function tb_log {
     local timestamp
     declare -A loglevel colorlevel
-    loglevel=(   [error]=10 [warn]=20 [info]=30 [debug]=40 )
-    colorlevel=( [error]=R  [warn]=Y  [info]=W  [debug]=B )
+    loglevel=(   [error]=10         [warn]=20            [info]=30           [debug]=40 )
+    colorlevel=( [error]=brightred  [warn]=brightyellow  [info]=brightwhite  [debug]=brightblue )
     tb_color
 
     if tb_is_tty; then
@@ -177,7 +177,7 @@ function tb_log {
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
-        echo -e "${color[${colorlevel[$1]}]}[${1^^}$timestamp]${color[0]} ${*:2}" >&2
+        echo -e "${color[${colorlevel[$1]}]}[${1^^}$timestamp]${color[reset]} ${*:2}" >&2
     fi
 }
 
@@ -251,7 +251,7 @@ function tb_test_deps {
     if (( ${#false[@]} )); then
         tb_log error "can't find dependencies:"
         for dep in "${false[@]}"; do
-            echo -e "${color[s]}${color[R]}✗${color[0]} $dep" >&2
+            echo -e "${color[bold]}${color[brightred]}✗${color[reset]} $dep" >&2
         done
         return 1
     fi
@@ -327,25 +327,22 @@ function tb_choice {
 }
 
 function tb_color {
-    # * https://github.com/ppo/bash-colors
-    # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     declare -gA color
-    # create color alias with `declare -n c=color`
     color=(
-        # foreground bright       background    bright
-        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
-        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
-        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
-        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
-        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
-        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
-        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
-        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
+        # foreground                                background
+        [black]='\e[30m'   [brightblack]='\e[90m'   [bblack]='\e[40m'   [bbrightblack]='\e[100m'
+        [red]='\e[31m'     [brightred]='\e[91m'     [bred]='\e[41m'     [bbrightred]='\e[101m'
+        [green]='\e[32m'   [brightgreen]='\e[92m'   [bgreen]='\e[42m'   [bbrightgreen]='\e[102m'
+        [yellow]='\e[33m'  [brightyellow]='\e[93m'  [byellow]='\e[43m'  [bbrightyellow]='\e[103m'
+        [blue]='\e[34m'    [brightblue]='\e[94m'    [bblue]='\e[44m'    [bbrightblue]='\e[104m'
+        [magenta]='\e[35m' [brightmagenta]='\e[95m' [bmagenta]='\e[45m' [bbrightmagenta]='\e[105m'
+        [cyan]='\e[36m'    [brightcyan]='\e[96m'    [bcyan]='\e[46m'    [bbrightcyan]='\e[106m'
+        [white]='\e[37m'   [brightwhite]='\e[97m'   [bwhite]='\e[47m'   [bbrightwhite]='\e[107m'
 
-        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
-        # n: negative, h: hidden, t: strikethrough, 0: reset
-        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
-        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
+        [bold]='\e[1m' [dim]='\e[2m' [italic]='\e[3m' [underline]='\e[4m' [double-underline]='\e[21m'
+        [blink]='\e[5m' [negative]='\e[7m' [hidden]='\e[8m' [strikethrough]='\e[9m'
+        [reset]='\e[m'
     )
 
     if ! tb_is_tty; then
