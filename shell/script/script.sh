@@ -10,7 +10,7 @@ _params=( "$@" )
 tb_test_deps mailsend-go
 
 _usage="
-${color[cyan]}Usage${color[reset]}: $(basename "$0") [-l <logfile>]
+${color[cyan]}Usage${color[reset]}: script.sh [-l <logfile>]
 
 ${color[cyan]}Options${color[reset]}:
   ${color[brightwhite]}-l <logfile>${color[reset]}  Log to file
