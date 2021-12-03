@@ -166,8 +166,8 @@ function tb_init {
 function tb_log {
     local timestamp
     declare -A loglevel colorlevel
-    loglevel=(   [error]=10 [warn]=20 [info]=30 [debug]=40 )
-    colorlevel=( [error]=red  [warn]=yellow  [info]=white  [debug]=blue )
+    loglevel=(   [error]=10  [warn]=20     [info]=30    [debug]=40 )
+    colorlevel=( [error]=red [warn]=yellow [info]=white [debug]=blue )
 
     if tb_is_tty; then
         timestamp=''
