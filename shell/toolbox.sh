@@ -136,8 +136,6 @@ function tb_groupby {
 }
 
 function tb_init {
-    local ps4
-
     shopt -os errexit errtrace nounset pipefail
     # `inherit_errexit` added in version 4.4
     shopt -s dotglob inherit_errexit 2> /dev/null || true
@@ -153,11 +151,13 @@ function tb_init {
         }
     fi
 
+    tb_color
+
     if [[ ! -v BASH_VERSINFO[0] ]]; then
-        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
+        echo -e "${color[Y]}[WARN]${color[0]} unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)" >&2
     fi
 
-    export ps4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO]'
+    export PS4='[TRACE $(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX
@@ -249,9 +249,9 @@ function tb_test_deps {
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
-        echo -e "\e[91m[ERROR]\e[m can't find dependencies:" >&2
+        echo -e "${color[R]}[ERROR]${color[0]} can't find dependencies:" >&2
         for dep in "${false[@]}"; do
-            echo -e "\e[1;91m✗\e[m $dep" >&2
+            echo -e "${color[s]}${color[R]}✗${color[0]} $dep" >&2
         done
         return 1
     fi
@@ -260,20 +260,14 @@ function tb_test_deps {
 # ini #
 function tb_section_to_array {
     # -o: store values in section order in ordinary array (omitting keys)
-    local section key keys ordered value
+    local section key keys value
 
     tb_parse_opts o "$@"
     shift $(( OPTIND - 1 ))
 
-    if [[ -v opts[o] ]]; then
-        ordered=true
-    else
-        ordered=false
-    fi
-
     for section in "${@:2}"; do
         unset "$section"
-        if ! $ordered; then
+        if [[ ! -v opts[o] ]]; then
             declare -gA "$section"
         fi
         # create array with same name as section name
@@ -283,7 +277,7 @@ function tb_section_to_array {
         mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
         for key in "${keys[@]}"; do
             value=$(crudini --get "$1" "$section" "$key")
-            if $ordered; then
+            if [[ -v opts[o] ]]; then
                 array+=( "$value" )
             else
                 array[$key]=$value
@@ -330,6 +324,33 @@ function tb_choice {
         done
     fi
     echo "$answer"
+}
+
+function tb_color {
+    # * https://github.com/ppo/bash-colors
+    # * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    declare -gA color
+    # create color alias with `declare -n c=color`
+    color=(
+        # foreground bright       background    bright
+        [k]='\e[30m' [K]='\e[90m' [_k]='\e[40m' [_K]='\e[100m'  # black
+        [r]='\e[31m' [R]='\e[91m' [_r]='\e[41m' [_R]='\e[101m'  # red
+        [g]='\e[32m' [G]='\e[92m' [_g]='\e[42m' [_G]='\e[102m'  # green
+        [y]='\e[33m' [Y]='\e[93m' [_y]='\e[43m' [_Y]='\e[103m'  # yellow
+        [b]='\e[34m' [B]='\e[94m' [_b]='\e[44m' [_B]='\e[104m'  # blue
+        [m]='\e[35m' [M]='\e[95m' [_m]='\e[45m' [_M]='\e[105m'  # magenta
+        [c]='\e[36m' [C]='\e[96m' [_c]='\e[46m' [_C]='\e[106m'  # cyan
+        [w]='\e[37m' [W]='\e[97m' [_w]='\e[47m' [_W]='\e[107m'  # white
+
+        # s: bold, d: dim, i: italic, u: underline, U: double-underline, f: blink
+        # n: negative, h: hidden, t: strikethrough, 0: reset
+        [s]='\e[1m' [d]='\e[2m' [i]='\e[3m' [u]='\e[4m' [U]='\e[21m' [f]='\e[5m'
+        [n]='\e[7m' [h]='\e[8m' [t]='\e[9m' [0]='\e[m'
+    )
+
+    if ! tb_is_tty; then
+        tb_map '' color
+    fi
 }
 
 function tb_progress {
