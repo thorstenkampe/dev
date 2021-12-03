@@ -7,8 +7,13 @@ tb_init
 _params=( "$@" )
 
 # MAIN CODE STARTS HERE #
-tb_test_deps mailsend-go
+tb_test_deps mailsend-go pastel
 
+declare -A color=(
+    [c]=$(pastel format ansi-24bit-escapecode darkcyan)
+    [W]=$(pastel format ansi-24bit-escapecode white)
+    [0]='\e[m'
+)
 _usage="
 ${color[c]}Usage${color[0]}: $(basename "$0") [-l <logfile>]
 
