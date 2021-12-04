@@ -193,11 +193,14 @@ function tb_log_to_file {
 function tb_map {
     # `tb_map 'expr $arg \* 2' array`
     local key arg
-    declare -n _array=$2
 
-    for key in "${!_array[@]}"; do
-        arg=${_array[$key]}
-        _array[$key]=$(eval "$1")
+    for name in "${@:2}"; do
+        declare -n _array=$name
+
+        for key in "${!_array[@]}"; do
+            arg=${_array[$key]}
+            _array[$key]=$(eval "$1")
+        done
     done
 }
 
@@ -329,23 +332,29 @@ function tb_choice {
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     declare -gA color=(
-        # foreground                                background
-        [black]='\e[30m'   [brightblack]='\e[90m'   [bblack]='\e[40m'   [bbrightblack]='\e[100m'
-        [red]='\e[31m'     [brightred]='\e[91m'     [bred]='\e[41m'     [bbrightred]='\e[101m'
-        [green]='\e[32m'   [brightgreen]='\e[92m'   [bgreen]='\e[42m'   [bbrightgreen]='\e[102m'
-        [yellow]='\e[33m'  [brightyellow]='\e[93m'  [byellow]='\e[43m'  [bbrightyellow]='\e[103m'
-        [blue]='\e[34m'    [brightblue]='\e[94m'    [bblue]='\e[44m'    [bbrightblue]='\e[104m'
-        [magenta]='\e[35m' [brightmagenta]='\e[95m' [bmagenta]='\e[45m' [bbrightmagenta]='\e[105m'
-        [cyan]='\e[36m'    [brightcyan]='\e[96m'    [bcyan]='\e[46m'    [bbrightcyan]='\e[106m'
-        [white]='\e[37m'   [brightwhite]='\e[97m'   [bwhite]='\e[47m'   [bbrightwhite]='\e[107m'
-
+        # effects
         [bold]='\e[1m' [dim]='\e[2m' [italic]='\e[3m' [underline]='\e[4m' [double-underline]='\e[21m'
         [blink]='\e[5m' [negative]='\e[7m' [hidden]='\e[8m' [strikethrough]='\e[9m'
         [reset]='\e[m'
+
+        # foreground colors
+        [black]='\e[30m' [brightblack]='\e[90m'  [red]='\e[31m'     [brightred]='\e[91m'
+        [green]='\e[32m' [brightgreen]='\e[92m'  [yellow]='\e[33m'  [brightyellow]='\e[93m'
+        [blue]='\e[34m'  [brightblue]='\e[94m'   [magenta]='\e[35m' [brightmagenta]='\e[95m'
+        [cyan]='\e[36m'  [brightcyan]='\e[96m'   [white]='\e[37m'   [brightwhite]='\e[97m'
+    )
+
+    # shellcheck disable=SC2034
+    declare -gA bcolor=(
+        # background colors
+        [black]='\e[40m' [brightblack]='\e[100m' [red]='\e[41m'     [brightred]='\e[101m'
+        [green]='\e[42m' [brightgreen]='\e[102m' [yellow]='\e[43m'  [brightyellow]='\e[103m'
+        [blue]='\e[44m'  [brightblue]='\e[104m'  [magenta]='\e[45m' [brightmagenta]='\e[105m'
+        [cyan]='\e[46m'  [brightcyan]='\e[106m'  [white]='\e[47m'   [brightwhite]='\e[107m'
     )
 
     if ! tb_is_tty; then
-        tb_map '' color
+        tb_map '' color bcolor
     fi
 }
 
