@@ -55,8 +55,9 @@ function tb_send_mail {
 }
 
 function tb_test_file {
-    # test whether file (or folder) satisfies test
-    # `tb_test_file file -mmin +60` (test if file is older than sixty minutes)
+    # test whether file (or folder) satisfies test - uses `find`'s test syntax
+    # `tb_test_file file -mmin +60` (test if file was modified more than sixty minutes
+    # ago)
     [[ $(find "$(dirname "$1")" -mindepth 1 -maxdepth 1 -name "$(basename "$1")" "${@:2}") ]]
 }
 
@@ -107,10 +108,10 @@ function tb_contains {
 }
 
 function tb_groupby {
-    # `tb_groupby 'echo ${#arg}' 1 22 333 444` -> groupby=([1]=groupby0 [2]=groupby1
-    # [3]=groupby2), groupby0=(1), groupby1=(22), groupby2=(333 444)
-    #
-    # array=${groupby[3]}[@]; echo "${!array}"
+    # group current directory content by type:
+    # `tb_groupby 'LC_ALL=POSIX stat --format %F "$arg"' *`
+    # show file types: `printf '%s\n' "${!groupby[@]}"`
+    # show regular files: `array=${groupby[regular file]}[@]; echo "${!array}"`
     # assemble: `tb_map 'array=$arg[@]; echo "${!array}"' groupby`
 
     local arg result index i
@@ -331,6 +332,7 @@ function tb_choice {
 
 function tb_color {
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    # shellcheck disable=SC2034
     declare -gA color=(
         # effects
         [bold]='\e[1m' [dim]='\e[2m' [italic]='\e[3m' [underline]='\e[4m' [double-underline]='\e[21m'
@@ -342,10 +344,8 @@ function tb_color {
         [green]='\e[32m' [brightgreen]='\e[92m'  [yellow]='\e[33m'  [brightyellow]='\e[93m'
         [blue]='\e[34m'  [brightblue]='\e[94m'   [magenta]='\e[35m' [brightmagenta]='\e[95m'
         [cyan]='\e[36m'  [brightcyan]='\e[96m'   [white]='\e[37m'   [brightwhite]='\e[97m'
-    )
-
-    # shellcheck disable=SC2034
-    declare -gA bcolor=(
+    ) \
+                bcolor=(
         # background colors
         [black]='\e[40m' [brightblack]='\e[100m' [red]='\e[41m'     [brightred]='\e[101m'
         [green]='\e[42m' [brightgreen]='\e[102m' [yellow]='\e[43m'  [brightyellow]='\e[103m'
