@@ -13,8 +13,7 @@ function setup {
     shopt -ou nounset
     source ./test.sh
     source ./toolbox.sh
-    export LANGUAGE=en_US
-    export LC_ALL=POSIX
+    export LANGUAGE=en_US LC_ALL=POSIX
     config=test/test_ini.ini
     testdir=$(mktemp --directory)
 }
