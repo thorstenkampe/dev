@@ -5,6 +5,11 @@
 ## escape characters: `printf %q`
 ## interactive shell sets `PS1` variable
 
+function tb_get_group {
+    local array="${groupby[$1]}[@]"
+    echo "${!array}"
+}
+
 function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
@@ -105,12 +110,6 @@ function tb_contains {
         fi
     done
     return 1
-}
-
-function tb_get_group {
-    local array
-    array="${groupby[$1]}[@]"
-    echo "${!array}"
 }
 
 function tb_groupby {

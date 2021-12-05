@@ -1,4 +1,4 @@
-# shellcheck disable=SC2016,SC2154,SC2178
+# shellcheck disable=SC2016,SC2030,SC2031,SC2034,SC2154
 
 shopt -os errexit errtrace nounset pipefail
 shopt -s dotglob failglob inherit_errexit
@@ -24,6 +24,17 @@ function teardown {
 }
 
 ##
+@test get_group {
+    declare -A groupby=( [1]=groupby0 [2]=groupby1 [3]=groupby2 )
+    groupby0=( 1 )
+    groupby1=( 22 )
+    groupby2=( 333 444 )
+
+    assert_equal "$(tb_get_group 1)" 1
+    assert_equal "$(tb_get_group 2)" 22
+    assert_equal "$(tb_get_group 3)" '333 444'
+}
+
 @test is_online {
     run tb_is_online
 
@@ -139,21 +150,9 @@ function teardown {
 }
 
 #
-@test get_group {
-    tb_groupby 'echo ${#arg}' 1 22 333 444
-
-    assert_equal "$(tb_get_group 1)" 1
-
-    assert_equal "$(tb_get_group 2)" 22
-
-    assert_equal "$(tb_get_group 3)" '333 444'
-}
-
-#
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
 
-    # shellcheck disable=SC2030
     array="${groupby[1]}[@]"
     assert_equal "${!array}" 1
 
@@ -185,7 +184,6 @@ function teardown {
 @test 'map - array' {
     unset "array[8]"
     tb_map 'expr $arg \* 2' array
-    # shellcheck disable=SC2031
     assert_equal "${array[*]}" '2 4 6 8 10 12 14 16'
 }
 
