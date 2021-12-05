@@ -171,9 +171,8 @@ function tb_init {
 
 function tb_log {
     local timestamp
-    declare -A loglevel colorlevel
-    loglevel=(   [error]=10        [warn]=20           [info]=30          [debug]=40 )
-    colorlevel=( [error]=brightred [warn]=brightyellow [info]=brightwhite [debug]=brightblue )
+    declare -A  loglevel=(   [error]=10        [warn]=20           [info]=30          [debug]=40 ) \
+                colorlevel=( [error]=brightred [warn]=brightyellow [info]=brightwhite [debug]=brightblue )
     tb_color
 
     if tb_is_tty; then
@@ -381,8 +380,8 @@ function tb_spinner {
     # `tb_spinner 'sleep 10'`
     # source: https://stackoverflow.com/a/12498305/5740232
     # shellcheck disable=SC1003
-    local spin=( '-' '\' '|' '/' )
-    local i=0
+    local spin=( '-' '\' '|' '/' ) \
+          i=0
 
     eval "$@" &
     # or `kill -0 $! 2> /dev/null` ($! = PID of last job placed into background)
