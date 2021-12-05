@@ -107,12 +107,18 @@ function tb_contains {
     return 1
 }
 
+function tb_get_group {
+    local array
+    array="${groupby[$1]}[@]"
+    echo "${!array}"
+}
+
 function tb_groupby {
     # group current directory content by type:
     # `tb_groupby 'LC_ALL=POSIX stat --format %F "$arg"' *`
     # show file types: `printf '%s\n' "${!groupby[@]}"`
-    # show regular files: `array=${groupby[regular file]}[@]; echo "${!array}"`
-    # assemble: `tb_map 'array=$arg[@]; echo "${!array}"' groupby`
+    # show regular files: `tb_get_group 'regular file'`
+    # assemble: `tb_map 'tb_get_group "$key"' groupby`
 
     local arg result index i
     declare -gA groupby=()

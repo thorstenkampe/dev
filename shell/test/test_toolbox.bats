@@ -139,6 +139,17 @@ function teardown {
 }
 
 #
+@test get_group {
+    tb_groupby 'echo ${#arg}' 1 22 333 444
+
+    assert_equal "$(tb_get_group 1)" 1
+
+    assert_equal "$(tb_get_group 2)" 22
+
+    assert_equal "$(tb_get_group 3)" '333 444'
+}
+
+#
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
 
