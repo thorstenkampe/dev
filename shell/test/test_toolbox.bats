@@ -34,6 +34,19 @@ function teardown {
     assert_equal "$(tb_get_group 3)" '333 444'
 }
 
+@test 'is_le_version - smaller' {
+    tb_is_le_version 1.5 1.10
+}
+
+@test 'is_le_version - equal' {
+    tb_is_le_version 1.0 1.0
+}
+
+@test 'is_le_version - bigger' {
+    run tb_is_le_version 1.10 1.5
+    assert_failure
+}
+
 @test is_online {
     run tb_is_online
 
@@ -69,15 +82,6 @@ function teardown {
     refute_output
 }
 
-@test 'port_reachable - reachable' {
-    run tb_port_reachable 8.8.8.8 53
-}
-
-@test 'port_reachable - unreachable' {
-    run tb_port_reachable localhost 1
-    assert_failure
-}
-
 @test send_mail {
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
@@ -105,6 +109,20 @@ function teardown {
     assert_file_not_exist "$tmp_file"
 }
 
+@test 'test_port - reachable' {
+    run tb_test_port 8.8.8.8 53
+
+    assert_success
+    refute_output
+}
+
+@test 'test_port - unreachable' {
+    run tb_test_port localhost 1
+
+    assert_failure
+    refute_output
+}
+
 ##
 @test 'arc - zip' {
     tb_arc -c toolbox.sh "$testdir/toolbox.sh.zip"
@@ -127,7 +145,6 @@ function teardown {
 
 @test 'contains - not' {
     run tb_contains 22 1 2 3
-
     assert_failure
 }
 
@@ -262,7 +279,6 @@ function teardown {
 
 @test 'test_deps - failure' {
     run tb_test_deps bash does_not_exist
-
     assert_failure
 }
 
