@@ -10,6 +10,10 @@ function tb_get_group {
     echo "${!array}"
 }
 
+function tb_is_le_version {
+    printf '%s\n' "$@" | sort --version-sort --check=quiet
+}
+
 function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
@@ -41,18 +45,6 @@ function tb_join {
     printf %s "${2-}" "${rest[@]/#/$1}"
 }
 
-function tb_port_reachable {
-    {
-    if   which ncat; then
-        ncat -z --wait 0.024 "$1" "$2"
-    elif which nc; then
-        nc -z -w 1 "$1" "$2"
-    else
-        return 1
-    fi
-    } &> /dev/null
-}
-
 function tb_send_mail {
     # https://github.com/muquit/mailsend-go
     # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
@@ -64,6 +56,15 @@ function tb_test_file {
     # `tb_test_file file -mmin +60` (test if file was modified more than sixty minutes
     # ago)
     [[ $(find "$(dirname "$1")" -mindepth 1 -maxdepth 1 -name "$(basename "$1")" "${@:2}") ]]
+}
+
+function tb_test_port {
+    if which ncat &> /dev/null; then
+        ncat -z --wait 0.024 "$1" "$2"
+    else
+        tb_test_deps nc
+        nc -z -w 1 "$1" "$2" 2> /dev/null
+    fi
 }
 
 ##
@@ -143,8 +144,11 @@ function tb_groupby {
 
 function tb_init {
     shopt -os errexit errtrace nounset pipefail
-    # `inherit_errexit` added in version 4.4
-    shopt -s dotglob inherit_errexit 2> /dev/null || true
+    if tb_is_le_version "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}" 4.4 ; then
+        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.4)" >&2
+        return 1
+    fi
+    shopt -s dotglob inherit_errexit
 
     if   tb_is_linux; then
         PATH=/usr/local/bin:$PATH
@@ -155,12 +159,6 @@ function tb_init {
         function ps {
             procps "$@"
         }
-    fi
-
-    tb_color
-
-    if [[ ! -v BASH_VERSINFO[0] ]]; then
-        tb_log warn "unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.3)"
     fi
 
     export PS4='[$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
