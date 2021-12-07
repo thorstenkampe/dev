@@ -144,7 +144,7 @@ function tb_groupby {
 
 function tb_init {
     shopt -os errexit errtrace nounset pipefail
-    if tb_is_le_version "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}" 4.4 ; then
+    if tb_is_le_version "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}" 4.3 ; then
         echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.4)" >&2
         return 1
     fi
