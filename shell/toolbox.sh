@@ -6,26 +6,30 @@
 ## interactive shell sets `PS1` variable
 
 function tb_get_group {
+    # `tb_groupby` helper function (`tb_get_group <groupby_key>`)
     local array="${groupby[$1]}[@]"
     echo "${!array}"
 }
 
 function tb_is_le_version {
+    # uses: sort
+    # is version1 <= version2 [...]? (`tb_is_le_version 1.5 1.10`)
     printf '%s\n' "$@" | sort --version-sort --check=quiet
 }
 
 function tb_is_linux {
+    # uses: tb_contains
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
 
 function tb_is_online {
-    if   tb_is_linux || [[ -x /usr/bin/ping ]]; then  # POSIX ping
+    # uses: tb_is_windows
+    # uses: ping
+    if tb_is_windows && [[ ! -x /usr/bin/ping ]]; then  # Cygwin but no POSIX ping
+        ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
+    else                                                # POSIX ping
         # `-i` is locale sensitive on Cygwin
         LC_NUMERIC=POSIX ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
-    elif tb_is_windows; then                          # Cygwin but no POSIX ping
-        ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
-    else
-        return 1
     fi
 }
 
@@ -34,6 +38,7 @@ function tb_is_tty {
 }
 
 function tb_is_windows {
+    # uses: tb_contains
     tb_contains "$OSTYPE" cygwin msys
 }
 
@@ -46,12 +51,14 @@ function tb_join {
 }
 
 function tb_send_mail {
+    # uses: mailsend-go, whoami
     # https://github.com/muquit/mailsend-go
     # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
     mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
 }
 
 function tb_test_file {
+    # uses: basename, dirname, find
     # test whether file (or folder) satisfies test - uses `find`'s test syntax
     # `tb_test_file file -mmin +60` (test if file was modified more than sixty minutes
     # ago)
@@ -59,16 +66,20 @@ function tb_test_file {
 }
 
 function tb_test_port {
-    if which ncat &> /dev/null; then
+    # uses: tb_test_deps
+    # uses: nc, ncat
+    if tb_test_deps ncat; then
         ncat -z --wait 0.024 "$1" "$2"
     else
-        tb_test_deps nc
+        tb_test_deps -v nc
         nc -z -w 1 "$1" "$2" 2> /dev/null
     fi
 }
 
 ##
 function tb_arc {
+    # uses: tb_log error, tb_parse_opts, tb_split, tb_test_args
+    # uses: 7za, basename, dirname, readlink, tar
     local dest false true split
 
     tb_parse_opts cx "$@"
@@ -114,11 +125,10 @@ function tb_contains {
 }
 
 function tb_groupby {
-    # group current directory content by type:
-    # `tb_groupby 'LC_ALL=POSIX stat --format %F "$arg"' *`
+    # group current directory by file type: `LC_ALL=POSIX tb_groupby 'stat --format %F "$arg"' *`
     # show file types: `printf '%s\n' "${!groupby[@]}"`
     # show regular files: `tb_get_group 'regular file'`
-    # assemble: `tb_map 'tb_get_group "$key"' groupby`
+    # assemble: `tb_map 'tb_get_group "$key"' groupby; declare -p groupby`
 
     local arg result index i
     declare -gA groupby=()
@@ -143,6 +153,8 @@ function tb_groupby {
 }
 
 function tb_init {
+    # uses: tb_is_le_version, tb_is_linux, tb_is_windows
+    # uses: basename, procps
     shopt -os errexit errtrace nounset pipefail
     if tb_is_le_version "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}" 4.3 ; then
         echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.4)" >&2
@@ -168,9 +180,11 @@ function tb_init {
 }
 
 function tb_log {
+    # uses: tb_color, tb_is_tty
+    # uses: date
     local timestamp
-    declare -A  loglevel=(   [error]=10        [warn]=20           [info]=30          [debug]=40 ) \
-                colorlevel=( [error]=brightred [warn]=brightyellow [info]=brightwhite [debug]=brightblue )
+    declare -A loglevel=(   [error]=10        [warn]=20           [info]=30          [debug]=40 ) \
+               colorlevel=( [error]=brightred [warn]=brightyellow [info]=brightwhite [debug]=brightblue )
     tb_color
 
     if tb_is_tty; then
@@ -185,6 +199,7 @@ function tb_log {
 }
 
 function tb_log_to_file {
+    # uses: logsave, ps
     local parent_process
     parent_process=$(ps --pid $PPID --format comm=) || true
 
@@ -251,20 +266,29 @@ function tb_test_args {
 }
 
 function tb_test_deps {
+    # uses: tb_log, tb_parse_opts, tb_test_args
+    # uses: which
     local false true
+    tb_parse_opts v "$@"
+    shift $(( OPTIND - 1 ))
     tb_test_args 'which $arg' "$@"
 
     if (( ${#false[@]} )); then
-        tb_log error "can't find dependencies:"
-        for dep in "${false[@]}"; do
-            echo -e "${color[bold]}${color[brightred]}✗${color[reset]} $dep" >&2
-        done
+        if [[ -v opts[v] ]]; then
+            tb_log error "can't find dependencies:"
+            error_char="${color[bold]}${color[brightred]}✗${color[reset]}"
+            for dep in "${false[@]}"; do
+                echo -e "$error_char $dep" >&2
+            done
+        fi
         return 1
     fi
 }
 
 # ini #
 function tb_section_to_array {
+    # uses: tb_parse_opts
+    # uses: crudini
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
 
@@ -293,6 +317,7 @@ function tb_section_to_array {
 }
 
 function tb_section_to_var {
+    # uses: crudini
     local section
 
     for section in "${@:2}"; do
@@ -302,6 +327,7 @@ function tb_section_to_var {
 
 # input/output #
 function tb_choice {
+    # uses: tb_contains, tb_parse_opts
     # `tb_choice 'Continue? [Y|n]: ' y n ''`
     # `tb_choice -m $'\nDatabase type [1-5]: ' MSSQL MySQL Oracle PostgreSQL SQLite`
     local PS3 answer
@@ -333,6 +359,7 @@ function tb_choice {
 }
 
 function tb_color {
+    # uses: tb_is_tty, tb_map
     # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
     # shellcheck disable=SC2034
     declare -gA color=(
@@ -361,6 +388,8 @@ function tb_color {
 }
 
 function tb_progress {
+    # uses: tb_parse_opts
+    # uses: pv
     # `for item in $(seq 50); do sleep 0.1; echo; done | tb_progress -s 50`
     local pv_opts
     tb_parse_opts s: "$@"
@@ -375,6 +404,7 @@ function tb_progress {
 }
 
 function tb_spinner {
+    # uses: sleep
     # `tb_spinner 'sleep 10'`
     # source: https://stackoverflow.com/a/12498305/5740232
     # shellcheck disable=SC1003
