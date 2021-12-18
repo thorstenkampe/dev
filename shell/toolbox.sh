@@ -66,12 +66,10 @@ function tb_test_file {
 }
 
 function tb_test_port {
-    # uses: tb_test_deps
     # uses: nc, ncat
-    if tb_test_deps ncat; then
+    if type -P ncat > /dev/null; then
         ncat -z --wait 0.024 "$1" "$2"
     else
-        tb_test_deps -v nc
         nc -z -w 1 "$1" "$2" 2> /dev/null
     fi
 }
@@ -267,20 +265,16 @@ function tb_test_args {
 }
 
 function tb_test_deps {
-    # uses: tb_log, tb_parse_opts, tb_test_args
+    # uses: tb_log, tb_test_args
     local false true
-    tb_parse_opts v "$@"
-    shift $(( OPTIND - 1 ))
     tb_test_args 'type -P "$arg"' "$@"
 
     if (( ${#false[@]} )); then
-        if [[ -v opts[v] ]]; then
-            tb_log error "can't find dependencies:"
-            error_char="${color[bold]}${color[brightred]}✗${color[reset]}"
-            for dep in "${false[@]}"; do
-                echo -e "$error_char $dep" >&2
-            done
-        fi
+        tb_log error "can't find dependencies:"
+        error_char="${color[bold]}${color[brightred]}✗${color[reset]}"
+        for dep in "${false[@]}"; do
+            echo -e "$error_char $dep" >&2
+        done
         return 1
     fi
 }
