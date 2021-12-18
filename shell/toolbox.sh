@@ -156,8 +156,9 @@ function tb_init {
     # uses: tb_is_le_version, tb_is_linux, tb_is_windows
     # uses: basename, procps
     shopt -os errexit errtrace nounset pipefail
-    if tb_is_le_version "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}" 4.3 ; then
-        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}, minimum: 4.4)" >&2
+    local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
+    if tb_is_le_version "$bash_version" 4.3 ; then
+        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: $bash_version, minimum: 4.4)" >&2
         return 1
     fi
     shopt -s dotglob inherit_errexit
@@ -173,10 +174,10 @@ function tb_init {
         }
     fi
 
-    export PS4='[$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
-    export LC_ALL=POSIX
+    export LC_ALL=POSIX \
+           PS4='[$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
 }
 
 function tb_log {
@@ -267,11 +268,10 @@ function tb_test_args {
 
 function tb_test_deps {
     # uses: tb_log, tb_parse_opts, tb_test_args
-    # uses: which
     local false true
     tb_parse_opts v "$@"
     shift $(( OPTIND - 1 ))
-    tb_test_args 'which $arg' "$@"
+    tb_test_args 'type -P "$arg"' "$@"
 
     if (( ${#false[@]} )); then
         if [[ -v opts[v] ]]; then
@@ -301,16 +301,17 @@ function tb_section_to_array {
             declare -gA "$section"
         fi
         # create array with same name as section name
-        declare -n array=$section
-        array=()
+        # shellcheck disable=SC2178
+        declare -n _array=$section
+        _array=()
 
         mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
         for key in "${keys[@]}"; do
             value=$(crudini --get "$1" "$section" "$key")
             if [[ -v opts[o] ]]; then
-                array+=( "$value" )
+                _array+=( "$value" )
             else
-                array[$key]=$value
+                _array[$key]=$value
             fi
         done
     done

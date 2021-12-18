@@ -15,11 +15,13 @@ function setup {
     source ./toolbox.sh
     export LANGUAGE=en_US LC_ALL=POSIX
     config=test/test_ini.ini
-    testdir=$(mktemp --directory)
+    testdir=$(mktemp --directory --tmpdir 'tmp XXXXXXXXXX')
+    testfile=$(mktemp --tmpdir 'tmp XXXXXXXXXX')
+    non_existing_file=$(mktemp --dry-run)
 }
 
 function teardown {
-    rm -rf "$testdir"
+    rm -rf "$testdir" "$testfile"
 }
 
 ##
@@ -29,9 +31,17 @@ function teardown {
     groupby1=( 22 )
     groupby2=( 333 444 )
 
-    assert_equal "$(tb_get_group 1)" 1
-    assert_equal "$(tb_get_group 2)" 22
-    assert_equal "$(tb_get_group 3)" '333 444'
+    run tb_get_group 1
+    assert_success
+    assert_output 1
+
+    run tb_get_group 2
+    assert_success
+    assert_output 22
+
+    run tb_get_group 3
+    assert_success
+    assert_output '333 444'
 }
 
 @test 'is_le_version - smaller' {
@@ -65,7 +75,7 @@ function teardown {
     run tb_join ', ' "${array[@]}"
 
     assert_success
-    assert_output '1, 2, 3, 4, 5, 6, 7, 8, '
+    assert_output '1, 2, 3, 4, 5, 6, 7, 8 8, '
 }
 
 @test 'join - single element' {
@@ -93,20 +103,15 @@ function teardown {
 }
 
 @test 'test_file - older than' {
-    tmp_file=$(mktemp)
-    touch --date '1 hour ago' "$tmp_file"
+    touch --date '1 hour ago' "$testfile"
 
     # test if file is older than sixty minutes
-    tb_test_file "$tmp_file" -mmin +60
-    rm "$tmp_file"
+    tb_test_file "$testfile" -mmin +60
 }
 
 @test 'test_file - not existing' {
-    tmp_file=$(mktemp --dry-run)
-    run tb_test_file "$tmp_file"
-
+    run tb_test_file "$non_existing_file"
     assert_failure
-    assert_file_not_exist "$tmp_file"
 }
 
 @test 'test_port - reachable' {
@@ -151,7 +156,7 @@ function teardown {
 #
 @test 'init - find' {
     tb_init
-    run which find
+    run type -p find
 
     assert_success
     assert_output /usr/bin/find
@@ -198,15 +203,13 @@ function teardown {
 
 #
 @test 'map - array' {
-    unset "array[8]"
-    tb_map 'expr $arg \* 2' array
-    assert_equal "${array[*]}" '2 4 6 8 10 12 14 16'
+    tb_map 'echo ${#arg}' array
+    assert_equal "${array[*]}" '1 1 1 1 1 1 1 3 0'
 }
 
 @test 'map - associative array' {
-    unset "assoc[9]"
-    tb_map 'expr $arg \* 2' assoc
-    assert_equal "${assoc[*]}" '16 14 12 10 8 6 4 2'
+    tb_map 'echo ${#arg}' assoc
+    assert_equal "${assoc[*]}" '0 1 1 1 1 1 1 1 3'
 }
 
 #
@@ -280,6 +283,11 @@ function teardown {
 @test 'test_deps - failure' {
     run tb_test_deps bash does_not_exist
     assert_failure
+}
+
+@test 'test_deps - name with space' {
+    chmod +x "$testfile"
+    tb_test_deps "$testfile"
 }
 
 # ini #
