@@ -26,20 +26,10 @@ function teardown {
 
 ##
 @test get_group {
-    declare -A groupby=( [1]=groupby0 [2]=groupby1 [3]=groupby2 )
-    groupby0=( 1 )
-    groupby1=( 22 )
-    groupby2=( 333 444 )
+    declare -A groupby=( [0 0]=groupby0 )
+    groupby0=( 333 444 )
 
-    run tb_get_group 1
-    assert_success
-    assert_output 1
-
-    run tb_get_group 2
-    assert_success
-    assert_output 22
-
-    run tb_get_group 3
+    run tb_get_group '0 0'
     assert_success
     assert_output '333 444'
 }
