@@ -128,9 +128,8 @@ function tb_groupby {
     # show regular files: `tb_get_group 'regular file'`
     # assemble: `tb_map 'tb_get_group "$key"' groupby; declare -p groupby`
 
-    local arg result group i
+    local arg result group i=0
     declare -gA groupby=()
-    i=0
 
     for arg in "${@:2}"; do
         result=$(eval "$1")
@@ -179,7 +178,6 @@ function tb_init {
 
 function tb_log {
     # uses: tb_color, tb_is_tty
-    # uses: date
     local timestamp
     declare -A loglevel=(   [error]=10        [warn]=20           [info]=30          [debug]=40 ) \
                colorlevel=( [error]=brightred [warn]=brightyellow [info]=brightwhite [debug]=brightblue )
@@ -188,7 +186,7 @@ function tb_log {
     if tb_is_tty; then
         timestamp=''
     else
-        timestamp=" $(date +'%F %T')"
+        timestamp=" $(printf '%(%Y-%m-%d %H:%M:%S)T')"
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
@@ -207,7 +205,7 @@ function tb_log_to_file {
 }
 
 function tb_map {
-    # `tb_map 'expr $arg \* 2' array`
+    # `tb_map 'echo $((arg * 2))' array`
     local key arg
 
     for name in "${@:2}"; do
@@ -248,8 +246,8 @@ function tb_split {
 }
 
 function tb_test_args {
-    # * split arguments into arrays that evaluate to true and to false
-    # * `tb_test_args '(( arg % 2 ))' 1 2 3 4` -> true=(1 3) false=(2 4)
+    # * split arguments into arrays that return true or false
+    # * `tb_test_args '((arg % 2))' 1 2 3 4` -> true=(1 3) false=(2 4)
     local arg
     true=()
     false=()
