@@ -1,4 +1,4 @@
-# shellcheck disable=SC2016,SC2294
+# shellcheck disable=SC2016,SC2178,SC2294
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
 ## absolute path: `readlink|realpath --canonicalize-missing`
@@ -7,8 +7,8 @@
 
 function tb_get_group {
     # `tb_groupby` helper function (`tb_get_group <groupby_key>`)
-    local array="${groupby[$1]}[@]"
-    echo "${!array}"
+    declare -n group=${groupby[$1]}
+    echo "${group[@]}"
 }
 
 function tb_is_le_version {
@@ -128,19 +128,18 @@ function tb_groupby {
     # show regular files: `tb_get_group 'regular file'`
     # assemble: `tb_map 'tb_get_group "$key"' groupby; declare -p groupby`
 
-    local arg result index i
+    local arg result group i
     declare -gA groupby=()
     i=0
 
     for arg in "${@:2}"; do
         result=$(eval "$1")
         if [[ -v groupby[$result] ]]; then
-            declare -n index=${groupby[$result]}
-            index+=( "$arg" )
+            declare -n group=${groupby[$result]}
+            group+=( "$arg" )
         else
-            # shellcheck disable=SC2178
-            declare -n index=groupby$i
-            index=( "$arg" )
+            declare -n group=groupby$i
+            group=( "$arg" )
             groupby[$result]=groupby$((i++))
         fi
     done
@@ -295,7 +294,6 @@ function tb_section_to_array {
             declare -gA "$section"
         fi
         # create array with same name as section name
-        # shellcheck disable=SC2178
         declare -n _array=$section
         _array=()
 
