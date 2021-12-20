@@ -186,7 +186,7 @@ function tb_log {
     if tb_is_tty; then
         timestamp=''
     else
-        timestamp=" $(printf '%(%Y-%m-%d %H:%M:%S)T')"
+        timestamp=" $(printf '%(%F %T)T')"
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
@@ -263,7 +263,7 @@ function tb_test_args {
 
 function tb_test_deps {
     # uses: tb_log, tb_test_args
-    local false true
+    local false true error_char
     tb_test_args 'type -P "$arg"' "$@"
 
     if (( ${#false[@]} )); then
