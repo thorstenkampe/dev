@@ -144,7 +144,7 @@ function tb_groupby {
     done
 
     while [[ -v groupby$i ]]; do
-        unset groupby$((i++))
+        unset -v groupby$((i++))
     done
 }
 
@@ -186,7 +186,7 @@ function tb_log {
     if tb_is_tty; then
         timestamp=''
     else
-        timestamp=" $(printf '%(%Y-%m-%d %H:%M:%S)T')"
+        timestamp=" $(printf '%(%F %T)T')"
     fi
 
     if (( ${loglevel[$1]} <= ${loglevel[${verbosity-info}]} )); then
@@ -219,7 +219,7 @@ function tb_map {
 }
 
 function tb_parse_opts {
-    unset opts OPTIND
+    unset -v opts OPTIND
     local opt
     declare -gA opts
 
@@ -263,7 +263,7 @@ function tb_test_args {
 
 function tb_test_deps {
     # uses: tb_log, tb_test_args
-    local false true
+    local false true error_char
     tb_test_args 'type -P "$arg"' "$@"
 
     if (( ${#false[@]} )); then
@@ -287,7 +287,7 @@ function tb_section_to_array {
     shift $(( OPTIND - 1 ))
 
     for section in "${@:2}"; do
-        unset "$section"
+        unset -v "$section"
         if [[ ! -v opts[o] ]]; then
             declare -gA "$section"
         fi
