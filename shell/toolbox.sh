@@ -76,7 +76,7 @@ function tb_test_port {
 
 ##
 function tb_arc {
-    # uses: tb_log error, tb_parse_opts, tb_split, tb_test_args
+    # uses: tb_log, tb_parse_opts, tb_split, tb_test_args
     # uses: 7za, basename, dirname, readlink, tar
     local dest false true split
 
