@@ -1,15 +1,17 @@
 # pytest
 # pylint: disable = too-few-public-methods
-import re
-import pip, pycompat
+import pip
 from collections import OrderedDict
 from socket      import create_server
 from pytest      import raises
 from test        import (
-    config, even, df, dict as dict_, even, list as list_, set as set_, sr, str as str_,
-    table, tuple as tuple_
+    config, df, dict as dict_, even, list as list_, set as set_, sr, str as str_,
+    tuple as tuple_
 )
 from toolbox     import *  # NOSONAR
+
+typeint = type(0)
+typestr = type('str')
 
 def groups_lst(groupby):
     '''
@@ -36,8 +38,8 @@ class Test_is_localdb:  # NOSONAR
         assert not is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
 
 def test_dmap():
-    result = {'a': False, 'b': True, 'c': False, 'd': True, 'e': False, 'f': True, 'g': False, 'h': True, 9: False}
-    assert dmap(dict_, keyfunc=even) == result
+    result = {'a': typeint, 'b': typeint, 'c': typeint, 'd': typeint, 'e': typeint, 'f': typeint, 'g': typestr, 'h h': typestr, 9: typestr}
+    assert dmap(dict_, keyfunc=type) == result
 
 def test_cast_config():
     result = {'section': {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}}
@@ -76,21 +78,21 @@ class Test_port_reachable:  # NOSONAR
 # DATA #
 class Test_groupby:  # NOSONAR
     def test_dict(self):
-        group  = groupby(dict_, keyfunc=lambda x: even(x[1]))
-        result = {False: {'a': 1, 'c': 3, 'e': 5, 'g': 7, 9: 9}, True: {'b': 2, 'd': 4, 'f': 6, 'h': 8}}
+        group  = groupby(dict_, keyfunc=lambda x: type(x[1]))
+        result = {typeint: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, typestr: {9: '', 'g': '7', 'h h': '8 8'}}
         assert group == result
 
     def test_list(self):
-        group = groupby(list_, keyfunc=even)
-        assert group == {False: [1, 3, 5, 7, 9], True: [2, 4, 6, 8]}
+        group = groupby(list_, keyfunc=type)
+        assert group == {typeint: [1, 2, 3, 4, 5, 6], typestr: ['7', '8 8', '']}
 
     def test_set(self):
-        group = groupby(set_, keyfunc=even)
-        assert group == {False: {3, 9, 1, 7, 5}, True: {8, 6, 4, 2}}
+        group = groupby(set_, keyfunc=type)
+        assert group == {typeint: {1, 2, 3, 4, 5, 6}, typestr: {'7', '8 8', ''}}
 
     def test_tuple(self):
-        group = groupby(tuple_, keyfunc=even)
-        assert group == {False: (1, 3, 5, 7, 9), True: (2, 4, 6, 8)}
+        group = groupby(tuple_, keyfunc=type)
+        assert group == {typeint: (1, 2, 3, 4, 5, 6), typestr: ('7', '8 8', '')}
 
     def test_error_label(self):
         with raises(TypeError, match='^axis specified but iterable is not dataframe$'):
@@ -101,8 +103,8 @@ class Test_groupby:  # NOSONAR
             groupby(df, axis='row')
 
     def test_series(self):
-        group  = groupby(sr, keyfunc=even)
-        result = {False: ['a', 'c', 'e', 'g', 'i'], True: ['b', 'd', 'f', 'h']}
+        group  = groupby(sr, keyfunc=type)
+        result = {typeint: ['a', 'b', 'c', 'd', 'e', 'f'], typestr: ['g', 'h', 'i']}
         assert groups_lst(group) == result
 
     def test_dataframe_group_by_row(self):
@@ -119,12 +121,12 @@ class Test_groupby:  # NOSONAR
             groupby(str_)
 
 def test_sort_index():
-    result = OrderedDict([(9, 9), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', 7), ('h', 8)])
+    result = OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
     assert sort_index(dict_, keyfunc=str) == result
 
 def test_sort_value():
-    result = OrderedDict([('a', 1), ('c', 3), ('e', 5), ('g', 7), (9, 9), ('b', 2), ('d', 4), ('f', 6), ('h', 8)])
-    assert sort_value(dict_, keyfunc=even) == result
+    result = OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
+    assert sort_value(dict_, keyfunc=str) == result
 
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR

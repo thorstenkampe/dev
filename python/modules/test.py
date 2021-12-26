@@ -8,13 +8,13 @@ def even(integer):
     return not integer % 2
 
 #
-list    = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+list    = [1, 2, 3, 4, 5, 6, '7', '8 8', '']
 
-set     = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+set     = {1, 2, 3, 4, 5, 6, '7', '8 8', ''}
 
-tuple   = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+tuple   = (1, 2, 3, 4, 5, 6, '7', '8 8', '')
 
-dict    = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 9: 9}
+dict    = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': '7', 'h h': '8 8', 9: ''}
 
 str     = 'The quick brown fox jumps over the lazy dog'
 
