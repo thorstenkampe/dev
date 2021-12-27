@@ -55,8 +55,9 @@ def cast_config(config):  # NOSONAR
 
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''
-    from pandas import DataFrame, Series
-    for type_ in (dict, list, set, tuple, collections.abc.MappingView, Series, DataFrame):
+    import pandas as pd
+    for type_ in (dict, list, set, tuple, collections.abc.MappingView, pd.Series,
+                  pd.DataFrame):
         if isinstance(obj, type_):
             return type_
 
@@ -93,8 +94,7 @@ def port_reachable(url):
 
 # input/output #  NOSONAR
 def prettytab(iter_, headers=None, pager=False, **kwargs):
-    from pandas import DataFrame
-    from rich   import box, console, table
+    import pandas as pd, rich
 
     def stringify(obj):
         if type(obj) == float:
@@ -105,7 +105,7 @@ def prettytab(iter_, headers=None, pager=False, **kwargs):
     if not headers:
         headers = []
 
-    if type(iter_) == DataFrame:
+    if type(iter_) == pd.DataFrame:
         if iter_.index.name:
             index_name = iter_.index.name
         else:
@@ -117,18 +117,18 @@ def prettytab(iter_, headers=None, pager=False, **kwargs):
     iter_ = list(iter_)
 
     if pager:
-        tabbox = box.ASCII
+        tabbox = rich.box.ASCII
     else:
-        tabbox = box.MINIMAL_HEAVY_HEAD
+        tabbox = rich.box.MINIMAL_HEAVY_HEAD
 
-    tab = table.Table(*headers, safe_box=False, box=tabbox, show_edge=False, show_header=bool(headers),
-                      **kwargs)
+    tab = rich.table.Table(*headers, safe_box=False, box=tabbox, show_edge=False,
+                           show_header=bool(headers), **kwargs)
 
     for row in iter_:
         row = [stringify(item) for item in row]
         tab.add_row(*row)
 
-    con = console.Console()
+    con = rich.console.Console()
     if pager:
         with con.pager(styles=True):
             con.print(tab)
@@ -164,12 +164,12 @@ def sort_value(dict_, keyfunc=ident):
 
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
-    from pandas import DataFrame, Series
+    import pandas as pd
 
     type_    = typeof(iter_)
     eq_class = collections.defaultdict(type_)
 
-    if axis and type_ != DataFrame:
+    if axis and type_ != pd.DataFrame:
         raise TypeError('axis specified but iterable is not dataframe')
 
     if axis not in [None, 'rows', 'columns']:
@@ -193,11 +193,11 @@ def groupby(iter_, keyfunc=ident, axis=None):
         def grouper(proj, elem):
             eq_class[proj] += (elem,)
 
-    elif type_ == Series:
+    elif type_ == pd.Series:
         return iter_.groupby(iter_.apply(keyfunc), axis='index', sort=False)
 
     # https://realpython.com/pandas-groupby/
-    elif type_ == DataFrame:
+    elif type_ == pd.DataFrame:
         if axis == 'columns':
             iter_ = iter_.transpose()  # = apply by axis=rows, groupby by axis=columns
         return iter_.groupby(iter_.apply(keyfunc, axis='columns'), axis='index', sort=False)

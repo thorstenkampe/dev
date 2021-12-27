@@ -33,9 +33,9 @@ section = config['section']
 
 # Pandas
 try:
-    from pandas import DataFrame, Series
+    import pandas as pd
 
-    sr    = Series(
+    sr    = pd.Series(
         data  = list,
         # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
         index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
@@ -43,7 +43,7 @@ try:
     sr.name       = 'sr'
     sr.index.name = 'index'
 
-    df    = DataFrame(
+    df    = pd.DataFrame(
         data    = table,
         index   = [1, 2, 3, 4],
         columns = ['a', 'b', 'c', 'd', 'e']
@@ -56,26 +56,25 @@ except ModuleNotFoundError:
     pass
 
 try:
-    from toolbox import engine
     dsn = types.SimpleNamespace(
-        mslocal     = engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
-        mslinux     = engine('mssql://sa:password@db/Chinook'),
-        mswindows   = engine('mssql://sa:password@windows-db/Chinook'),
+        mslocal     = tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
+        mslinux     = tb.engine('mssql://sa:password@db/Chinook'),
+        mswindows   = tb.engine('mssql://sa:password@windows-db/Chinook'),
 
-        mylocal     = engine('mysql://root:password@rednails/Chinook'),
-        mylinux     = engine('mysql://root:password@db/Chinook'),
-        mywindows   = engine('mysql://root:password@windows-db/Chinook'),
+        mylocal     = tb.engine('mysql://root:password@rednails/Chinook'),
+        mylinux     = tb.engine('mysql://root:password@db/Chinook'),
+        mywindows   = tb.engine('mysql://root:password@windows-db/Chinook'),
 
-        oralinux    = engine('oracle://sys:password@db/xe'),
-        orawindows  = engine('oracle://sys:password@windows-db/xepdb1'),
-        oracdb      = engine('oracle://sys:password@windows-db'),
+        oralinux    = tb.engine('oracle://sys:password@db/xe'),
+        orawindows  = tb.engine('oracle://sys:password@windows-db/xepdb1'),
+        oracdb      = tb.engine('oracle://sys:password@windows-db'),
 
-        postlocal   = engine('postgresql://postgres:password@rednails/'),
-        postlinux   = engine('postgresql://postgres:password@db/'),
-        postwindows = engine('postgresql://postgres:password@windows-db/'),
+        postlocal   = tb.engine('postgresql://postgres:password@rednails/'),
+        postlinux   = tb.engine('postgresql://postgres:password@db/'),
+        postwindows = tb.engine('postgresql://postgres:password@windows-db/'),
 
-        litelocal   = engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
-        litelinux   = engine('sqlite:////home/thorsten/data/Chinook.sqlite')
+        litelocal   = tb.engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
+        litelinux   = tb.engine('sqlite:////home/thorsten/data/Chinook.sqlite')
     )
 except ModuleNotFoundError:
     pass
