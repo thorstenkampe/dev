@@ -1,14 +1,8 @@
 # pytest
 # pylint: disable = too-few-public-methods
-import pip
-from collections import OrderedDict
-from socket      import create_server
-from pytest      import raises
-from test        import (
-    config, df, dict as dict_, even, list as list_, set as set_, sr, str as str_,
-    tuple as tuple_
-)
-from toolbox     import *  # NOSONAR
+import collections, pip, socket
+import pytest
+import test, toolbox as tb
 
 typeint = type(0)
 typestr = type('str')
@@ -18,138 +12,138 @@ def groups_lst(groupby):
     return `groups`-like dictionary from Pandas GroupBy object with list as values
     instead of index for pytest assertions
     '''
-    return dmap(groupby.groups, lambda x: x.to_list())
+    return tb.dmap(groupby.groups, lambda x: x.to_list())
 
 class Test_pkg_version:  # NOSONAR
     def test_installed(self):
-        assert pkg_version('pip') == pip.__version__
+        assert tb.pkg_version('pip') == pip.__version__
 
     def test_not_installed(self):
-        assert pkg_version('DoesNotExist') is None
+        assert tb.pkg_version('DoesNotExist') is None
 
 class Test_is_localdb:  # NOSONAR
     def test_mslocal(self):
-        assert is_localdb(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
+        assert tb.is_localdb(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
 
     def test_mslocal_no_scheme(self):
-        assert is_localdb(r'(LocalDB)\MSSQLLocalDB')
+        assert tb.is_localdb(r'(LocalDB)\MSSQLLocalDB')
 
     def test_mysql(self):
-        assert not is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
+        assert not tb.is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
 
 def test_dmap():
     result = {'a': typeint, 'b': typeint, 'c': typeint, 'd': typeint, 'e': typeint, 'f': typeint, 'g': typestr, 'h h': typestr, 9: typestr}
-    assert dmap(dict_, keyfunc=type) == result
+    assert tb.dmap(test.dict, keyfunc=type) == result
 
 def test_cast_config():
     result = {'section': {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}}
-    assert cast_config(config) == result
+    assert tb.cast_config(test.config) == result
 
 def test_typeof():
-    assert typeof(set_) == set
+    assert tb.typeof(test.set) == set
 
 class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
-        server = create_server(('localhost', 0))
+        server = socket.create_server(('localhost', 0))
         port   = server.getsockname()[1]
-        assert port_reachable(f'scheme://localhost:{port}')
+        assert tb.port_reachable(f'scheme://localhost:{port}')
         server.close()
 
     def test_mslocal(self):
-        assert port_reachable(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
+        assert tb.port_reachable(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
 
     def test_default_port(self):
-        server = create_server(('localhost', 1521))
-        assert port_reachable('oracle://localhost')
+        server = socket.create_server(('localhost', 1521))
+        assert tb.port_reachable('oracle://localhost')
         server.close()
 
     def test_unreachable(self):
-        assert not port_reachable('scheme://localhost:1')
+        assert not tb.port_reachable('scheme://localhost:1')
 
     def test_no_port_unknown_scheme(self):
         match = '^no port given and can\'t find default port for scheme "scheme"$'
-        with raises(ValueError, match=match):
-            port_reachable('scheme://')
+        with pytest.raises(ValueError, match=match):
+            tb.port_reachable('scheme://')
 
     def test_no_scheme(self):
-        with raises(ValueError, match='^no URL scheme given$'):
-            port_reachable('liteloc')
+        with pytest.raises(ValueError, match='^no URL scheme given$'):
+            tb.port_reachable('liteloc')
 
 # DATA #
 class Test_groupby:  # NOSONAR
     def test_dict(self):
-        group  = groupby(dict_, keyfunc=lambda x: type(x[1]))
+        group  = tb.groupby(test.dict, keyfunc=lambda x: type(x[1]))
         result = {typeint: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, typestr: {9: '', 'g': '7', 'h h': '8 8'}}
         assert group == result
 
     def test_list(self):
-        group = groupby(list_, keyfunc=type)
+        group = tb.groupby(test.list, keyfunc=type)
         assert group == {typeint: [1, 2, 3, 4, 5, 6], typestr: ['7', '8 8', '']}
 
     def test_set(self):
-        group = groupby(set_, keyfunc=type)
+        group = tb.groupby(test.set, keyfunc=type)
         assert group == {typeint: {1, 2, 3, 4, 5, 6}, typestr: {'7', '8 8', ''}}
 
     def test_tuple(self):
-        group = groupby(tuple_, keyfunc=type)
+        group = tb.groupby(test.tuple, keyfunc=type)
         assert group == {typeint: (1, 2, 3, 4, 5, 6), typestr: ('7', '8 8', '')}
 
     def test_error_label(self):
-        with raises(TypeError, match='^axis specified but iterable is not dataframe$'):
-            groupby(sr, axis='rows')
+        with pytest.raises(TypeError, match='^axis specified but iterable is not dataframe$'):
+            tb.groupby(test.sr, axis='rows')
 
     def test_error_axis(self):
-        with raises(ValueError, match="^axis must be 'rows' or 'columns'$"):
-            groupby(df, axis='row')
+        with pytest.raises(ValueError, match="^axis must be 'rows' or 'columns'$"):
+            tb.groupby(test.df, axis='row')
 
     def test_series(self):
-        group  = groupby(sr, keyfunc=type)
+        group  = tb.groupby(test.sr, keyfunc=type)
         result = {typeint: ['a', 'b', 'c', 'd', 'e', 'f'], typestr: ['g', 'h', 'i']}
         assert groups_lst(group) == result
 
     def test_dataframe_group_by_row(self):
-        group = groupby(df, keyfunc=lambda x: even(x['e']), axis='rows')
+        group = tb.groupby(test.df, keyfunc=lambda x: test.even(x['e']), axis='rows')
         assert groups_lst(group) == {False: [1, 3], True: [2, 4]}
 
     def test_dataframe_group_by_column(self):
-        group = groupby(df, keyfunc=lambda x: type(x[1]), axis='columns')
+        group = tb.groupby(test.df, keyfunc=lambda x: type(x[1]), axis='columns')
         assert groups_lst(group) == {float: ['d'], int: ['e'], str: ['a', 'b', 'c']}
 
     def test_error_type(self):
         match = r'^Type not supported for iterable\. Use dictionary, list, set, tuple, series, or dataframe\.$'
-        with raises(TypeError, match=match):
-            groupby(str_)
+        with pytest.raises(TypeError, match=match):
+            tb.groupby(test.str)
 
 def test_sort_index():
-    result = OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
-    assert sort_index(dict_, keyfunc=str) == result
+    result = collections.OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
+    assert tb.sort_index(test.dict, keyfunc=str) == result
 
 def test_sort_value():
-    result = OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
-    assert sort_value(dict_, keyfunc=str) == result
+    result = collections.OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
+    assert tb.sort_value(test.dict, keyfunc=str) == result
 
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR
     def test_mslocal(self):
         result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
-        assert str(engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
+        assert str(tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
 
     def test_mslinux(self):
         result = 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
-        assert str(engine('mssql://')) == result
+        assert str(tb.engine('mssql://')) == result
 
     def test_mylocal(self):
-        assert str(engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
+        assert str(tb.engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
 
     def test_oracle(self):
-        assert str(engine('oracle://')) == 'Engine(oracle:///?encoding=UTF-8&nencoding=UTF-8)'
+        assert str(tb.engine('oracle://')) == 'Engine(oracle:///?encoding=UTF-8&nencoding=UTF-8)'
 
     def test_oracle_sys(self):
         result = 'Engine(oracle://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
-        assert str(engine('oracle://sys@')) == result
+        assert str(tb.engine('oracle://sys@')) == result
 
     def test_postgresql(self):
-        assert str(engine('postgresql://')) == 'Engine(postgresql://)'
+        assert str(tb.engine('postgresql://')) == 'Engine(postgresql://)'
 
     def test_sqlite(self):
-        assert str(engine('sqlite:///')) == 'Engine(sqlite:///)'
+        assert str(tb.engine('sqlite:///')) == 'Engine(sqlite:///)'

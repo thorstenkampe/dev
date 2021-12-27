@@ -1,7 +1,6 @@
 # pylint: disable = redefined-builtin
-import types
+import configparser, types
 import toolbox as tb
-from configparser import ConfigParser
 
 # pytest helpers
 def even(integer):
@@ -27,7 +26,7 @@ table   = [
 
 redis   = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
 
-config  = ConfigParser()
+config  = configparser.ConfigParser()
 config['DEFAULT'] = {'def_key': 'def_value'}
 config['section'] = {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False', 'none': 'None', 'str': 'text'}
 section = config['section']

@@ -1,6 +1,4 @@
-import importlib.metadata, socket, sys, urllib
-from collections     import defaultdict, OrderedDict
-from collections.abc import MappingView
+import collections, collections.abc, importlib.metadata, socket, sys, urllib
 
 def pkg_version(pkg):
     '''return the installed version of package or None if not installed'''
@@ -58,7 +56,7 @@ def cast_config(config):  # NOSONAR
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''
     from pandas import DataFrame, Series
-    for type_ in (dict, list, set, tuple, MappingView, Series, DataFrame):
+    for type_ in (dict, list, set, tuple, collections.abc.MappingView, Series, DataFrame):
         if isinstance(obj, type_):
             return type_
 
@@ -158,18 +156,18 @@ def progress(func, iter_=None):
 # DATA #
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
-    return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
+    return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
 
 def sort_value(dict_, keyfunc=ident):
     '''sort dictionary by value'''
-    return OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
+    return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
 
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
     from pandas import DataFrame, Series
 
     type_    = typeof(iter_)
-    eq_class = defaultdict(type_)
+    eq_class = collections.defaultdict(type_)
 
     if axis and type_ != DataFrame:
         raise TypeError('axis specified but iterable is not dataframe')
