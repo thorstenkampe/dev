@@ -1,9 +1,8 @@
 import os, sys
-import click, click_help_colors
+import click, click_help_colors, rich.traceback
 from loguru import logger
-from rich   import traceback
 
-traceback.install(width=80, extra_lines=1)
+rich.traceback.install(width=80, extra_lines=1)
 
 if os.isatty(2):
     timestamp = ''

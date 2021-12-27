@@ -94,7 +94,7 @@ def port_reachable(url):
 
 # input/output #  NOSONAR
 def prettytab(iter_, headers=None, pager=False, **kwargs):
-    import pandas as pd, rich
+    import pandas as pd, rich.box, rich.console, rich.table
 
     def stringify(obj):
         if type(obj) == float:
