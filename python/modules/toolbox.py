@@ -56,8 +56,9 @@ def cast_config(config):  # NOSONAR
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''
     import pandas as pd
-    for type_ in (dict, list, set, tuple, collections.abc.MappingView, pd.Series,
-                  pd.DataFrame):
+    for type_ in (
+        dict, list, set, tuple, collections.abc.MappingView, pd.Series, pd.DataFrame
+    ):
         if isinstance(obj, type_):
             return type_
 
