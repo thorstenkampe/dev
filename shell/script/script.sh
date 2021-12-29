@@ -7,7 +7,7 @@ tb_init
 _params=( "$@" )
 
 # MAIN CODE STARTS HERE #
-tb_test_deps -v mailsend-go
+tb_test_deps mailsend-go
 
 tb_color
 _usage="
