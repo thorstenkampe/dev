@@ -173,7 +173,7 @@ function tb_init {
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX \
-           PS4='[$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}:$LINENO] '
+           PS4='$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}($LINENO): '
 }
 
 function tb_log {
