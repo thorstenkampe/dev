@@ -263,14 +263,13 @@ function tb_test_args {
 
 function tb_test_deps {
     # uses: tb_log, tb_test_args
-    local false true error_char
+    local false true
     tb_test_args 'type -P "$arg"' "$@"
 
     if (( ${#false[@]} )); then
         tb_log error "can't find dependencies:"
-        error_char="${color[bold]}${color[brightred]}✗${color[reset]}"
         for dep in "${false[@]}"; do
-            echo -e "$error_char $dep" >&2
+            echo -e "${color[bold]}${color[brightred]}✗${color[reset]} $dep" >&2
         done
         return 1
     fi
