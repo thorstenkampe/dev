@@ -47,13 +47,6 @@ function teardown {
     assert_failure
 }
 
-@test is_online {
-    run tb_is_online
-
-    assert_success
-    refute_output
-}
-
 @test is_tty {
     run tb_is_tty
 

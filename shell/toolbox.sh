@@ -22,17 +22,6 @@ function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
 
-function tb_is_online {
-    # uses: tb_is_windows
-    # uses: ping
-    if tb_is_windows && [[ ! -x /usr/bin/ping ]]; then  # Cygwin but no POSIX ping
-        ping -n 3 -l 0 -w 1 8.8.8.8 &> /dev/null
-    else                                                # POSIX ping
-        # `-i` is locale sensitive on Cygwin
-        LC_NUMERIC=POSIX ping -c 3 -i 0.2 -s 0 -W 1 8.8.8.8 &> /dev/null
-    fi
-}
-
 function tb_is_tty {
     [[ -t 1 && -t 2 ]]
 }
