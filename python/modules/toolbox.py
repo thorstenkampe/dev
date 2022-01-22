@@ -1,7 +1,6 @@
-import collections, collections.abc, importlib.metadata, socket, sys, urllib
-
 def pkg_version(pkg):
     '''return the installed version of package or None if not installed'''
+    import importlib.metadata
     try:
         return importlib.metadata.version(pkg)
     except importlib.metadata.PackageNotFoundError:
@@ -11,6 +10,7 @@ def ident(x):
     return x
 
 def is_localdb(dsn):
+    import urllib
     localdb    = r'(localdb)\mssqllocaldb'
     parsed_url = urllib.parse.urlsplit(dsn)
 
@@ -25,6 +25,7 @@ def is_localdb(dsn):
 
 def is_pyinstaller():
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
+    import sys
     return getattr(sys, 'frozen', False)
 
 def dmap(dict_, keyfunc):
@@ -55,6 +56,7 @@ def cast_config(config):  # NOSONAR
 
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''
+    import collections.abc
     import pandas as pd
     for type_ in (
         dict, list, set, tuple, collections.abc.MappingView, pd.Series, pd.DataFrame
@@ -67,6 +69,7 @@ def typeof(obj):
 def port_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
+    import socket, urllib
     default_port = {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432}
     urlp         = urllib.parse.urlsplit(url)
 
@@ -157,14 +160,17 @@ def progress(func, iter_=None):
 # DATA #
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
+    import collections
     return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
 
 def sort_value(dict_, keyfunc=ident):
     '''sort dictionary by value'''
+    import collections
     return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
 
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
+    import collections
     import pandas as pd
 
     type_    = typeof(iter_)
@@ -216,6 +222,7 @@ def groupby(iter_, keyfunc=ident, axis=None):
 # SQLALCHEMY #
 def engine(dsn):
     '''create SQLAlchemy engine with sane parameters'''
+    import urllib
     import pyodbc, sqlalchemy as sa
 
     # dsn = scheme://netloc/path
