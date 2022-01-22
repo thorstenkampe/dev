@@ -64,6 +64,28 @@ function tb_test_port {
 }
 
 ##
+function tb_alias {
+    # uses: tb_is_linux, tb_is_windows
+    function curl {
+        command curl --show-error --location --connect-timeout 8 "$@"
+    }
+
+    if   tb_is_linux; then
+        function gpg {
+            command gpg --batch --pinentry-mode loopback --yes --verbose "$@"
+        }
+
+    elif tb_is_windows; then
+        function gpg {
+            gpg2 --batch --pinentry-mode loopback --yes --verbose "$@"
+        }
+
+        function ps {
+            procps "$@"
+        }
+    fi
+}
+
 function tb_arc {
     # uses: tb_log, tb_parse_opts, tb_split, tb_test_args
     # uses: 7za, basename, dirname, readlink, tar
@@ -139,7 +161,7 @@ function tb_groupby {
 
 function tb_init {
     # uses: tb_is_le_version, tb_is_linux, tb_is_windows
-    # uses: basename, procps
+    # uses: basename
     shopt -os errexit errtrace nounset pipefail
     local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
     if tb_is_le_version "$bash_version" 4.3 ; then
@@ -153,16 +175,14 @@ function tb_init {
 
     elif tb_is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
-
-        function ps {
-            procps "$@"
-        }
     fi
 
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
     export LC_ALL=POSIX \
            PS4='$(basename "${BASH_SOURCE[0]}")${FUNCNAME:+:${FUNCNAME[0]}}($LINENO): '
+
+    tb_alias
 }
 
 function tb_log {
