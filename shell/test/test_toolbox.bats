@@ -112,6 +112,15 @@ function teardown {
 }
 
 ##
+@test 'alias - ps' {
+    tb_alias
+    run ps --pid $$ --format comm=
+
+    assert_success
+    assert_output bash
+}
+
+#
 @test 'arc - zip' {
     tb_arc -c toolbox.sh "$testdir/toolbox.sh.zip"
     tb_arc -x "$testdir/toolbox.sh.zip" "$testdir"
@@ -143,14 +152,6 @@ function teardown {
 
     assert_success
     assert_output /usr/bin/find
-}
-
-@test 'init - ps' {
-    tb_init
-    run ps --pid $$ --format comm=
-
-    assert_success
-    assert_output bash
 }
 
 #
