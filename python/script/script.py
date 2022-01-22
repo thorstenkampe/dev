@@ -1,6 +1,7 @@
-import os, sys
+import os, subprocess, sys
 import click, click_help_colors, rich.traceback
 from loguru import logger
+import toolbox as tb
 
 rich.traceback.install(width=80, extra_lines=1)
 
@@ -22,9 +23,19 @@ configure_logging(level='info')
     help_options_color = 'bright_white'  # NOSONAR
 )
 
+@click.option(
+    '-d', '--debug', is_flag=True, help='Show debug and trace messages.'
+)
+
 # MAIN CODE STARTS HERE #
 
-def main():
+def main(debug):
     '''purpose of script'''
+
+    if debug:
+        configure_logging(level='debug')
+        if not (sys.gettrace() or tb.is_pyinstaller()):
+            subprocess.run([sys.executable, '-m', 'trace', '--trace', '--ignore-dir',
+                            sys.prefix] + sys.argv)
 
 main()
