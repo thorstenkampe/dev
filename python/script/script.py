@@ -1,4 +1,4 @@
-import os, subprocess, sys
+import os, sys
 import click, click_help_colors, rich.traceback
 from loguru import logger
 import toolbox as tb
@@ -34,8 +34,6 @@ def main(debug):
 
     if debug:
         configure_logging(level='debug')
-        if not (sys.gettrace() or tb.is_pyinstaller()):
-            subprocess.run([sys.executable, '-m', 'trace', '--trace', '--ignore-dir',
-                            sys.prefix] + sys.argv)
+        tb.trace()
 
 main()
