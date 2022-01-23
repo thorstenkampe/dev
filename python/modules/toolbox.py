@@ -157,6 +157,12 @@ def progress(func, iter_=None):
         with alive_progress.alive_bar(bar=False, stats=False, elapsed=False, monitor=False):
             func()
 
+def trace():
+    import subprocess, sys
+    if not (sys.gettrace() or is_pyinstaller()):
+        subprocess.run([sys.executable, '-m', 'trace', '--trace', '--ignore-dir',
+                        sys.prefix] + sys.argv)
+
 # DATA #
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
@@ -167,13 +173,6 @@ def sort_value(dict_, keyfunc=ident):
     '''sort dictionary by value'''
     import collections
     return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
-
-def trace():
-    import subprocess, sys
-    if not (sys.gettrace() or is_pyinstaller()):
-        subprocess.run([sys.executable, '-m', 'trace', '--trace', '--ignore-dir',
-                        sys.prefix] + sys.argv)
-
 
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
