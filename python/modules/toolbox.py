@@ -160,8 +160,9 @@ def progress(func, iter_=None):
 def trace():
     import subprocess, sys
     if not (sys.gettrace() or is_pyinstaller()):
+        # pylint: disable = subprocess-run-check
         subprocess.run([sys.executable, '-m', 'trace', '--trace', '--ignore-dir',
-                        sys.prefix] + sys.argv)
+                       sys.prefix] + sys.argv)
 
 # DATA #
 def sort_index(dict_, keyfunc=ident):
