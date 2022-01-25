@@ -20,7 +20,7 @@ ${color[cyan]}Options${color[reset]}:
 "
 
 function error_handler {
-    # "[ERROR] command "command" in script_name:function_name:line_number"
+    # "[ERROR] command "command" in script_name:function_name(line_number)"
     tb_log error "command \"$BASH_COMMAND\" in $(basename "${BASH_SOURCE[1]}"):${FUNCNAME[1]}(${BASH_LINENO[0]})" || true
     if ! tb_is_tty; then
         tb_send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
@@ -38,12 +38,12 @@ if [[ -v opts[h] ]]; then
 fi
 
 if [[ -v opts[l] ]]; then
-    tb_log_to_file "${opts[l]}" bash "$0" "${_params[@]}"
+    tb_log_to_file "${opts[l]}" "$BASH" "$0" "${_params[@]}"
 fi
 
 if [[ -v opts[d] ]]; then
     export verbosity=debug
     if ! shopt -oq xtrace; then
-        exec bash -x "$0" "${_params[@]}"
+        exec "$BASH" -x "$0" "${_params[@]}"
     fi
 fi
