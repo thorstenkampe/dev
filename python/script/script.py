@@ -36,4 +36,5 @@ def main(debug):
         configure_logging(level='debug')
         tb.trace()
 
+# pylint: disable = no-value-for-parameter
 main()
