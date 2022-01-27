@@ -160,7 +160,7 @@ function tb_groupby {
 }
 
 function tb_init {
-    # uses: tb_is_le_version, tb_is_linux, tb_is_windows
+    # uses: tb_alias, tb_is_le_version, tb_is_linux, tb_is_windows
     # uses: basename
     shopt -os errexit errtrace nounset pipefail
     local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
