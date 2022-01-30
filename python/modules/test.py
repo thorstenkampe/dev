@@ -27,8 +27,11 @@ table   = [
 redis   = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
 
 config  = configparser.ConfigParser()
-config['DEFAULT'] = {'def_key': 'def_value'}
-config['section'] = {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False', 'none': 'None', 'str': 'text'}
+_config = {
+    'DEFAULT': {'def_key': 'def_value'},
+    'section': {'int': '1', 'float': '1.0', 'true': 'True', 'false': 'False', 'none': 'None', 'str': 'text'}
+}
+config.read_dict(_config)
 section = config['section']
 
 # Pandas

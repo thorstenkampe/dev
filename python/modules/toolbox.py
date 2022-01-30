@@ -32,27 +32,18 @@ def dmap(dict_, keyfunc):
     '''apply function to value of dictionary'''
     return {key: keyfunc(dict_[key]) for key in dict_}
 
-def cast_config(config):  # NOSONAR
-    '''cast ini values to integer, float, boolean, or None if possible'''
-    def cast(value):
+def cast(value):
+    '''cast value to integer, float, boolean, or None if possible'''
+    try:
+        value = int(value)
+    except ValueError:
         try:
-            value = int(value)
+            value = float(value)
         except ValueError:
-            try:
-                value = float(value)
-            except ValueError:
-                if value in ['True', 'False', 'None']:
-                    # pylint: disable = eval-used
-                    value = eval(value)
-
-        return value
-
-    myconfig = {}
-
-    for section in config.sections():
-        myconfig[section] = dmap(config[section], cast)
-
-    return myconfig
+            if value in ['True', 'False', 'None']:
+                # pylint: disable = eval-used
+                value = eval(value)
+    return value
 
 def typeof(obj):
     '''equivalent of `type` for `isinstance`'''

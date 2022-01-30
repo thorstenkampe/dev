@@ -35,9 +35,9 @@ def test_dmap():
     result = {'a': typeint, 'b': typeint, 'c': typeint, 'd': typeint, 'e': typeint, 'f': typeint, 'g': typestr, 'h h': typestr, 9: typestr}
     assert tb.dmap(test.dict, keyfunc=type) == result
 
-def test_cast_config():
-    result = {'section': {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}}
-    assert tb.cast_config(test.config) == result
+def test_cast():
+    result = {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}
+    assert tb.dmap(test.section, tb.cast) == result
 
 def test_typeof():
     assert tb.typeof(test.set) == set
