@@ -81,7 +81,7 @@ def port_reachable(url):
 
     try:
         sock = socket.create_connection((urlp.hostname, port), timeout=0.048)
-    except (ConnectionRefusedError, socket.gaierror, socket.timeout):
+    except (OSError, socket.gaierror, socket.timeout):
         return False
     else:
         sock.close()
