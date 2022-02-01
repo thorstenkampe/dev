@@ -36,11 +36,7 @@ def test_dmap():
     assert tb.dmap(test.dict, keyfunc=type) == result
 
 def test_cast():
-    result = {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}
-    assert tb.dmap(test.section, tb.cast) == result
-
-def test_typeof():
-    assert tb.typeof(test.set) == set
+    assert tb.dmap(test.section, tb.cast) == {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}
 
 class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
@@ -73,8 +69,7 @@ class Test_port_reachable:  # NOSONAR
 class Test_groupby:  # NOSONAR
     def test_dict(self):
         group  = tb.groupby(test.dict, keyfunc=lambda x: type(x[1]))
-        result = {typeint: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, typestr: {9: '', 'g': '7', 'h h': '8 8'}}
-        assert group == result
+        assert group == {typeint: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, typestr: {9: '', 'g': '7', 'h h': '8 8'}}
 
     def test_list(self):
         group = tb.groupby(test.list, keyfunc=type)
@@ -98,8 +93,7 @@ class Test_groupby:  # NOSONAR
 
     def test_series(self):
         group  = tb.groupby(test.sr, keyfunc=type)
-        result = {typeint: ['a', 'b', 'c', 'd', 'e', 'f'], typestr: ['g', 'h', 'i']}
-        assert groups_lst(group) == result
+        assert groups_lst(group) == {typeint: ['a', 'b', 'c', 'd', 'e', 'f'], typestr: ['g', 'h', 'i']}
 
     def test_dataframe_group_by_row(self):
         group = tb.groupby(test.df, keyfunc=lambda x: test.even(x['e']), axis='rows')
@@ -115,12 +109,10 @@ class Test_groupby:  # NOSONAR
             tb.groupby(test.str)
 
 def test_sort_index():
-    result = collections.OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
-    assert tb.sort_index(test.dict, keyfunc=str) == result
+    assert tb.sort_index({2: 1, '1': '2'}, keyfunc=str) == collections.OrderedDict([('1', '2'), (2, 1)])
 
 def test_sort_value():
-    result = collections.OrderedDict([(9, ''), ('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', '7'), ('h h', '8 8')])
-    assert tb.sort_value(test.dict, keyfunc=str) == result
+    assert tb.sort_value({'1': '2', 2: 1}, keyfunc=str) == collections.OrderedDict([(2, 1), ('1', '2')])
 
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR
@@ -129,8 +121,7 @@ class Test_engine:  # NOSONAR
         assert str(tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
 
     def test_mslinux(self):
-        result = 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
-        assert str(tb.engine('mssql://')) == result
+        assert str(tb.engine('mssql://')) == 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
 
     def test_mylocal(self):
         assert str(tb.engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
@@ -139,8 +130,7 @@ class Test_engine:  # NOSONAR
         assert str(tb.engine('oracle://')) == 'Engine(oracle:///?encoding=UTF-8&nencoding=UTF-8)'
 
     def test_oracle_sys(self):
-        result = 'Engine(oracle://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
-        assert str(tb.engine('oracle://sys@')) == result
+        assert str(tb.engine('oracle://sys@')) == 'Engine(oracle://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
 
     def test_postgresql(self):
         assert str(tb.engine('postgresql://')) == 'Engine(postgresql://)'

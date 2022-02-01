@@ -45,18 +45,6 @@ def cast(value):
                 value = eval(value)
     return value
 
-def typeof(obj):
-    '''equivalent of `type` for `isinstance`'''
-    import collections.abc
-    import pandas as pd
-    for type_ in (
-        dict, list, set, tuple, collections.abc.MappingView, pd.Series, pd.DataFrame
-    ):
-        if isinstance(obj, type_):
-            return type_
-
-    return None
-
 def port_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
@@ -171,7 +159,7 @@ def groupby(iter_, keyfunc=ident, axis=None):
     import collections
     import pandas as pd
 
-    type_    = typeof(iter_)
+    type_    = type(iter_)
     eq_class = collections.defaultdict(type_)
 
     if axis and type_ != pd.DataFrame:
