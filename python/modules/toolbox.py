@@ -130,7 +130,7 @@ def progress(func, iter_=None):
     import alive_progress
 
     if iter_:
-        for item in alive_progress.alive_it(iter_, bar='circles'):
+        for item in alive_progress.alive_it(iter_, bar='circles', spinner=None):
             func(item)
     else:
         with alive_progress.alive_bar(bar=False, stats=False, elapsed=False, monitor=False):
@@ -193,12 +193,12 @@ def groupby(iter_, keyfunc=ident, axis=None):
     elif type_ == pd.DataFrame:
         if axis == 'columns':
             iter_ = iter_.transpose()  # = apply by axis=rows, groupby by axis=columns
-        return iter_.groupby(iter_.apply(keyfunc, axis='columns'), axis='index', sort=False)
+        return iter_.groupby(iter_.apply(keyfunc, axis='columns'), axis='index',
+                             sort=False)
 
     else:
-        msg = ('Type not supported for iterable. Use dictionary, list, set, tuple,'
-               ' series, or dataframe.')
-        raise TypeError(msg)
+        raise TypeError('Type not supported for iterable. Use dictionary, list, '
+                        'set, tuple, series, or dataframe.')
 
     for proj, elem in zip(map(keyfunc, iter_), iter_):
         grouper(proj, elem)
@@ -221,7 +221,8 @@ def engine(dsn):
 
     if   scheme == 'mssql':
         # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
-        query_params = {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes', 'TrustServerCertificate': 'yes'}
+        query_params = {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes',
+                        'TrustServerCertificate': 'yes'}
 
         if is_localdb(dsn):
             query_params['Encrypt'] = 'no'
