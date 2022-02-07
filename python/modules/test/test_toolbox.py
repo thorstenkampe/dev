@@ -4,9 +4,6 @@ import collections, pip, socket
 import pytest
 import test, toolbox as tb
 
-typeint = type(0)
-typestr = type('str')
-
 def groups_lst(groupby):
     '''
     return `groups`-like dictionary from Pandas GroupBy object with list as values
@@ -32,7 +29,7 @@ class Test_is_localdb:  # NOSONAR
         assert not tb.is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
 
 def test_dmap():
-    result = {'a': typeint, 'b': typeint, 'c': typeint, 'd': typeint, 'e': typeint, 'f': typeint, 'g': typestr, 'h h': typestr, 9: typestr}
+    result = {'a': int, 'b': int, 'c': int, 'd': int, 'e': int, 'f': int, 'g': str, 'h h': str, 9: str}
     assert tb.dmap(test.dict, keyfunc=type) == result
 
 def test_cast():
@@ -69,19 +66,19 @@ class Test_port_reachable:  # NOSONAR
 class Test_groupby:  # NOSONAR
     def test_dict(self):
         group  = tb.groupby(test.dict, keyfunc=lambda x: type(x[1]))
-        assert group == {typeint: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, typestr: {9: '', 'g': '7', 'h h': '8 8'}}
+        assert group == {int: {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}, str: {9: '', 'g': '7', 'h h': '8 8'}}
 
     def test_list(self):
         group = tb.groupby(test.list, keyfunc=type)
-        assert group == {typeint: [1, 2, 3, 4, 5, 6], typestr: ['7', '8 8', '']}
+        assert group == {int: [1, 2, 3, 4, 5, 6], str: ['7', '8 8', '']}
 
     def test_set(self):
         group = tb.groupby(test.set, keyfunc=type)
-        assert group == {typeint: {1, 2, 3, 4, 5, 6}, typestr: {'7', '8 8', ''}}
+        assert group == {int: {1, 2, 3, 4, 5, 6}, str: {'7', '8 8', ''}}
 
     def test_tuple(self):
         group = tb.groupby(test.tuple, keyfunc=type)
-        assert group == {typeint: (1, 2, 3, 4, 5, 6), typestr: ('7', '8 8', '')}
+        assert group == {int: (1, 2, 3, 4, 5, 6), str: ('7', '8 8', '')}
 
     def test_error_label(self):
         with pytest.raises(TypeError, match='^axis specified but iterable is not dataframe$'):
@@ -93,7 +90,7 @@ class Test_groupby:  # NOSONAR
 
     def test_series(self):
         group  = tb.groupby(test.sr, keyfunc=type)
-        assert groups_lst(group) == {typeint: ['a', 'b', 'c', 'd', 'e', 'f'], typestr: ['g', 'h', 'i']}
+        assert groups_lst(group) == {int: ['a', 'b', 'c', 'd', 'e', 'f'], str: ['g', 'h', 'i']}
 
     def test_dataframe_group_by_row(self):
         group = tb.groupby(test.df, keyfunc=lambda x: test.even(x['e']), axis='rows')
