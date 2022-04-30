@@ -57,7 +57,7 @@ function tb_test_file {
 function tb_test_port {
     # uses: nc, ncat
     if type -P ncat > /dev/null; then
-        ncat -z --wait 0.024 "$1" "$2"
+        ncat -z --wait 0.025 "$1" "$2"
     else
         nc -z -w 1 "$1" "$2" 2> /dev/null
     fi
@@ -66,6 +66,7 @@ function tb_test_port {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
+    # uses: curl, gpg, gpg2, procps
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
@@ -133,6 +134,31 @@ function tb_contains {
     return 1
 }
 
+function tb_gpg {
+    # uses: tb_alias, tb_log, tb_parse_opts, tb_test_args
+    # uses: gpg
+    local false true
+
+    tb_parse_opts d:e:s: "$@"
+    shift $(( OPTIND - 1 ))
+
+    tb_test_args '[[ -v opts[$arg] ]]' d e s
+
+    if (( ${#true[@]} != 1 )); then
+        tb_log error 'either option "d" (decrypt), "e" (encrypt), or "s" (symmetric) must be given'
+        return 1
+    fi
+
+    tb_alias
+    if   [[ -v opts[d] ]]; then
+        gpg --decrypt-files --passphrase "${opts[d]}" "$1"
+    elif [[ -v opts[e] ]]; then
+        gpg --encrypt --trust-model always --recipient "${opts[e]}" "$1"
+    else
+        gpg --symmetric --passphrase "${opts[s]}" "$1"
+    fi
+}
+
 function tb_groupby {
     # group current directory by file type: `LC_ALL=POSIX tb_groupby 'stat --format %F "$arg"' *`
     # show file types: `printf '%s\n' "${!groupby[@]}"`
@@ -164,11 +190,6 @@ function tb_init {
     # uses: basename
     shopt -os errexit errtrace nounset pipefail
     local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
-    if tb_is_le_version "$bash_version" 4.3 ; then
-        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: $bash_version, minimum: 4.4)" >&2
-        return 1
-    fi
-    shopt -s dotglob inherit_errexit
 
     if   tb_is_linux; then
         PATH=/usr/local/bin:$PATH
@@ -176,6 +197,12 @@ function tb_init {
     elif tb_is_windows; then
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
     fi
+
+    if tb_is_le_version "$bash_version" 4.3 ; then
+        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: $bash_version, minimum: 4.4)" >&2
+        return 1
+    fi
+    shopt -s dotglob inherit_errexit
 
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
     # * http://pubs.opengroup.org/onlinepubs/7908799/xbd/locale.html
@@ -228,12 +255,13 @@ function tb_map {
 }
 
 function tb_parse_opts {
+    # uses: tb_contains
     unset -v opts OPTIND
     local opt
     declare -gA opts
 
     while getopts "$1" opt "${@:2}"; do
-        if [[ $opt == '?' ]]; then
+        if tb_contains "$opt" '?' ':' ; then
             # unknown option or required argument missing
             return 1
         else
