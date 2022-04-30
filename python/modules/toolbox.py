@@ -133,7 +133,8 @@ def progress(func, iter_=None):
         for item in alive_progress.alive_it(iter_, bar='circles', spinner=None):
             func(item)
     else:
-        with alive_progress.alive_bar(bar=False, stats=False, elapsed=False, monitor=False):
+        with alive_progress.alive_bar(bar=False, stats=False, elapsed=False, monitor=False,
+                                      stats_end=False):
             func()
 
 def trace():
@@ -216,7 +217,7 @@ def engine(dsn):
     scheme, netloc, path, _, _ = urlp
 
     # only necessary for interactive use (e.g. IPython) to prevent open sessions
-    engine_params = {'poolclass': sa.pool.NullPool, 'future': True}
+    engine_params = {'poolclass': sa.pool.NullPool, 'future': False}
     query_params  = {}
 
     if   scheme == 'mssql':
