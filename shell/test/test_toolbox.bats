@@ -136,6 +136,17 @@ function teardown {
 }
 
 #
+@test gpg {
+    cd "$testdir"
+    cp "$testfile" "$testfile.old"
+
+    tb_gpg -s password "$testfile"
+    tb_gpg -d password "$testfile.gpg"
+
+    cmp --quiet "$testfile.old" "$testfile"
+}
+
+#
 @test contains {
     tb_contains 2 1 2 3
 }
@@ -197,29 +208,54 @@ function teardown {
 }
 
 #
-@test 'parse_opts - valid options' {
+@test 'parse_opts - valid options (verbose)' {
     tb_parse_opts a:bc -a 1 -b arg1
 }
 
-@test 'parse_opts - option arguments' {
+@test 'parse_opts - valid options (silent)' {
+    tb_parse_opts :a:bc -a 1 -b arg1
+}
+
+@test 'parse_opts - option arguments (verbose)' {
     tb_parse_opts a:bc -a 1 -b arg1
 
     assert_equal "${opts[a]}" 1
     assert_equal "${opts[b]}" ''
 }
 
-@test 'parse_opts - unknown option' {
+@test 'parse_opts - option arguments (silent)' {
+    tb_parse_opts :a:bc -a 1 -b arg1
+
+    assert_equal "${opts[a]}" 1
+    assert_equal "${opts[b]}" ''
+}
+
+@test 'parse_opts - unknown option (verbose)' {
     run tb_parse_opts a:bc -x
 
     assert_failure
     assert_output --partial ': illegal option -- x'
 }
 
-@test 'parse_opts - option requires argument' {
+@test 'parse_opts - unknown option (silent)' {
+    run tb_parse_opts :a:bc -x
+
+    assert_failure
+    refute_output
+}
+
+@test 'parse_opts - option requires argument (verbose)' {
     run tb_parse_opts a:bc -a
 
     assert_failure
     assert_output --partial ': option requires an argument -- a'
+}
+
+@test 'parse_opts - option requires argument (silent)' {
+    run tb_parse_opts :a:bc -a
+
+    assert_failure
+    refute_output
 }
 
 @test 'parse_opts - no option' {
