@@ -396,21 +396,20 @@ function tb_color {
         [reset]='\e[m'
 
         # foreground colors
-        [black]='\e[30m' [brightblack]='\e[90m'  [red]='\e[31m'     [brightred]='\e[91m'
-        [green]='\e[32m' [brightgreen]='\e[92m'  [yellow]='\e[33m'  [brightyellow]='\e[93m'
-        [blue]='\e[34m'  [brightblue]='\e[94m'   [magenta]='\e[35m' [brightmagenta]='\e[95m'
-        [cyan]='\e[36m'  [brightcyan]='\e[96m'   [white]='\e[37m'   [brightwhite]='\e[97m'
-    ) \
-                bcolor=(
+        [black]='\e[30m'  [brightblack]='\e[90m'   [red]='\e[31m'      [brightred]='\e[91m'
+        [green]='\e[32m'  [brightgreen]='\e[92m'   [yellow]='\e[33m'   [brightyellow]='\e[93m'
+        [blue]='\e[34m'   [brightblue]='\e[94m'    [magenta]='\e[35m'  [brightmagenta]='\e[95m'
+        [cyan]='\e[36m'   [brightcyan]='\e[96m'    [white]='\e[37m'    [brightwhite]='\e[97m'
+
         # background colors
-        [black]='\e[40m' [brightblack]='\e[100m' [red]='\e[41m'     [brightred]='\e[101m'
-        [green]='\e[42m' [brightgreen]='\e[102m' [yellow]='\e[43m'  [brightyellow]='\e[103m'
-        [blue]='\e[44m'  [brightblue]='\e[104m'  [magenta]='\e[45m' [brightmagenta]='\e[105m'
-        [cyan]='\e[46m'  [brightcyan]='\e[106m'  [white]='\e[47m'   [brightwhite]='\e[107m'
+        [bblack]='\e[40m' [bbrightblack]='\e[100m' [bred]='\e[41m'     [bbrightred]='\e[101m'
+        [bgreen]='\e[42m' [bbrightgreen]='\e[102m' [byellow]='\e[43m'  [bbrightyellow]='\e[103m'
+        [bblue]='\e[44m'  [bbrightblue]='\e[104m'  [bmagenta]='\e[45m' [bbrightmagenta]='\e[105m'
+        [bcyan]='\e[46m'  [bbrightcyan]='\e[106m'  [bwhite]='\e[47m'   [bbrightwhite]='\e[107m'
     )
 
     if ! tb_is_tty; then
-        tb_map '' color bcolor
+        tb_map '' color
     fi
 }
 
