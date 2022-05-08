@@ -323,7 +323,7 @@ function tb_get_section {
     tb_parse_opts ao "$@"
     shift $(( OPTIND - 1 ))
 
-    if [[ -v opts[a] || -v opts[o] ]]; then
+    if [[ -v opts[@] ]]; then
         for section in "${@:2}"; do
             unset -v "$section"
             if [[ ! -v opts[o] ]]; then
