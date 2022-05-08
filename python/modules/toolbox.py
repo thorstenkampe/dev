@@ -76,6 +76,18 @@ def port_reachable(url):
         return True
 
 # input/output #  NOSONAR
+def logging(level='info'):
+    import os, sys
+    from loguru import logger
+
+    if os.isatty(2):
+        timestamp = ''
+    else:
+        timestamp = ' {time:YYYY-MM-DD HH:mm:ss}'
+    logfmt = f'<level>[{{level}}{timestamp}]</> {{message}}\n'
+
+    logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=logfmt)])
+
 def prettytab(iter_, headers=None, pager=False, **kwargs):
     import pandas as pd, rich.box, rich.console, rich.table
 

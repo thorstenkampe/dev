@@ -1,20 +1,10 @@
-import os, sys
 import click, click_help_colors, rich.traceback
+# pylint: disable = unused-import
 from loguru import logger
 import toolbox as tb
 
 rich.traceback.install(width=80, extra_lines=1)
-
-if os.isatty(2):
-    timestamp = ''
-else:
-    timestamp = ' {time:YYYY-MM-DD HH:mm:ss}'
-logfmt = f'<level>[{{level}}{timestamp}]</> {{message}}\n'
-
-def configure_logging(level, fmt=logfmt):
-    logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=fmt)])
-
-configure_logging(level='info')
+tb.logging()
 
 @click.command(
     context_settings   = {'help_option_names': ['-h', '--help']},
@@ -33,7 +23,7 @@ def main(debug):
     '''purpose of script'''
 
     if debug:
-        configure_logging(level='debug')
+        tb.logging(level='debug')
         tb.trace()
 
 # pylint: disable = no-value-for-parameter
