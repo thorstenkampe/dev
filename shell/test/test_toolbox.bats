@@ -311,8 +311,17 @@ function teardown {
 }
 
 # ini #
-@test section_to_array {
-    tb_section_to_array $config connection logging
+@test 'get_section - var' {
+    tb_get_section $config connection logging
+
+    assert_equal "$user" test_user
+    assert_equal "$password" test_password
+    assert_equal "$file" test.log
+    assert_equal "$level" debug
+}
+
+@test 'get_section - associative array' {
+    tb_get_section -a $config connection logging
 
     assert_equal "${connection[user]}" test_user
     assert_equal "${connection[password]}" test_password
@@ -320,20 +329,11 @@ function teardown {
     assert_equal "${logging[level]}" debug
 }
 
-@test 'section_to_array - ordered' {
-    tb_section_to_array -o $config connection logging
+@test 'get_section - ordered array' {
+    tb_get_section -o $config connection logging
 
     assert_equal "${connection[0]}" test_user
     assert_equal "${connection[1]}" test_password
     assert_equal "${logging[0]}" test.log
     assert_equal "${logging[1]}" debug
-}
-
-@test section_to_var {
-    tb_section_to_var $config connection logging
-
-    assert_equal "$user" test_user
-    assert_equal "$password" test_password
-    assert_equal "$file" test.log
-    assert_equal "$level" debug
 }

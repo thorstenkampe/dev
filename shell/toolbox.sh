@@ -312,44 +312,42 @@ function tb_test_deps {
     fi
 }
 
-# ini #
-function tb_section_to_array {
+function tb_get_section {
     # uses: tb_parse_opts
     # uses: crudini
+    # store section values as shell variables
+    # -a: store values in associative array
     # -o: store values in section order in ordinary array (omitting keys)
     local section key keys value
 
-    tb_parse_opts o "$@"
+    tb_parse_opts ao "$@"
     shift $(( OPTIND - 1 ))
 
-    for section in "${@:2}"; do
-        unset -v "$section"
-        if [[ ! -v opts[o] ]]; then
-            declare -gA "$section"
-        fi
-        # create array with same name as section name
-        declare -n _array=$section
-        _array=()
-
-        mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
-        for key in "${keys[@]}"; do
-            value=$(crudini --get "$1" "$section" "$key")
-            if [[ -v opts[o] ]]; then
-                _array+=( "$value" )
-            else
-                _array[$key]=$value
+    if [[ -v opts[a] || -v opts[o] ]]; then
+        for section in "${@:2}"; do
+            unset -v "$section"
+            if [[ ! -v opts[o] ]]; then
+                declare -gA "$section"
             fi
+            # create array with same name as section name
+            declare -n _array=$section
+            _array=()
+
+            mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
+            for key in "${keys[@]}"; do
+                value=$(crudini --get "$1" "$section" "$key")
+                if [[ -v opts[o] ]]; then
+                    _array+=( "$value" )
+                else
+                    _array[$key]=$value
+                fi
+            done
         done
-    done
-}
-
-function tb_section_to_var {
-    # uses: crudini
-    local section
-
-    for section in "${@:2}"; do
-        eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
-    done
+    else
+        for section in "${@:2}"; do
+            eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
+        done
+    fi
 }
 
 # input/output #
