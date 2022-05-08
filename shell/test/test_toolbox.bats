@@ -166,6 +166,34 @@ function teardown {
 }
 
 #
+@test 'get_section - var' {
+    tb_get_section $config connection logging
+
+    assert_equal "$user" test_user
+    assert_equal "$password" test_password
+    assert_equal "$file" test.log
+    assert_equal "$level" debug
+}
+
+@test 'get_section - associative array' {
+    tb_get_section -a $config connection logging
+
+    assert_equal "${connection[user]}" test_user
+    assert_equal "${connection[password]}" test_password
+    assert_equal "${logging[file]}" test.log
+    assert_equal "${logging[level]}" debug
+}
+
+@test 'get_section - ordered array' {
+    tb_get_section -o $config connection logging
+
+    assert_equal "${connection[0]}" test_user
+    assert_equal "${connection[1]}" test_password
+    assert_equal "${logging[0]}" test.log
+    assert_equal "${logging[1]}" debug
+}
+
+#
 @test groupby {
     tb_groupby 'echo ${#arg}' 1 22 333 444
 
@@ -308,32 +336,4 @@ function teardown {
 @test 'test_deps - name with space' {
     chmod +x "$testfile"
     tb_test_deps "$testfile"
-}
-
-# ini #
-@test 'get_section - var' {
-    tb_get_section $config connection logging
-
-    assert_equal "$user" test_user
-    assert_equal "$password" test_password
-    assert_equal "$file" test.log
-    assert_equal "$level" debug
-}
-
-@test 'get_section - associative array' {
-    tb_get_section -a $config connection logging
-
-    assert_equal "${connection[user]}" test_user
-    assert_equal "${connection[password]}" test_password
-    assert_equal "${logging[file]}" test.log
-    assert_equal "${logging[level]}" debug
-}
-
-@test 'get_section - ordered array' {
-    tb_get_section -o $config connection logging
-
-    assert_equal "${connection[0]}" test_user
-    assert_equal "${connection[1]}" test_password
-    assert_equal "${logging[0]}" test.log
-    assert_equal "${logging[1]}" debug
 }

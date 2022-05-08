@@ -134,6 +134,44 @@ function tb_contains {
     return 1
 }
 
+function tb_get_section {
+    # uses: tb_parse_opts
+    # uses: crudini
+    # store section values as shell variables
+    # -a: store values in associative array
+    # -o: store values in section order in ordinary array (omitting keys)
+    local section key keys value
+
+    tb_parse_opts ao "$@"
+    shift $(( OPTIND - 1 ))
+
+    if [[ -v opts[@] ]]; then
+        for section in "${@:2}"; do
+            unset -v "$section"
+            if [[ ! -v opts[o] ]]; then
+                declare -gA "$section"
+            fi
+            # create array with same name as section name
+            declare -n _array=$section
+            _array=()
+
+            mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
+            for key in "${keys[@]}"; do
+                value=$(crudini --get "$1" "$section" "$key")
+                if [[ -v opts[o] ]]; then
+                    _array+=( "$value" )
+                else
+                    _array[$key]=$value
+                fi
+            done
+        done
+    else
+        for section in "${@:2}"; do
+            eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
+        done
+    fi
+}
+
 function tb_gpg {
     # uses: tb_alias, tb_log, tb_parse_opts, tb_test_args
     # uses: gpg
@@ -309,44 +347,6 @@ function tb_test_deps {
             echo -e "${color[bold]}${color[brightred]}✗${color[reset]} $dep" >&2
         done
         return 1
-    fi
-}
-
-function tb_get_section {
-    # uses: tb_parse_opts
-    # uses: crudini
-    # store section values as shell variables
-    # -a: store values in associative array
-    # -o: store values in section order in ordinary array (omitting keys)
-    local section key keys value
-
-    tb_parse_opts ao "$@"
-    shift $(( OPTIND - 1 ))
-
-    if [[ -v opts[@] ]]; then
-        for section in "${@:2}"; do
-            unset -v "$section"
-            if [[ ! -v opts[o] ]]; then
-                declare -gA "$section"
-            fi
-            # create array with same name as section name
-            declare -n _array=$section
-            _array=()
-
-            mapfile -t keys < <(crudini --get "$1" "$section" 2> /dev/null)
-            for key in "${keys[@]}"; do
-                value=$(crudini --get "$1" "$section" "$key")
-                if [[ -v opts[o] ]]; then
-                    _array+=( "$value" )
-                else
-                    _array[$key]=$value
-                fi
-            done
-        done
-    else
-        for section in "${@:2}"; do
-            eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
-        done
     fi
 }
 
