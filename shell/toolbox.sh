@@ -66,9 +66,14 @@ function tb_test_port {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, gpg, gpg2, procps
+    # uses: curl, gpg, gpg2, procps, ssh
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
+    }
+
+    function ssh {
+        command ssh -o 'CheckHostIP no' -o 'StrictHostKeyChecking no' -o 'VerifyHostKeyDNS no' \
+                    -o 'UserKnownHostsFile /dev/null' "$@"
     }
 
     if   tb_is_linux; then
@@ -348,6 +353,20 @@ function tb_test_deps {
         done
         return 1
     fi
+}
+
+function tb_tunnel () {
+    # uses: tb_parse_opts, tb_split
+    # uses: sleep, ssh
+    # tb_tunnel -p <local_port> -g <user@gateway[:port]> <target:port>
+    # equivalent to (for testing): `ssh -f -4 -p <gateway_port> -L <local_port>:<target:port> <user@gateway> sleep 1m`
+    local split
+
+    tb_parse_opts p:g: "$@"
+    shift $(( OPTIND - 1 ))
+
+    tb_split : "${opts[g]}"
+    ssh -f -4 -p "${split[1]-22}" -L "${opts[p]}:$1" "${split[0]}" sleep 1m
 }
 
 # input/output #
