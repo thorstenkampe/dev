@@ -76,15 +76,16 @@ def port_reachable(url):
         return True
 
 # input/output #  NOSONAR
-def logging(level='info'):
+def logging(logfmt='', level='info'):
     import os, sys
     from loguru import logger
 
-    if os.isatty(2):
-        timestamp = ''
-    else:
-        timestamp = ' {time:YYYY-MM-DD HH:mm:ss}'
-    logfmt = f'<level>[{{level}}{timestamp}]</> {{message}}\n'
+    if not logfmt:
+        if os.isatty(2):
+            timestamp = ''
+        else:
+            timestamp = ' {time:YYYY-MM-DD HH:mm:ss}'
+        logfmt = f'<level>[{{level}}{timestamp}]</> {{message}}\n'
 
     logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=logfmt)])
 
