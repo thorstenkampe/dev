@@ -66,14 +66,20 @@ function tb_test_port {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, gpg, gpg2, procps, ssh
+    # uses: curl, gpg, gpg2, procps, sftp, ssh
+    _ssh_opts=( -oBatchMode=yes -oExitOnForwardFailure=yes -oCheckHostIP=no -oStrictHostKeyChecking=no
+                -oVerifyHostKeyDNS=no -oUserKnownHostsFile=/dev/null -oLogLevel=error )
+
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
 
+    function sftp {
+        command sftp "${_ssh_opts[@]}" "$@"
+    }
+
     function ssh {
-        command ssh -o 'CheckHostIP no' -o 'StrictHostKeyChecking no' -o 'VerifyHostKeyDNS no' \
-                    -o 'UserKnownHostsFile /dev/null' "$@"
+        command ssh "${_ssh_opts[@]}" "$@"
     }
 
     if   tb_is_linux; then
@@ -125,6 +131,14 @@ function tb_arc {
             7za x "$1" -o"$dest" -y "${@:3}"
         fi
     fi
+}
+
+function tb_backup {
+    # - backup=numbered: create numbered copy if backup file exists
+    # - update:          create backup file only if source is newer
+    # - preserve=all:    preserve all attributes
+    cp --backup=numbered --preserve=all --update --verbose "$1" \
+        "$(dirname "$1")/$(basename "$1")-$(date --iso-8601)"
 }
 
 function tb_contains {
