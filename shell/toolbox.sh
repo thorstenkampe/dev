@@ -5,6 +5,13 @@
 ## escape characters: `printf %q`
 ## interactive shell sets `PS1` variable
 
+function tb_backup {
+    # - backup=numbered: create numbered copy if backup file exists
+    # - update:          create backup file only if source is newer
+    # - preserve=all:    preserve all attributes
+    cp --backup=numbered --preserve=all --update --verbose "$1" "$1-$(date --iso-8601)"
+}
+
 function tb_get_group {
     # `tb_groupby` helper function (`tb_get_group <groupby_key>`)
     declare -n group=${groupby[$1]}
@@ -66,7 +73,7 @@ function tb_test_port {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, gpg, gpg2, procps, sftp, ssh
+    # uses: curl, gpg, gpg2, procps, rsync, sftp, ssh
     _ssh_opts=( -oBatchMode=yes -oExitOnForwardFailure=yes -oCheckHostIP=no -oStrictHostKeyChecking=no
                 -oVerifyHostKeyDNS=no -oUserKnownHostsFile=/dev/null -oLogLevel=error )
 
@@ -135,14 +142,6 @@ function tb_arc {
             7za x "$1" -o"$dest" -y "${@:3}"
         fi
     fi
-}
-
-function tb_backup {
-    # - backup=numbered: create numbered copy if backup file exists
-    # - update:          create backup file only if source is newer
-    # - preserve=all:    preserve all attributes
-    cp --backup=numbered --preserve=all --update --verbose "$1" \
-        "$(dirname "$1")/$(basename "$1")-$(date --iso-8601)"
 }
 
 function tb_contains {
