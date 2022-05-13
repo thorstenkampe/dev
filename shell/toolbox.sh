@@ -74,6 +74,10 @@ function tb_alias {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
 
+    function rsync {
+        command rsync --recursive --times --no-xattrs --human-readable "$@"
+    }
+
     function sftp {
         command sftp "${_ssh_opts[@]}" "$@"
     }
