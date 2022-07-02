@@ -97,20 +97,6 @@ function teardown {
     assert_failure
 }
 
-@test 'test_port - reachable' {
-    run tb_test_port 8.8.8.8 53
-
-    assert_success
-    refute_output
-}
-
-@test 'test_port - unreachable' {
-    run tb_test_port localhost 1
-
-    assert_failure
-    refute_output
-}
-
 ##
 @test 'alias - ps' {
     tb_alias
@@ -141,6 +127,7 @@ function teardown {
     cp "$testfile" "$testfile.old"
 
     tb_gpg -s password "$testfile"
+    rm "$testfile"
     tb_gpg -d password "$testfile.gpg"
 
     cmp --quiet "$testfile.old" "$testfile"

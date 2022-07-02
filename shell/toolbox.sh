@@ -6,6 +6,7 @@
 ## interactive shell sets `PS1` variable
 
 function tb_backup {
+    # uses: cp
     # - backup=numbered: create numbered copy if backup file exists
     # - update:          create backup file only if source is newer
     # - preserve=all:    preserve all attributes
@@ -61,24 +62,21 @@ function tb_test_file {
     [[ $(find "$(dirname "$1")" -mindepth 1 -maxdepth 1 -name "$(basename "$1")" "${@:2}") ]]
 }
 
-function tb_test_port {
-    # uses: nc, ncat
-    if type -P ncat > /dev/null; then
-        ncat -z --wait 0.025 "$1" "$2"
-    else
-        nc -z -w 1 "$1" "$2" 2> /dev/null
-    fi
-}
-
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, gpg, gpg2, procps, rsync, sftp, ssh
-    _ssh_opts=( -oBatchMode=yes -oExitOnForwardFailure=yes -oCheckHostIP=no -oStrictHostKeyChecking=no
-                -oVerifyHostKeyDNS=no -oUserKnownHostsFile=/dev/null -oLogLevel=error )
-
+    # uses: curl, gpg, gpg2, nc, ncat, procps, rsync, sftp, ssh
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
+    }
+
+    function nc {
+        # `-z`: report open ports
+        if type -P ncat > /dev/null; then
+            ncat --wait 0.025 "$@"
+        else
+            command nc -w 1 "$@" 2> /dev/null
+        fi
     }
 
     function rsync {
@@ -86,11 +84,15 @@ function tb_alias {
     }
 
     function sftp {
-        command sftp "${_ssh_opts[@]}" "$@"
+        command sftp -o BatchMode=yes -o ExitOnForwardFailure=yes -o CheckHostIP=no                     \
+                     -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o UserKnownHostsFile=/dev/null \
+                     -o LogLevel=error "$@"
     }
 
     function ssh {
-        command ssh "${_ssh_opts[@]}" "$@"
+        command ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o CheckHostIP=no                     \
+                    -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o UserKnownHostsFile=/dev/null \
+                    -o LogLevel=error "$@"
     }
 
     if   tb_is_linux; then
@@ -167,8 +169,8 @@ function tb_get_section {
     tb_parse_opts ao "$@"
     shift $(( OPTIND - 1 ))
 
-    if [[ -v opts[@] ]]; then
-        for section in "${@:2}"; do
+    for section in "${@:2}"; do
+        if [[ -v opts[@] ]]; then
             unset -v "$section"
             if [[ ! -v opts[o] ]]; then
                 declare -gA "$section"
@@ -186,12 +188,10 @@ function tb_get_section {
                     _array[$key]=$value
                 fi
             done
-        done
-    else
-        for section in "${@:2}"; do
+        else
             eval "$(crudini --get --format sh "$1" "$section" 2> /dev/null)"
-        done
-    fi
+        fi
+    done
 }
 
 function tb_gpg {
@@ -234,14 +234,10 @@ function tb_groupby {
             declare -n group=${groupby[$result]}
             group+=( "$arg" )
         else
-            declare -n group=groupby$i
-            group=( "$arg" )
             groupby[$result]=groupby$((i++))
+            declare -n group=${groupby[$result]}
+            group=( "$arg" )
         fi
-    done
-
-    while [[ -v groupby$i ]]; do
-        unset -v groupby$((i++))
     done
 }
 
@@ -375,15 +371,21 @@ function tb_test_deps {
 function tb_tunnel () {
     # uses: tb_parse_opts, tb_split
     # uses: sleep, ssh
-    # tb_tunnel -p <local_port> -g <user@gateway[:port]> <target:port>
-    # equivalent to (for testing): `ssh -f -4 -p <gateway_port> -L <local_port>:<target:port> <user@gateway> sleep 1m`
-    local split
+    # tb_tunnel [-p <local_port>] -g <[user@]gateway[:port]> <target:port>
+    local gateway gateway_port local_port split
 
     tb_parse_opts p:g: "$@"
     shift $(( OPTIND - 1 ))
 
+    tb_split : "$1"
+    local_port=${opts[p]-${split[1]}}
+
     tb_split : "${opts[g]}"
-    ssh -f -4 -p "${split[1]-22}" -L "${opts[p]}:$1" "${split[0]}" sleep 1m
+    gateway=${split[0]}
+    gateway_port=${split[1]-22}
+
+    ssh -f -4 -p "$gateway_port" -L "$local_port:$1" "$gateway" sleep 1m
+    echo "opened tunnel localhost:$local_port -> $1 (via $gateway:$gateway_port)"
 }
 
 # input/output #
