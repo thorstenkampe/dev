@@ -47,13 +47,6 @@ function tb_join {
     printf %s "${2-}" "${rest[@]/#/$1}"
 }
 
-function tb_send_mail {
-    # uses: mailsend-go, whoami
-    # https://github.com/muquit/mailsend-go
-    # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
-    mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
-}
-
 function tb_test_file {
     # uses: basename, dirname, find
     # test whether file (or folder) satisfies test - uses `find`'s test syntax
@@ -70,10 +63,17 @@ function tb_alias {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
 
+    function mailsend-go {
+        # uses: mailsend-go, whoami
+        # https://github.com/muquit/mailsend-go
+        # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
+        command mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
+    }
+
     function nc {
         # `-z`: report open ports
         if type -P ncat > /dev/null; then
-            ncat --wait 0.025 "$@"
+            ncat --wait 0.026 "$@"
         else
             command nc -w 1 "$@" 2> /dev/null
         fi

@@ -75,11 +75,12 @@ function teardown {
     refute_output
 }
 
-@test send_mail {
+@test mailsend-go {
     email_address=noreply@thorstenkampe.de
     msmtpd --port 60587 &
+    tb_alias
 
-    run tb_send_mail -port 60587 -from $email_address -to $email_address
+    run mailsend-go -port 60587 -from $email_address -to $email_address
     assert_success
 
     kill $!

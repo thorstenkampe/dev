@@ -23,7 +23,7 @@ function error_handler {
     # "[ERROR] command "command" in script_name:function_name(line_number)"
     tb_log error "command \"$BASH_COMMAND\" in $(basename "${BASH_SOURCE[1]}"):${FUNCNAME[1]}(${BASH_LINENO[0]})" || true
     if ! tb_is_tty; then
-        tb_send_mail -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
+        mailsend-go -to RECIPIENT -sub SUBJECT body -msg MESSAGE || true
     fi
 }
 
