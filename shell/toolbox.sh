@@ -30,6 +30,12 @@ function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
 
+function tb_is_sourced {
+    # https://stackoverflow.com/questions/41837948/can-a-bash-script-determine-if-its-been-sourced
+    # use like `if ! tb_is_sourced; then <main_content>; fi`
+    [[ ${BASH_SOURCE[1]} != "$0" ]]
+}
+
 function tb_is_tty {
     [[ -t 1 && -t 2 ]]
 }
@@ -58,13 +64,17 @@ function tb_test_file {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, gpg, gpg2, nc, ncat, procps, rsync, sftp, ssh
+    # uses: curl, dpkg, gpg, gpg2, mailsend-go, nc, ncat, ping, procps, rsync, sftp,
+    #       ssh, whoami, yum
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
 
+    function dpkg {
+        command dpkg --refuse-downgrade --skip-same-version "$@"
+    }
+
     function mailsend-go {
-        # uses: mailsend-go, whoami
         # https://github.com/muquit/mailsend-go
         # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
         command mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
@@ -77,6 +87,10 @@ function tb_alias {
         else
             command nc -w 1 "$@" 2> /dev/null
         fi
+    }
+
+    function ping {
+        command ping -n -s 0 -q "$@"
     }
 
     function rsync {
@@ -93,6 +107,10 @@ function tb_alias {
         command ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o CheckHostIP=no                     \
                     -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o UserKnownHostsFile=/dev/null \
                     -o LogLevel=error "$@"
+    }
+
+    function yum {
+        command yum --assumeyes --cacheonly "$@"
     }
 
     if   tb_is_linux; then

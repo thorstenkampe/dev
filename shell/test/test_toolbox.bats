@@ -47,6 +47,10 @@ function teardown {
     assert_failure
 }
 
+@test is_sourced {
+    tb_is_sourced
+}
+
 @test is_tty {
     run tb_is_tty
 
