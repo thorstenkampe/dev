@@ -10,7 +10,7 @@ function tb_backup {
     # - backup=numbered: create numbered copy if backup file exists
     # - update:          create backup file only if source is newer
     # - preserve=all:    preserve all attributes
-    cp --backup=numbered --preserve=all --update --verbose "$1" "$1-$(date --iso-8601)"
+    cp --backup=numbered --preserve=all --update --verbose "$1" "$(printf "$1-%(%F)T")"
 }
 
 function tb_get_group {
