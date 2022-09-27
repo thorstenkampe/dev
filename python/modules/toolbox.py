@@ -26,7 +26,7 @@ def is_localdb(dsn):
 def is_pyinstaller():
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html
     import sys
-    return getattr(sys, 'frozen', False)
+    return hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS')
 
 def dmap(dict_, keyfunc):
     '''apply function to value of dictionary'''
@@ -235,7 +235,7 @@ def engine(dsn):
 
     if   scheme == 'mssql':
         # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
-        query_params = {'driver': 'ODBC+Driver+17+for+SQL+Server', 'Encrypt': 'yes',
+        query_params = {'driver': 'ODBC+Driver+18+for+SQL+Server', 'Encrypt': 'yes',
                         'TrustServerCertificate': 'yes'}
 
         if is_localdb(dsn):
