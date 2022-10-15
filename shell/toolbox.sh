@@ -344,6 +344,11 @@ function tb_parse_opts {
     done
 }
 
+function tb_public_address {
+    # uses: curl
+    curl --silent https://api.ipify.org
+}
+
 function tb_split {
     # * split string into array 'split', e.g. `tb_split : "$PATH"`
     # * https://www.tutorialkart.com/bash-shell-scripting/bash-split-string/
