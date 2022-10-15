@@ -223,14 +223,13 @@ def groupby(iter_, keyfunc=ident, axis=None):
 def engine(dsn):
     '''create SQLAlchemy engine with sane parameters'''
     import urllib
-    import pyodbc, sqlalchemy as sa
+    import sqlalchemy as sa
 
     # dsn = scheme://netloc/path
     urlp = urllib.parse.urlsplit(dsn)
     scheme, netloc, path, _, _ = urlp
 
-    # only necessary for interactive use (e.g. IPython) to prevent open sessions
-    engine_params = {'poolclass': sa.pool.NullPool}
+    engine_params = {}
     query_params  = {}
 
     if   scheme == 'mssql':
@@ -241,26 +240,23 @@ def engine(dsn):
         if is_localdb(dsn):
             query_params['Encrypt'] = 'no'
 
-        # https://github.com/sqlalchemy/sqlalchemy/issues/5440
-        pyodbc.pooling = False
-
     elif scheme == 'mysql':
         # change default driver for MySQL from `mysqlclient` to MySQL Connector/Python
         # https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html
         dsn = dsn.replace('mysql://', 'mysql+mysqlconnector://')
 
     elif scheme == 'oracle':
-        # https://docs.sqlalchemy.org/en/14/dialects/oracle.html#max-identifier-lengths
+        # https://docs.sqlalchemy.org/en/20/dialects/oracle.html#max-identifier-lengths
         engine_params.update({'exclude_tablespaces': None, 'max_identifier_length': 30})
 
-        # https://docs.sqlalchemy.org/en/14/dialects/oracle.html#ensuring-the-correct-client-encoding
+        # https://docs.sqlalchemy.org/en/20/dialects/oracle.html#ensuring-the-correct-client-encoding
         query_params = {'service_name': path[1:], 'encoding': 'UTF-8', 'nencoding': 'UTF-8'}
 
         if urlp.username == 'sys':
             query_params['mode'] = 'sysdba'
 
         # remove database (path) because we'll pass it as `service_name` query parameter
-        dsn = f'oracle://{netloc}/'
+        dsn = f'oracle+oracledb://{netloc}/'
 
     elif scheme == 'postgresql':
         # change default driver for PostgreSQL from `psycopg2` to `psycopg`

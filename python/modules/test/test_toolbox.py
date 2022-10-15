@@ -124,10 +124,10 @@ class Test_engine:  # NOSONAR
         assert str(tb.engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
 
     def test_oracle(self):
-        assert str(tb.engine('oracle://')) == 'Engine(oracle:///?encoding=UTF-8&nencoding=UTF-8)'
+        assert str(tb.engine('oracle://')) == 'Engine(oracle+oracledb:///?encoding=UTF-8&nencoding=UTF-8)'
 
     def test_oracle_sys(self):
-        assert str(tb.engine('oracle://sys@')) == 'Engine(oracle://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
+        assert str(tb.engine('oracle://sys@')) == 'Engine(oracle+oracledb://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
 
     def test_postgresql(self):
         assert str(tb.engine('postgresql://')) == 'Engine(postgresql+psycopg://)'
