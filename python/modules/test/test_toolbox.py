@@ -114,11 +114,11 @@ def test_sort_value():
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR
     def test_mslocal(self):
-        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
+        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server)'
         assert str(tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
 
     def test_mslinux(self):
-        assert str(tb.engine('mssql://')) == 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+17+for+SQL+Server)'
+        assert str(tb.engine('mssql://')) == 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server)'
 
     def test_mylocal(self):
         assert str(tb.engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
@@ -130,7 +130,7 @@ class Test_engine:  # NOSONAR
         assert str(tb.engine('oracle://sys@')) == 'Engine(oracle://sys@/?encoding=UTF-8&mode=sysdba&nencoding=UTF-8)'
 
     def test_postgresql(self):
-        assert str(tb.engine('postgresql://')) == 'Engine(postgresql://)'
+        assert str(tb.engine('postgresql://')) == 'Engine(postgresql+psycopg://)'
 
     def test_sqlite(self):
         assert str(tb.engine('sqlite:///')) == 'Engine(sqlite:///)'

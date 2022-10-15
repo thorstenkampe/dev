@@ -230,7 +230,7 @@ def engine(dsn):
     scheme, netloc, path, _, _ = urlp
 
     # only necessary for interactive use (e.g. IPython) to prevent open sessions
-    engine_params = {'poolclass': sa.pool.NullPool, 'future': False}
+    engine_params = {'poolclass': sa.pool.NullPool}
     query_params  = {}
 
     if   scheme == 'mssql':
@@ -261,6 +261,10 @@ def engine(dsn):
 
         # remove database (path) because we'll pass it as `service_name` query parameter
         dsn = f'oracle://{netloc}/'
+
+    elif scheme == 'postgresql':
+        # change default driver for PostgreSQL from `psycopg2` to `psycopg`
+        dsn = dsn.replace('postgresql://', 'postgresql+psycopg://')
 
     dsn += '?' + '&'.join(f'{key}={value}' for key, value in query_params.items())
 
