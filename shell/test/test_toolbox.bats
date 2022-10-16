@@ -59,7 +59,7 @@ function teardown {
 }
 
 @test join {
-    run tb_join ', ' "${array[@]}"
+    run tb_join ', ' "${test_array[@]}"
 
     assert_success
     assert_output '1, 2, 3, 4, 5, 6, 7, 8 8, '
@@ -218,13 +218,13 @@ function teardown {
 
 #
 @test 'map - array' {
-    tb_map 'echo ${#arg}' array
-    assert_equal "${array[*]}" '1 1 1 1 1 1 1 3 0'
+    tb_map 'echo ${#arg}' test_array
+    assert_equal "${test_array[*]}" '1 1 1 1 1 1 1 3 0'
 }
 
 @test 'map - associative array' {
-    tb_map 'echo ${#arg}' assoc
-    assert_equal "${assoc[*]}" '0 1 1 1 1 1 1 1 3'
+    tb_map 'echo ${#arg}' test_assoc
+    assert_equal "${test_assoc[*]}" '0 1 1 1 1 1 1 1 3'
 }
 
 #
