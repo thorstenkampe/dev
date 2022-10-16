@@ -14,7 +14,7 @@ declare -gA test_assoc=( [a]=1 [b]=2 [c]=3 [d]=4 [e]=5 [f]=6 [g]=7 [h h]='8 8' [
 declare -gn test_nameref=test_assoc
 
 #
-function vartype {
+function test_vartype {
     case $(declare -p "$1" 2> /dev/null) in
         (declare\ -a*)
             echo 'indexed array'
