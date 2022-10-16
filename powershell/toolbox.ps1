@@ -109,6 +109,13 @@ function tb_choice($Prompt, $Answers) {
     $selection
 }
 
+function tb_Clean-Path($paths) {
+    # Remove duplicate and non-existing paths from delimited path string
+    $paths = $paths -split [IO.Path]::PathSeparator
+    $paths = $paths | Select-Object -Unique | Where-Object {Test-Path -Path $PSItem -PathType Container}
+    $paths -join [IO.Path]::PathSeparator
+}
+
 function tb_map($Keyfunc, $Collection) {
     try {
         $indices = @($Collection.Keys)
