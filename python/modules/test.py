@@ -60,21 +60,11 @@ except ModuleNotFoundError:
 
 try:
     dsn = types.SimpleNamespace(
-        mslocal     = tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB/master'),
-        mslinux     = tb.engine('mssql://sa:password@db/Chinook'),
-        mswindows   = tb.engine('mssql://sa:password@windows-db/Chinook'),
+        mslocal     = tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
 
         mylocal     = tb.engine('mysql://root:password@rednails/Chinook'),
-        mylinux     = tb.engine('mysql://root:password@db/Chinook'),
-        mywindows   = tb.engine('mysql://root:password@windows-db/Chinook'),
 
-        oralinux    = tb.engine('oracle://sys:password@db/xe'),
-        orawindows  = tb.engine('oracle://sys:password@windows-db/xepdb1'),
-        oracdb      = tb.engine('oracle://sys:password@windows-db'),
-
-        postlocal   = tb.engine('postgresql://postgres:password@rednails/'),
-        postlinux   = tb.engine('postgresql://postgres:password@db/'),
-        postwindows = tb.engine('postgresql://postgres:password@windows-db/'),
+        postlocal   = tb.engine('postgresql://postgres:password@rednails/chinook'),
 
         litelocal   = tb.engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
         litelinux   = tb.engine('sqlite:////home/thorsten/data/Chinook.sqlite')

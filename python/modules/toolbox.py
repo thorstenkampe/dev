@@ -9,6 +9,13 @@ def pkg_version(pkg):
 def ident(x):
     return x
 
+def is_ipython_terminal():
+    try:
+        # we treat QT Console and Notebook as one
+        return get_ipython().__class__.__name__ == 'TerminalInteractiveShell'
+    except NameError:
+        return False
+
 def is_localdb(dsn):
     import urllib
     localdb    = r'(localdb)\mssqllocaldb'

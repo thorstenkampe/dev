@@ -28,6 +28,9 @@ class Test_is_localdb:  # NOSONAR
     def test_mysql(self):
         assert not tb.is_localdb(r'mysql://(LocalDB)\MSSQLLocalDB')
 
+def test_is_terminal():
+    assert tb.is_terminal() is False
+
 def test_dmap():
     result = {'a': int, 'b': int, 'c': int, 'd': int, 'e': int, 'f': int, 'g': str, 'h h': str, 9: str}
     assert tb.dmap(test.dict, keyfunc=type) == result
