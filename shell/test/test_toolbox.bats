@@ -34,6 +34,19 @@ function teardown {
     assert_output '333 444'
 }
 
+@test http_status_code {
+    run tb_http_status_code https://httpstat.us/403
+
+    assert_success
+    assert_output 403
+}
+
+@test is_interactive {
+    run tb_is_interactive
+
+    assert_failure
+}
+
 @test 'is_le_version - smaller' {
     tb_is_le_version 1.5 1.10
 }
@@ -328,4 +341,19 @@ function teardown {
 @test 'test_deps - name with space' {
     chmod +x "$testfile"
     tb_test_deps "$testfile"
+}
+
+@test 'test_version - bigger than minimum' {
+    tb_test_version app 1.5 1.10
+}
+
+@test 'test_version - equal to minimum' {
+    tb_test_version app 1.0 1.0
+}
+
+@test 'test_version - smaller than minimum' {
+    run tb_test_version app 1.10 1.5
+
+    assert_failure
+    assert_output --partial ' unsupported app version (current: 1.5, minimum: 1.10)'
 }

@@ -1,9 +1,12 @@
 # shellcheck disable=SC2016,SC2178,SC2294
 
 ## string functions: length: `${#var}`, lower case: `${var,,}`, upper case: `${var^^}`
-## absolute path: `readlink|realpath --canonicalize-missing`
 ## escape characters: `printf %q`
-## interactive shell sets `PS1` variable
+
+function tb_abspath {
+    # uses: realpath
+    realpath --canonicalize-missing "$1"
+}
 
 function tb_backup {
     # uses: cp
@@ -17,6 +20,16 @@ function tb_get_group {
     # `tb_groupby` helper function (`tb_get_group <groupby_key>`)
     declare -n group=${groupby[$1]}
     echo "${group[@]}"
+}
+
+function tb_http_status_code {
+    # uses: curl
+    # https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+    curl --write-out '%{response_code}\n' --head --silent --output /dev/null "$1"
+}
+
+function tb_is_interactive {
+    [[ -v PS1 ]]
 }
 
 function tb_is_le_version {
@@ -130,8 +143,8 @@ function tb_alias {
 }
 
 function tb_arc {
-    # uses: tb_log, tb_parse_opts, tb_split, tb_test_args
-    # uses: 7za, basename, dirname, readlink, tar
+    # uses: tb_abspath, tb_log, tb_parse_opts, tb_split, tb_test_args
+    # uses: 7za, basename, dirname, tar
     local dest false true split
 
     tb_parse_opts cx "$@"
@@ -150,7 +163,7 @@ function tb_arc {
         if [[ ${split[-2]} == tar ]]; then
             tar -caf "$2" -C "$(dirname "$1")" "$(basename "$1")" "${@:3}"
         else
-            7za a -ssw "$2" "$(readlink --canonicalize-missing "$1")" "${@:3}"
+            7za a -ssw "$2" "$(tb_abspath "$1")" "${@:3}"
         fi
     else
         dest=${2-.}  # destination defaults to `.` (current directory)
@@ -188,7 +201,7 @@ function tb_get_section {
     shift $(( OPTIND - 1 ))
 
     for section in "${@:2}"; do
-        if [[ -v opts[@] ]]; then
+        if (( ${#opts[@]} )); then
             unset -v "$section"
             if [[ ! -v opts[o] ]]; then
                 declare -gA "$section"
@@ -260,10 +273,9 @@ function tb_groupby {
 }
 
 function tb_init {
-    # uses: tb_alias, tb_is_le_version, tb_is_linux, tb_is_windows
+    # uses: tb_alias, tb_is_linux, tb_is_windows
     # uses: basename
     shopt -os errexit errtrace nounset pipefail
-    local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
 
     if   tb_is_linux; then
         PATH=/usr/local/bin:$PATH
@@ -272,10 +284,7 @@ function tb_init {
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
     fi
 
-    if tb_is_le_version "$bash_version" 4.3 ; then
-        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: $bash_version, minimum: 4.4)" >&2
-        return 1
-    fi
+    tb_test_version Bash 4.4 "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}"
     shopt -s dotglob inherit_errexit
 
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
@@ -391,6 +400,15 @@ function tb_test_deps {
     fi
 }
 
+function tb_test_version {
+    # uses: tb_is_le_version
+
+    if ! tb_is_le_version "$2" "$3"; then
+        echo -e "\e[91m[ERROR]\e[m unsupported $1 version (current: $3, minimum: $2)" >&2
+        return 1
+    fi
+}
+
 function tb_tunnel () {
     # uses: tb_parse_opts, tb_split
     # uses: sleep, ssh
@@ -470,6 +488,40 @@ function tb_color {
     if ! tb_is_tty; then
         tb_map '' color
     fi
+}
+
+function tb_password {
+    # https://stackoverflow.com/a/24600839 (modeled after `systemd-ask-password`)
+    local char passwd prompt
+    unset -v passwd prompt
+
+    echo -en "${1-🔐 Password: }" >&2
+
+    while true; do
+        read -rsn 1 -p "${prompt-}" char
+
+        case $char in
+            ($'\x0')                      # Enter - accept password
+                break
+                ;;
+
+            ($'\x7F')                     # Backspace
+                if [[ -n ${passwd-} ]]; then
+                    prompt=$'\b \b'
+                    passwd=${passwd::-1}  # remove last character
+                else
+                    prompt=
+                fi
+                ;;
+
+            (*)
+                prompt='*'
+                passwd+=$char
+        esac
+    done
+
+    echo >&2
+    echo -e "${passwd:-}"
 }
 
 function tb_progress {
