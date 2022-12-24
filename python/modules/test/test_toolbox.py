@@ -38,6 +38,9 @@ def test_dmap():
 def test_cast():
     assert tb.dmap(test.section, tb.cast) == {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}
 
+def test_http_status_code():
+    assert tb.http_status_code('https://httpstat.us/403') == 403
+
 class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
         server = socket.create_server(('localhost', 0))

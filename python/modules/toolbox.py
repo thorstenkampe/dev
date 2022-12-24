@@ -52,6 +52,27 @@ def cast(value):
                 value = eval(value)
     return value
 
+def http_status_code(url):
+    # https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+    import http.client, urllib
+
+    host, path = urllib.parse.urlsplit(url)[1:3]
+
+    if ':' in host:
+        # port specified, try to use it
+        host, port = host.split(':')
+        port       = int(port)
+
+    else:
+        # no port specified, use default port
+        port = None
+
+    connection = http.client.HTTPSConnection(host, port = port)
+    connection.request('HEAD', path)
+
+    # -> http.HTTPStatus(status).phrase, http.HTTPStatus(status).description
+    return connection.getresponse().status
+
 def port_reachable(url):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
