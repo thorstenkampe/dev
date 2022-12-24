@@ -1,8 +1,5 @@
 # shellcheck disable=SC2016,SC2030,SC2031,SC2034,SC2154
 
-shopt -os errexit errtrace nounset pipefail
-shopt -s dotglob failglob inherit_errexit
-
 # MAIN CODE STARTS HERE #
 
 load /usr/local/libexec/bats-assert/load.bash
@@ -10,7 +7,9 @@ load /usr/local/libexec/bats-support/load.bash
 load /usr/local/libexec/bats-file/load.bash
 
 function setup {
-    shopt -ou nounset
+    shopt -os errexit errtrace nounset pipefail
+    shopt -s dotglob failglob inherit_errexit
+
     source ./test.sh
     source ./toolbox.sh
     export LANGUAGE=en_US LC_ALL=POSIX
@@ -32,6 +31,24 @@ function teardown {
     run tb_get_group '0 0'
     assert_success
     assert_output '333 444'
+}
+
+@test 'has_section - existing section' {
+    tb_has_section $config connection
+}
+
+@test 'has_section - not existing section' {
+    run tb_has_section $config no_connection
+    assert_failure
+}
+
+@test 'has_section - existing key' {
+    tb_has_section $config connection user
+}
+
+@test 'has_section - not existing key' {
+    run tb_has_section $config connection no_user
+    assert_failure
 }
 
 @test http_status_code {
@@ -144,9 +161,9 @@ function teardown {
     cd "$testdir"
     cp "$testfile" "$testfile.old"
 
-    tb_gpg -s password "$testfile"
+    tb_gpg -s -p password "$testfile"
     rm "$testfile"
-    tb_gpg -d password "$testfile.gpg"
+    tb_gpg -d -p password "$testfile.gpg"
 
     cmp --quiet "$testfile.old" "$testfile"
 }
@@ -180,6 +197,10 @@ function teardown {
     assert_equal "$level" debug
 }
 
+@test 'get_section - var (non-existing section)' {
+    tb_get_section $config does_not_exist
+}
+
 @test 'get_section - associative array' {
     tb_get_section -a $config connection logging
 
@@ -189,6 +210,10 @@ function teardown {
     assert_equal "${logging[level]}" debug
 }
 
+@test 'get_section - associative array (non-existing section)' {
+    tb_get_section -a $config does_not_exist
+}
+
 @test 'get_section - ordered array' {
     tb_get_section -o $config connection logging
 
@@ -196,6 +221,10 @@ function teardown {
     assert_equal "${connection[1]}" test_password
     assert_equal "${logging[0]}" test.log
     assert_equal "${logging[1]}" debug
+}
+
+@test 'get_section - ordered array (non-existing section)' {
+    tb_get_section -o $config does_not_exist
 }
 
 #
@@ -341,19 +370,4 @@ function teardown {
 @test 'test_deps - name with space' {
     chmod +x "$testfile"
     tb_test_deps "$testfile"
-}
-
-@test 'test_version - bigger than minimum' {
-    tb_test_version app 1.5 1.10
-}
-
-@test 'test_version - equal to minimum' {
-    tb_test_version app 1.0 1.0
-}
-
-@test 'test_version - smaller than minimum' {
-    run tb_test_version app 1.10 1.5
-
-    assert_failure
-    assert_output --partial ' unsupported app version (current: 1.5, minimum: 1.10)'
 }

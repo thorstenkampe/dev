@@ -22,6 +22,11 @@ function tb_get_group {
     echo "${group[@]}"
 }
 
+function tb_has_section {
+    # uses: crudini
+    crudini --get "$@" &> /dev/null
+}
+
 function tb_http_status_code {
     # uses: curl
     # https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
@@ -41,6 +46,10 @@ function tb_is_le_version {
 function tb_is_linux {
     # uses: tb_contains
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
+}
+
+function tb_is_root {
+    (( EUID == 0 ))
 }
 
 function tb_is_sourced {
@@ -66,6 +75,11 @@ function tb_join {
     printf %s "${2-}" "${rest[@]/#/$1}"
 }
 
+function tb_public_address {
+    # uses: curl
+    curl --silent https://api.ipify.org
+}
+
 function tb_test_file {
     # uses: basename, dirname, find
     # test whether file (or folder) satisfies test - uses `find`'s test syntax
@@ -77,8 +91,9 @@ function tb_test_file {
 ##
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
-    # uses: curl, dpkg, gpg, gpg2, mailsend-go, nc, ncat, ping, procps, rsync, sftp,
-    #       ssh, whoami, yum
+    # uses: curl, dpkg, gpg, gpg2, mailsend-go, mkdir, nc, ncat, ping, procps, rsync,
+    #       sftp, ssh, whoami, yum
+
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
     }
@@ -91,6 +106,10 @@ function tb_alias {
         # https://github.com/muquit/mailsend-go
         # required: `-to`, `-sub`, optional: `body -msg`, `-fname`, `auth -user -pass`
         command mailsend-go -smtp localhost -port 25 -from "$(whoami)@$HOSTNAME" "$@"
+    }
+
+    function mkdir {
+        command mkdir --parents "$@"
     }
 
     function nc {
@@ -195,6 +214,7 @@ function tb_get_section {
     # store section values as shell variables
     # -a: store values in associative array
     # -o: store values in section order in ordinary array (omitting keys)
+    # non-existing sections are ignored
     local section key keys value
 
     tb_parse_opts ao "$@"
@@ -226,11 +246,11 @@ function tb_get_section {
 }
 
 function tb_gpg {
-    # uses: tb_alias, tb_log, tb_parse_opts, tb_test_args
+    # uses: tb_alias, tb_log, tb_parse_opts, tb_password, tb_test_args
     # uses: gpg
-    local false true
+    local false true REPLY
 
-    tb_parse_opts d:e:s: "$@"
+    tb_parse_opts desr:p: "$@"
     shift $(( OPTIND - 1 ))
 
     tb_test_args '[[ -v opts[$arg] ]]' d e s
@@ -242,11 +262,14 @@ function tb_gpg {
 
     tb_alias
     if   [[ -v opts[d] ]]; then
-        gpg --decrypt-files --passphrase "${opts[d]}" "$1"
+        gpg --decrypt-files --passphrase "${opts[p]-$(tb_password '🔐 Passphrase: ')}" "$1"
     elif [[ -v opts[e] ]]; then
-        gpg --encrypt --trust-model always --recipient "${opts[e]}" "$1"
+        if [[ ! -v opts[r] ]]; then
+            read -erp 'Recipient: '
+        fi
+        gpg --encrypt --trust-model always --recipient "${opts[r]-$REPLY}" "$1"
     else
-        gpg --symmetric --passphrase "${opts[s]}" "$1"
+        gpg --symmetric --passphrase "${opts[p]-$(tb_password '🔐 Passphrase: ')}" "$1"
     fi
 }
 
@@ -276,6 +299,7 @@ function tb_init {
     # uses: tb_alias, tb_is_linux, tb_is_windows
     # uses: basename
     shopt -os errexit errtrace nounset pipefail
+    local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
 
     if   tb_is_linux; then
         PATH=/usr/local/bin:$PATH
@@ -284,7 +308,11 @@ function tb_init {
         PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
     fi
 
-    tb_test_version Bash 4.4 "${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}"
+    # shellcheck disable=SC2072
+    if [[ $bash_version < 4.4 ]]; then
+        echo -e "\e[91m[ERROR]\e[m unsupported Bash version (current: $bash_version, minimum: 4.4)" >&2
+        return 1
+    fi
     shopt -s dotglob inherit_errexit
 
     # * https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
@@ -341,7 +369,7 @@ function tb_parse_opts {
     # uses: tb_contains
     unset -v opts OPTIND
     local opt
-    declare -gA opts
+    declare -gA opts=()
 
     while getopts "$1" opt "${@:2}"; do
         if tb_contains "$opt" '?' ':' ; then
@@ -351,11 +379,6 @@ function tb_parse_opts {
             opts[$opt]=${OPTARG-}
         fi
     done
-}
-
-function tb_public_address {
-    # uses: curl
-    curl --silent https://api.ipify.org
 }
 
 function tb_split {
@@ -396,15 +419,6 @@ function tb_test_deps {
         for dep in "${false[@]}"; do
             echo -e "${color[bold]}${color[brightred]}✗${color[reset]} $dep" >&2
         done
-        return 1
-    fi
-}
-
-function tb_test_version {
-    # uses: tb_is_le_version
-
-    if ! tb_is_le_version "$2" "$3"; then
-        echo -e "\e[91m[ERROR]\e[m unsupported $1 version (current: $3, minimum: $2)" >&2
         return 1
     fi
 }
@@ -490,6 +504,7 @@ function tb_color {
     fi
 }
 
+# shellcheck disable=SC2120
 function tb_password {
     # https://stackoverflow.com/a/24600839 (modeled after `systemd-ask-password`)
     local char passwd prompt
