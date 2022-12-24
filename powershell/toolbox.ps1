@@ -142,8 +142,8 @@ function tb_exec($Cmd) {
 
 function tb_groupby($Keyfunc={param($x) $x}, $Collection) {
     # * https://www.powershellmagazine.com/2013/12/23/simplifying-data-manipulation-in-powershell-with-lambda-functions/
-    # * `tb_groupby {param($x) $x.gettype().Name} $array`
-    # * `tb_groupby {param($x) $x.Value.GetType().Name} $hashtable`
+    # * `tb_groupby {param($x) $x.gettype().Name} $test_array`
+    # * `tb_groupby {param($x) $x.Value.GetType().Name} $test_hashtable`
     if (tb_is_pscore) {
         $params = @{'-CaseSensitive' = $true}
     }
