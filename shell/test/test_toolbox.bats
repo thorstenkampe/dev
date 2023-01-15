@@ -77,6 +77,10 @@ function teardown {
     assert_failure
 }
 
+@test is_online {
+    tb_is_online
+}
+
 @test is_sourced {
     tb_is_sourced
 }
