@@ -48,6 +48,11 @@ function tb_is_linux {
     tb_contains "$OSTYPE" linux linux-gnu linux-musl
 }
 
+function tb_is_online {
+    # uses: ping
+    ping -c 3 8.8.8.8 > /dev/null
+}
+
 function tb_is_root {
     (( EUID == 0 ))
 }
@@ -296,17 +301,12 @@ function tb_groupby {
 }
 
 function tb_init {
-    # uses: tb_alias, tb_is_linux, tb_is_windows
+    # uses: tb_alias
     # uses: basename
     shopt -os errexit errtrace nounset pipefail
     local bash_version=${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}
 
-    if   tb_is_linux; then
-        PATH=/usr/local/bin:$PATH
-
-    elif tb_is_windows; then
-        PATH=/usr/sbin:/usr/local/bin:/usr/bin:$PATH
-    fi
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
     # shellcheck disable=SC2072
     if [[ $bash_version < 4.4 ]]; then
