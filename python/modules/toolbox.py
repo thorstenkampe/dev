@@ -118,7 +118,7 @@ def logging(logfmt='', level='info'):
     logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=logfmt)])
 
 def prettytab(iter_, headers=None, pager=False, **kwargs):
-    import pandas as pd, rich.box, rich.console, rich.table
+    import pandas, rich.box, rich.console, rich.table
 
     def stringify(obj):
         if type(obj) == float:
@@ -129,7 +129,7 @@ def prettytab(iter_, headers=None, pager=False, **kwargs):
     if not headers:
         headers = []
 
-    if type(iter_) == pd.DataFrame:
+    if type(iter_) == pandas.DataFrame:
         if iter_.index.name:
             index_name = iter_.index.name
         else:
@@ -199,12 +199,12 @@ def sort_value(dict_, keyfunc=ident):
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
     import collections
-    import pandas as pd
+    import pandas
 
     type_    = type(iter_)
     eq_class = collections.defaultdict(type_)
 
-    if axis and type_ != pd.DataFrame:
+    if axis and type_ != pandas.DataFrame:
         raise TypeError('axis specified but iterable is not dataframe')
 
     if axis not in [None, 'rows', 'columns']:
@@ -228,11 +228,11 @@ def groupby(iter_, keyfunc=ident, axis=None):
         def grouper(proj, elem):
             eq_class[proj] += (elem,)
 
-    elif type_ == pd.Series:
+    elif type_ == pandas.Series:
         return iter_.groupby(iter_.apply(keyfunc), axis='index', sort=False)
 
     # https://realpython.com/pandas-groupby/
-    elif type_ == pd.DataFrame:
+    elif type_ == pandas.DataFrame:
         if axis == 'columns':
             iter_ = iter_.transpose()  # = apply by axis=rows, groupby by axis=columns
         return iter_.groupby(iter_.apply(keyfunc, axis='columns'), axis='index',
