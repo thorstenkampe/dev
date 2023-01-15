@@ -36,9 +36,9 @@ section = config['section']
 
 # Pandas
 try:
-    import pandas as pd
+    import pandas
 
-    sr    = pd.Series(
+    sr    = pandas.Series(
         data  = list,
         # non-numeric indexing enables label _and_ position based indexing (sr['a'], sr[0])
         index = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
@@ -46,7 +46,7 @@ try:
     sr.name       = 'sr'
     sr.index.name = 'index'
 
-    df    = pd.DataFrame(
+    df    = pandas.DataFrame(
         data    = table,
         index   = [1, 2, 3, 4],
         columns = ['a', 'b', 'c', 'd', 'e']
