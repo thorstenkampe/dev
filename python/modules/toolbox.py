@@ -117,7 +117,7 @@ def logging(logfmt='', level='info'):
 
     logger.configure(handlers=[dict(sink=sys.stderr, level=level.upper(), format=logfmt)])
 
-def prettytab(iter_, headers=None, pager=False, **kwargs):
+def prettytab(iter_, headers=None, **kwargs):
     import pandas, rich.box, rich.console, rich.table
 
     def stringify(obj):
@@ -138,26 +138,15 @@ def prettytab(iter_, headers=None, pager=False, **kwargs):
         headers = [index_name] + list(iter_.columns)
         iter_   = iter_.itertuples()
 
-    iter_ = list(iter_)
-
-    if pager:
-        tabbox = rich.box.ASCII
-    else:
-        tabbox = rich.box.MINIMAL_HEAVY_HEAD
-
-    tab = rich.table.Table(*headers, safe_box=False, box=tabbox, show_edge=False,
-                           show_header=bool(headers), **kwargs)
+    tab = rich.table.Table(*headers, safe_box=False, box=rich.box.MINIMAL_HEAVY_HEAD,
+                           show_edge=False, show_header=bool(headers), **kwargs)
 
     for row in iter_:
         row = [stringify(item) for item in row]
         tab.add_row(*row)
 
     con = rich.console.Console()
-    if pager:
-        with con.pager(styles=True):
-            con.print(tab)
-    else:
-        con.print(tab)
+    con.print(tab)
 
 def progress(func, iter_=None):
     '''
