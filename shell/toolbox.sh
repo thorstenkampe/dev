@@ -97,7 +97,7 @@ function tb_test_file {
 function tb_alias {
     # uses: tb_is_linux, tb_is_windows
     # uses: curl, dpkg, gpg, gpg2, mailsend-go, mkdir, nc, ncat, ping, procps, rsync,
-    #       sftp, ssh, whoami, yum
+    #       sftp, ssh, whoami, wget, yum
 
     function curl {
         command curl --show-error --location --connect-timeout 8 "$@"
@@ -144,6 +144,10 @@ function tb_alias {
         command ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o CheckHostIP=no                     \
                     -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o UserKnownHostsFile=/dev/null \
                     -o LogLevel=error "$@"
+    }
+
+    function wget {
+        command wget --continue "$@"
     }
 
     function yum {
