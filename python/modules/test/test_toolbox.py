@@ -4,13 +4,6 @@ import collections, pip, socket
 import pytest
 import test, toolbox as tb
 
-def groups_lst(groupby):
-    '''
-    return `groups`-like dictionary from Pandas GroupBy object with list as values
-    instead of index for pytest assertions
-    '''
-    return tb.dmap(groupby.groups, lambda x: x.to_list())
-
 class Test_pkg_version:  # NOSONAR
     def test_installed_current(self):
         assert tb.pkg_version('pip', type_='current') == pip.__version__
@@ -107,20 +100,23 @@ class Test_groupby:  # NOSONAR
 
     def test_series(self):
         group  = tb.groupby(test.sr, keyfunc=type)
-        assert groups_lst(group) == {int: ['a', 'b', 'c', 'd', 'e', 'f'], str: ['g', 'h', 'i']}
+        assert tb.groups_lst(group) == {int: ['a', 'b', 'c', 'd', 'e', 'f'], str: ['g', 'h', 'i']}
 
     def test_dataframe_group_by_row(self):
         group = tb.groupby(test.df, keyfunc=lambda x: test.even(x['e']), axis='rows')
-        assert groups_lst(group) == {False: [1, 3], True: [2, 4]}
+        assert tb.groups_lst(group) == {False: [1, 3], True: [2, 4]}
 
     def test_dataframe_group_by_column(self):
         group = tb.groupby(test.df, keyfunc=lambda x: type(x[1]), axis='columns')
-        assert groups_lst(group) == {float: ['d'], int: ['e'], str: ['a', 'b', 'c']}
+        assert tb.groups_lst(group) == {float: ['d'], int: ['e'], str: ['a', 'b', 'c']}
 
     def test_error_type(self):
         match = r'^Type not supported for iterable\. Use dictionary, list, set, tuple, series, or dataframe\.$'
         with pytest.raises(TypeError, match=match):
             tb.groupby(test.str)
+
+def test_groups_lst():
+    assert tb.groups_lst(test.group) == {False: [1, 3], True: [2, 4]}
 
 def test_sort_index():
     assert tb.sort_index({2: 1, '1': '2'}, keyfunc=str) == collections.OrderedDict([('1', '2'), (2, 1)])

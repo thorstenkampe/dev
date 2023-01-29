@@ -196,6 +196,13 @@ def trace():
                        sys.prefix] + sys.argv)
 
 # DATA #
+def groups_lst(groupby):
+    '''
+    return `groups`-like dictionary from Pandas GroupBy object with list as values
+    instead of index
+    '''
+    return dmap(groupby.groups, lambda x: x.to_list())
+
 def sort_index(dict_, keyfunc=ident):
     '''sort dictionary by index (dictionary key)'''
     import collections
