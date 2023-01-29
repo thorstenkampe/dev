@@ -12,11 +12,18 @@ def groups_lst(groupby):
     return tb.dmap(groupby.groups, lambda x: x.to_list())
 
 class Test_pkg_version:  # NOSONAR
-    def test_installed(self):
-        assert tb.pkg_version('pip') == pip.__version__
+    def test_installed_current(self):
+        assert tb.pkg_version('pip', type_='current') == pip.__version__
 
-    def test_not_installed(self):
-        assert tb.pkg_version('DoesNotExist') is None
+    def test_not_installed_current(self):
+        assert tb.pkg_version('DoesNotExist', type_='current') is None
+
+    def test_installed_latest(self):
+        assert tb.pkg_version('pip', type_='latest') == pip.__version__
+
+    def test_not_installed_latest(self):
+        with pytest.raises(KeyError, match="^'info'$"):
+            tb.pkg_version('DoesNotExist', type_='latest')
 
 class Test_is_localdb:  # NOSONAR
     def test_mslocal(self):
@@ -40,6 +47,10 @@ def test_cast():
 
 def test_http_status_code():
     assert tb.http_status_code('https://httpstat.us/403') == 403
+
+def test_transpose():
+    result = [('1a', '2a', '3a', '4a'), ('1b', '2b', '3b', '4b'), ('1c', '2c', '3c', '4c'), (1.0, 2.0, 3.0, 4.0), (1, 2, 3, 4)]
+    assert tb.transpose(test.table) == result
 
 class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
@@ -120,11 +131,11 @@ def test_sort_value():
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR
     def test_mslocal(self):
-        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server)'
+        result = r'Engine(mssql://(LocalDB)\MSSQLLocalDB?Encrypt=no&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server&timeout=5)'
         assert str(tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB')) == result
 
     def test_mslinux(self):
-        assert str(tb.engine('mssql://')) == 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server)'
+        assert str(tb.engine('mssql://')) == 'Engine(mssql://?Encrypt=yes&TrustServerCertificate=yes&driver=ODBC+Driver+18+for+SQL+Server&timeout=5)'
 
     def test_mylocal(self):
         assert str(tb.engine('mysql://')) == 'Engine(mysql+mysqlconnector://)'
