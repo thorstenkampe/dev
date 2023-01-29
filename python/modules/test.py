@@ -24,8 +24,6 @@ table   = [
     ('4a', '4b', '4c', 4.0, 4)
 ]
 
-redis   = {'list': ['0a', '1a'], 'hash': {'2': '2b', '3': '3b'}, 'string': 'abc'}
-
 config  = configparser.ConfigParser()
 _config = {
     'DEFAULT': {'def_key': 'def_value'},
@@ -60,14 +58,14 @@ except ModuleNotFoundError:
 
 try:
     dsn = types.SimpleNamespace(
-        mslocal     = tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
+        mslocal   = tb.engine(r'mssql://(LocalDB)\MSSQLLocalDB/Chinook'),
 
-        mylocal     = tb.engine('mysql://root:password@rednails/Chinook'),
+        mylocal   = tb.engine('mysql://root:password@rednails/Chinook'),
 
-        postlocal   = tb.engine('postgresql://postgres:password@rednails/chinook'),
+        postlocal = tb.engine('postgresql://postgres:password@rednails/chinook'),
 
-        litelocal   = tb.engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
-        litelinux   = tb.engine('sqlite:////home/thorsten/data/Chinook.sqlite')
+        litelocal = tb.engine(r'sqlite:///F:\cygwin\home\thorsten\data\Chinook.sqlite'),
+        litelinux = tb.engine('sqlite:////home/thorsten/data/Chinook.sqlite')
     )
 except ModuleNotFoundError:
     pass
