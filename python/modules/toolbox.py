@@ -1,10 +1,32 @@
-def pkg_version(pkg):
-    '''return the installed version of package or None if not installed'''
+# no unit test yet
+def filever(file):
+    import pycompat, re
+    if pycompat.system.is_windows:
+        # `filever(r'C:\Windows\System32\msodbcsql18.dll')` -> '2018.181.2.1'
+        import win32com.client
+        # * http://timgolden.me.uk/python/win32_how_do_i/get_dll_version.html
+        # * https://github.com/mhammond/pywin32/blob/d64fac8d7bda2cb1d81e2c9366daf99e802e327f/win32/Demos/getfilever.py
+        # * https://stackoverflow.com/questions/580924/how-to-access-a-files-properties-on-windows
+        return win32com.client.Dispatch('Scripting.FileSystemObject').GetFileVersion(file)
+    else:
+        # `filever('libmsodbcsql-18.0.so.1.1'` -> '18.0.1.1'
+        return '.'.join(re.findall(r'\d+\.\d+', file))
+
+def pkg_version(pkg, type_):
+    '''
+    return the installed or latest available version of package (or None if not
+    installed
+    '''
     import importlib.metadata
-    try:
-        return importlib.metadata.version(pkg)
-    except importlib.metadata.PackageNotFoundError:
-        return None
+    import outdated
+
+    if type_ == 'current':
+        try:
+            return importlib.metadata.version(pkg)
+        except importlib.metadata.PackageNotFoundError:
+            return None
+    elif type_ == 'latest':
+        return outdated.check_outdated(pkg, '0')[1]
 
 def ident(x):
     return x
@@ -103,6 +125,9 @@ def port_reachable(url):
         sock.close()
         return True
 
+def transpose(table):
+    return list(zip(*table))
+
 # input/output #  NOSONAR
 def logging(logfmt='', level='info'):
     import os, sys
@@ -120,12 +145,6 @@ def logging(logfmt='', level='info'):
 def prettytab(iter_, headers=None, **kwargs):
     import pandas, rich.box, rich.console, rich.table
 
-    def stringify(obj):
-        if type(obj) == float:
-            return f'{obj:.1f}'
-        else:
-            return str(obj)
-
     if not headers:
         headers = []
 
@@ -138,11 +157,13 @@ def prettytab(iter_, headers=None, **kwargs):
         headers = [index_name] + list(iter_.columns)
         iter_   = iter_.itertuples()
 
+    headers = [str(header) for header in headers]
+
     tab = rich.table.Table(*headers, safe_box=False, box=rich.box.MINIMAL_HEAVY_HEAD,
                            show_edge=False, show_header=bool(headers), **kwargs)
 
     for row in iter_:
-        row = [stringify(item) for item in row]
+        row = [str(item) for item in row]
         tab.add_row(*row)
 
     con = rich.console.Console()
@@ -246,13 +267,14 @@ def engine(dsn):
     urlp = urllib.parse.urlsplit(dsn)
     scheme, netloc, path, _, _ = urlp
 
-    engine_params = {}
-    query_params  = {}
+    connect_params = {}
+    engine_params  = {}
+    query_params   = {}
 
     if   scheme == 'mssql':
         # https://docs.microsoft.com/en-us/sql/relational-databases/native-client/applications/using-connection-string-keywords-with-sql-server-native-client#odbc-driver-connection-string-keywords
         query_params = {'driver': 'ODBC+Driver+18+for+SQL+Server', 'Encrypt': 'yes',
-                        'TrustServerCertificate': 'yes'}
+                        'timeout': 5, 'TrustServerCertificate': 'yes'}
 
         if is_localdb(dsn):
             query_params['Encrypt'] = 'no'
@@ -261,6 +283,7 @@ def engine(dsn):
         # change default driver for MySQL from `mysqlclient` to MySQL Connector/Python
         # https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html
         dsn = dsn.replace('mysql://', 'mysql+mysqlconnector://')
+        connect_params['connect_timeout'] = 5
 
     elif scheme == 'oracle':
         # https://docs.sqlalchemy.org/en/20/dialects/oracle.html#max-identifier-lengths
@@ -278,7 +301,14 @@ def engine(dsn):
     elif scheme == 'postgresql':
         # change default driver for PostgreSQL from `psycopg2` to `psycopg`
         dsn = dsn.replace('postgresql://', 'postgresql+psycopg://')
+        connect_params['connect_timeout'] = 5
 
     dsn += '?' + '&'.join(f'{key}={value}' for key, value in query_params.items())
 
-    return sa.create_engine(dsn, **engine_params)
+    return sa.create_engine(dsn, connect_args=connect_params, **engine_params)
+
+# no unit test yet
+def sqlquery(engine, query):
+    import sqlalchemy as sa
+    with engine.connect() as conn:
+        return conn.execute(sa.text(query)).all()
