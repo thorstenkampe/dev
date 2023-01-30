@@ -40,14 +40,14 @@ def is_ipython_terminal():
 
 def is_localdb(dsn):
     import urllib
-    localdb    = r'(localdb)\mssqllocaldb'
-    parsed_url = urllib.parse.urlsplit(dsn)
+    localdb = r'(localdb)\mssqllocaldb'
+    urlp    = urllib.parse.urlsplit(dsn)
 
-    if   parsed_url.scheme == 'mssql':
-        return parsed_url.hostname == localdb
+    if   urlp.scheme == 'mssql':
+        return urlp.hostname == localdb
 
-    elif not parsed_url.scheme:
-        return localdb in parsed_url.path.lower()
+    elif not urlp.scheme:
+        return localdb in urlp.path.lower()
 
     else:
         return False
@@ -78,47 +78,20 @@ def http_status_code(url):
     # https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
     import http.client, urllib
 
-    host, path = urllib.parse.urlsplit(url)[1:3]
-
-    if ':' in host:
-        # port specified, try to use it
-        host, port = host.split(':')
-        port       = int(port)
-
-    else:
-        # no port specified, use default port
-        port = None
-
-    connection = http.client.HTTPSConnection(host, port = port)
-    connection.request('HEAD', path)
+    urlp       = urllib.parse.urlsplit(url)
+    connection = http.client.HTTPSConnection(urlp.hostname, port = urlp.port)
+    connection.request('HEAD', urlp.path)
 
     # -> http.HTTPStatus(status).phrase, http.HTTPStatus(status).description
     return connection.getresponse().status
 
-def port_reachable(url):
+def port_reachable(host, port):
     # * doesn't work through SSH tunnel
     # * https://docs.python.org/3/howto/sockets.html
-    import socket, urllib
-    default_port = {'mssql': 1433, 'mysql': 3306, 'oracle': 1521, 'postgresql': 5432}
-    urlp         = urllib.parse.urlsplit(url)
-
-    if not urlp.scheme:
-        raise ValueError('no URL scheme given')
-
-    if is_localdb(url):
-        return True
-
-    if urlp.port:
-        port = urlp.port
-    else:  # no port from parsed URL
-        try:
-            port = default_port[urlp.scheme.split('+')[0]]
-        except KeyError:
-            msg = f'no port given and can\'t find default port for scheme "{urlp.scheme}"'
-            raise ValueError(msg) from None
+    import socket
 
     try:
-        sock = socket.create_connection((urlp.hostname, port), timeout=0.048)
+        sock = socket.create_connection((host, port), timeout=0.048)
     except (OSError, socket.gaierror, socket.timeout):
         return False
     else:
@@ -203,16 +176,6 @@ def groups_lst(groupby):
     '''
     return dmap(groupby.groups, lambda x: x.to_list())
 
-def sort_index(dict_, keyfunc=ident):
-    '''sort dictionary by index (dictionary key)'''
-    import collections
-    return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[0])))
-
-def sort_value(dict_, keyfunc=ident):
-    '''sort dictionary by value'''
-    import collections
-    return collections.OrderedDict(sorted(dict_.items(), key=lambda kv: keyfunc(kv[1])))
-
 def groupby(iter_, keyfunc=ident, axis=None):
     '''group iterable into equivalence classes - see http://en.wikipedia.org/wiki/Equivalence_relation'''
     import collections
@@ -221,10 +184,10 @@ def groupby(iter_, keyfunc=ident, axis=None):
     type_    = type(iter_)
     eq_class = collections.defaultdict(type_)
 
-    if axis and type_ != pandas.DataFrame:
+    if   axis and type_ != pandas.DataFrame:
         raise TypeError('axis specified but iterable is not dataframe')
 
-    if axis not in [None, 'rows', 'columns']:
+    elif axis not in [None, 'rows', 'columns']:
         raise ValueError("axis must be 'rows' or 'columns'")
 
     if   type_ == dict:

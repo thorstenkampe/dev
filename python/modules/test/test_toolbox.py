@@ -38,8 +38,12 @@ def test_dmap():
 def test_cast():
     assert tb.dmap(test.section, tb.cast) == {'def_key': 'def_value', 'int': 1, 'float': 1.0, 'true': True, 'false': False, 'none': None, 'str': 'text'}
 
-def test_http_status_code():
-    assert tb.http_status_code('https://httpstat.us/403') == 403
+class Test_http_status_code:  # NOSONAR
+    def test_url(self):
+        assert tb.http_status_code('https://httpstat.us/403') == 403
+
+    def test_url_with_port(self):
+        assert tb.http_status_code('https://httpstat.us:443/403') == 403
 
 def test_transpose():
     result = [('1a', '2a', '3a', '4a'), ('1b', '2b', '3b', '4b'), ('1c', '2c', '3c', '4c'), (1.0, 2.0, 3.0, 4.0), (1, 2, 3, 4)]
@@ -49,28 +53,11 @@ class Test_port_reachable:  # NOSONAR
     def test_reachable(self):
         server = socket.create_server(('localhost', 0))
         port   = server.getsockname()[1]
-        assert tb.port_reachable(f'scheme://localhost:{port}')
-        server.close()
-
-    def test_mslocal(self):
-        assert tb.port_reachable(r'mssql://(LocalDB)\MSSQLLocalDB')  # NOSONAR
-
-    def test_default_port(self):
-        server = socket.create_server(('localhost', 1521))
-        assert tb.port_reachable('oracle://localhost')
+        assert tb.port_reachable('localhost', port)
         server.close()
 
     def test_unreachable(self):
-        assert not tb.port_reachable('scheme://localhost:1')
-
-    def test_no_port_unknown_scheme(self):
-        match = '^no port given and can\'t find default port for scheme "scheme"$'
-        with pytest.raises(ValueError, match=match):
-            tb.port_reachable('scheme://')
-
-    def test_no_scheme(self):
-        with pytest.raises(ValueError, match='^no URL scheme given$'):
-            tb.port_reachable('liteloc')
+        assert not tb.port_reachable('localhost', 1)
 
 # DATA #
 class Test_groupby:  # NOSONAR
@@ -117,12 +104,6 @@ class Test_groupby:  # NOSONAR
 
 def test_groups_lst():
     assert tb.groups_lst(test.group) == {False: [1, 3], True: [2, 4]}
-
-def test_sort_index():
-    assert tb.sort_index({2: 1, '1': '2'}, keyfunc=str) == collections.OrderedDict([('1', '2'), (2, 1)])
-
-def test_sort_value():
-    assert tb.sort_value({'1': '2', 2: 1}, keyfunc=str) == collections.OrderedDict([(2, 1), ('1', '2')])
 
 # SQLALCHEMY #
 class Test_engine:  # NOSONAR
