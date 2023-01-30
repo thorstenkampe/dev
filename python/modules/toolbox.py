@@ -79,7 +79,7 @@ def http_status_code(url):
     import http.client, urllib
 
     urlp       = urllib.parse.urlsplit(url)
-    connection = http.client.HTTPSConnection(urlp.hostname, port = urlp.port)
+    connection = http.client.HTTPSConnection(urlp.hostname, port=urlp.port)
     connection.request('HEAD', urlp.path)
 
     # -> http.HTTPStatus(status).phrase, http.HTTPStatus(status).description
